@@ -1,0 +1,25 @@
+{
+  "name": "antkeeper-news",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/eslint": "1.12.1",
+    "@nuxt/hints": "1.0.0-alpha.3",
+    "@nuxt/scripts": "0.13.1",
+    "@nuxt/ui": "4.2.1",
+    "@unhead/vue": "^2.0.19",
+    "eslint": "^9.39.2",
+    "nuxt": "^4.2.2",
+    "typescript": "^5.9.3",
+    "vue": "^3.5.25",
+    "vue-router": "^4.6.4"
+  },
+  "packageManager": "pnpm@10.12.2+sha512.a32540185b964ee30bb4e979e405adc6af59226b438ee4cc19f9e8773667a66d302f5bfee60a39d3cac69e35e4b96e708a71dd002b7e9359c4112a1722ac323f"
+}
