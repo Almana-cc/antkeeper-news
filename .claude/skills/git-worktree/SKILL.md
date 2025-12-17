@@ -42,11 +42,14 @@ If no directory exists and no CLAUDE.md preference:
 ```
 No worktree directory found. Where should I create worktrees?
 
-1. .worktrees/ (project-local, hidden)
-2. ~/.config/superpowers/worktrees/<project-name>/ (global location)
+1. Sibling directories (e.g., project-name-feature/) (Recommended - best module resolution)
+2. .worktrees/ (project-local, hidden - may have module resolution issues in subfolders)
+3. ~/.config/superpowers/worktrees/<project-name>/ (global location)
 
 Which would you prefer?
 ```
+
+**Note:** Sibling directories (option 1) are recommended for projects with complex module resolution (like Nuxt, Next.js) as they avoid symlink and path resolution issues that can occur with nested worktree directories.
 
 ## Safety Verification
 
@@ -85,6 +88,11 @@ project=$(basename "$(git rev-parse --show-toplevel)")
 ```bash
 # Determine full path
 case $LOCATION in
+  sibling)
+    # Create sibling directory (e.g., myproject-feature/)
+    parent_dir=$(dirname "$(git rev-parse --show-toplevel)")
+    path="$parent_dir/${project}-${BRANCH_NAME#feature/}"
+    ;;
   .worktrees|worktrees)
     path="$LOCATION/$BRANCH_NAME"
     ;;
@@ -145,15 +153,26 @@ Ready to implement <feature-name>
 
 | Situation | Action |
 |-----------|--------|
-| `.worktrees/` exists | Use it (verify .gitignore) |
-| `worktrees/` exists | Use it (verify .gitignore) |
+| `.worktrees/` exists | Use it (verify .gitignore) - may have module issues |
+| `worktrees/` exists | Use it (verify .gitignore) - may have module issues |
 | Both exist | Use `.worktrees/` |
-| Neither exists | Check CLAUDE.md → Ask user |
+| Neither exists | Check CLAUDE.md → Ask user (recommend sibling) |
+| Nuxt/Next.js/complex modules | Prefer sibling directories |
 | Directory not in .gitignore | Add it immediately + commit |
 | Tests fail during baseline | Report failures + ask |
 | No package.json/Cargo.toml | Skip dependency install |
 
+**Best Practice:** Use sibling directories (e.g., `project-name-feature/`) for projects with:
+- Complex module resolution (Nuxt, Next.js, etc.)
+- Many dependencies
+- Monorepo setups
+- Build tools that resolve paths from project root
+
 ## Common Mistakes
+
+**Using nested directories for complex projects**
+- **Problem:** Nuxt/Next.js/modern frameworks may fail to resolve modules in nested `.worktrees/` subdirectories due to symlink handling
+- **Fix:** Use sibling directories for projects with complex module resolution
 
 **Skipping .gitignore verification**
 - **Problem:** Worktree contents get tracked, pollute git status
@@ -171,7 +190,27 @@ Ready to implement <feature-name>
 - **Problem:** Breaks on projects using different tools
 - **Fix:** Auto-detect from project files (package.json, etc.)
 
-## Example Workflow
+## Example Workflows
+
+### Example 1: Sibling Directory (Recommended for Nuxt/Next.js)
+
+```
+You: I'm using the using-git-worktrees skill to set up an isolated workspace.
+
+[No existing worktree directories found]
+[Ask user preference]
+User: Sibling directories
+
+[Create worktree: cd /Users/lova/www && git worktree add antkeeper-news-auth -b feature/auth]
+[Run pnpm install]
+[Run pnpm test - 47 passing]
+
+Worktree ready at /Users/lova/www/antkeeper-news-auth
+Tests passing (47 tests, 0 failures)
+Ready to implement auth feature
+```
+
+### Example 2: Project-Local Directory
 
 ```
 You: I'm using the using-git-worktrees skill to set up an isolated workspace.
