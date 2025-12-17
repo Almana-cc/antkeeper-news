@@ -1,5 +1,5 @@
 import { db, schema } from 'hub:db'
-import { eq, and } from 'drizzle-orm'
+import { eq } from 'drizzle-orm'
 import { parseRssFeed } from '../services/rss.service'
 import { matchesKeywords } from '../services/keyword-filter.service'
 
@@ -54,8 +54,7 @@ export default defineTask({
 
         // 3. Filter and save articles
         for (const item of items) {
-          const toto = true
-          if ( toto ) {// matchesKeywords(item.title, item.description, language)) {
+          if (matchesKeywords(item.title, item.description, language)) {
             try {
               // Generate slug from title
               const slug = generateSlug(item.title)
