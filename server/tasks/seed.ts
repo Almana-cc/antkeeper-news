@@ -16,7 +16,15 @@ export default defineTask({
         url: 'https://www.sciencesetavenir.fr/animaux/',
         isActive: true,
         fetchIntervalMinutes: 60,
-        config: { feedUrl: 'https://www.sciencesetavenir.fr/nature-environnement/rss.xml' }
+        config: { feedUrl: 'https://www.sciencesetavenir.fr/nature-environnement/rss.xml', language: 'fr' }
+      },
+      {
+        name: 'Myrmecological News Blog',
+        type: 'rss',
+        url: 'https://blog.myrmecologicalnews.org/',
+        isActive: true,
+        fetchIntervalMinutes: 60,
+        config: { feedUrl: 'https://blog.myrmecologicalnews.org/feed/', language: 'en' }
       },
       {
         name: 'Google News',
@@ -24,7 +32,7 @@ export default defineTask({
         url: 'https://news.google.com/search?q=fourmis+myrmecologie&hl=fr&gl=FR&ceid=FR:fr',
         isActive: true,
         fetchIntervalMinutes: 120,
-        config: { feedUrl: 'https://news.google.com/rss/search?q=fourmis+myrmecologie&hl=fr&gl=FR&ceid=FR:fr' }
+        config: { feedUrl: 'https://news.google.com/rss/search?q=fourmis+myrmecologie&hl=fr&gl=FR&ceid=FR:fr', language: 'fr' }
       }
     ]
 
