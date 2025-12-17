@@ -10,13 +10,18 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@electric-sql/pglite": "^0.3.14",
     "@nuxt/eslint": "1.12.1",
     "@nuxt/hints": "1.0.0-alpha.3",
     "@nuxt/scripts": "0.13.1",
     "@nuxt/ui": "4.2.1",
+    "@nuxthub/core": "0.10.1",
     "@unhead/vue": "^2.0.19",
+    "drizzle-kit": "^0.31.8",
+    "drizzle-orm": "^0.45.1",
     "eslint": "^9.39.2",
     "nuxt": "^4.2.2",
+    "postgres": "^3.4.7",
     "typescript": "^5.9.3",
     "vue": "^3.5.25",
     "vue-router": "^4.6.4"

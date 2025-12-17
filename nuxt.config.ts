@@ -7,6 +7,15 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/hints',
     '@nuxt/scripts',
-    '@nuxt/ui'
-  ]
+    '@nuxt/ui',
+    '@nuxthub/core'
+  ],
+  hub: {
+    db: 'postgresql'
+  },
+  nitro: {
+    experimental: {
+      tasks: true
+    }
+  }
 })
