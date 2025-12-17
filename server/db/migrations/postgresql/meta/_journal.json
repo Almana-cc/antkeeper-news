@@ -8,6 +8,13 @@
       "when": 1765915876426,
       "tag": "0000_omniscient_reaper",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1765996932095,
+      "tag": "0001_loose_alex_power",
+      "breakpoints": true
     }
   ]
 }

@@ -14,25 +14,28 @@ export default defineTask({
         name: 'Science et Avenir - Animaux',
         type: 'rss',
         url: 'https://www.sciencesetavenir.fr/animaux/',
+        language: 'fr',
         isActive: true,
         fetchIntervalMinutes: 60,
-        config: { feedUrl: 'https://www.sciencesetavenir.fr/nature-environnement/rss.xml', language: 'fr' }
+        config: { feedUrl: 'https://www.sciencesetavenir.fr/nature-environnement/rss.xml' }
       },
       {
         name: 'Myrmecological News Blog',
         type: 'rss',
         url: 'https://blog.myrmecologicalnews.org/',
+        language: 'en',
         isActive: true,
         fetchIntervalMinutes: 60,
-        config: { feedUrl: 'https://blog.myrmecologicalnews.org/feed/', language: 'en' }
+        config: { feedUrl: 'https://blog.myrmecologicalnews.org/feed/' }
       },
       {
         name: 'Google News',
         type: 'api',
         url: 'https://news.google.com/search?q=fourmis+myrmecologie&hl=fr&gl=FR&ceid=FR:fr',
+        language: 'fr',
         isActive: true,
         fetchIntervalMinutes: 120,
-        config: { feedUrl: 'https://news.google.com/rss/search?q=fourmis+myrmecologie&hl=fr&gl=FR&ceid=FR:fr', language: 'fr' }
+        config: { feedUrl: 'https://news.google.com/rss/search?q=fourmis+myrmecologie&hl=fr&gl=FR&ceid=FR:fr' }
       }
     ]
 

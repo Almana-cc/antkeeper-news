@@ -38,9 +38,9 @@ export default defineTask({
       try {
         console.log(`Processing source: ${source.name}`)
 
-        const config = source.config as { feedUrl?: string; language?: string }
+        const config = source.config as { feedUrl?: string }
         const feedUrl = config?.feedUrl
-        const language = config?.language || 'en'
+        const language = source.language
 
         if (!feedUrl) {
           console.warn(`Source ${source.name} has no feedUrl in config, skipping`)
@@ -54,7 +54,8 @@ export default defineTask({
 
         // 3. Filter and save articles
         for (const item of items) {
-          if (matchesKeywords(item.title, item.description, language)) {
+          const toto = true
+          if ( toto ) {// matchesKeywords(item.title, item.description, language)) {
             try {
               // Generate slug from title
               const slug = generateSlug(item.title)
@@ -70,6 +71,7 @@ export default defineTask({
                 author: item.author,
                 publishedAt: item.pubDate ? new Date(item.pubDate) : null,
                 language: language,
+                imageUrl: item.imageUrl,
                 tags: [],
                 category: 'news',
               }).returning()

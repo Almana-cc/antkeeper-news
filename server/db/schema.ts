@@ -24,6 +24,7 @@ export const sources = pgTable('sources', {
   name: varchar('name', { length: 200 }).notNull(),
   type: varchar('type', { length: 50 }),
   url: text('url'),
+  language: varchar('language', { length: 10 }).notNull().default('fr'),
   lastFetchedAt: timestamp('last_fetched_at'),
   fetchIntervalMinutes: integer('fetch_interval_minutes').default(60),
   isActive: boolean('is_active').default(true),

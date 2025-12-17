@@ -32,41 +32,12 @@
 
       <UContainer class="py-10">
         <div v-if="sortedArticles.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <UBlogPost
+          <ArticleCard
             v-for="article in sortedArticles"
             :key="article.id"
-            :title="article.title"
-            :description="article.summary || undefined"
-            :image="article.imageUrl || undefined"
-            :date="article.publishedAt || undefined"
-            :to="article.sourceUrl || undefined"
-            :target="article.sourceUrl ? '_blank' : undefined"
-            :badge="article.category ? {
-              label: article.category,
-              color: getCategoryColor(article.category),
-              variant: 'subtle'
-            } : undefined"
-            :authors="article.author ? [{
-              name: article.author,
-              description: article.sourceName || undefined
-            }] : undefined"
-            orientation="vertical"
-            variant="subtle"
-          >
-            <!-- Tags in footer slot -->
-            <template v-if="article.tags && article.tags.length > 0" #footer>
-              <div class="flex flex-wrap justify-end gap-2">
-                <UBadge
-                  v-for="tag in article.tags"
-                  :key="tag"
-                  :label="tag"
-                  size="sm"
-                  color="neutral"
-                  variant="soft"
-                />
-              </div>
-            </template>
-          </UBlogPost>
+            :article="article"
+            :category-color="getCategoryColor(article.category)"
+          />
         </div>
 
         <!-- Empty state -->
