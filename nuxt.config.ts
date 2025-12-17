@@ -17,5 +17,6 @@ export default defineNuxtConfig({
     experimental: {
       tasks: true
     }
-  }
+  },
+  css: ['~/assets/css/main.css']
 })
