@@ -11,7 +11,13 @@ export default defineNuxtConfig({
     '@nuxthub/core'
   ],
   hub: {
-    db: 'postgresql'
+    db: {
+      dialect: 'postgresql',
+      driver: 'postgres-js',
+      connection: {
+        connectionString: process.env.DATABASE_URL
+      }
+    }
   },
   nitro: {
     experimental: {
