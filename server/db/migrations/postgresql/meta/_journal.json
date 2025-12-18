@@ -15,6 +15,13 @@
       "when": 1765996932095,
       "tag": "0001_loose_alex_power",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1766049075214,
+      "tag": "0002_wet_ego",
+      "breakpoints": true
     }
   ]
 }

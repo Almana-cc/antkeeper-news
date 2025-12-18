@@ -1,17 +1,6 @@
 <script setup lang="ts">
   const { data: articles } = await useFetch<Article[]>('/api/articles')
 
-  // Helper function to get category badge color
-  const getCategoryColor = (category: string | null) => {
-    if (!category) return 'neutral'
-    const colorMap: Record<string, string> = {
-      'research': 'primary',
-      'care': 'success',
-      'news': 'info'
-    }
-    return colorMap[category] || 'neutral'
-  }
-
   // Sort articles by publishedAt (newest first)
   const sortedArticles = computed(() => {
     if (!articles.value) return []
@@ -36,7 +25,6 @@
             v-for="article in sortedArticles"
             :key="article.id"
             :article="article"
-            :category-color="getCategoryColor(article.category)"
           />
         </div>
 

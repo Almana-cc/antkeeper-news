@@ -1,7 +1,6 @@
 <script setup lang="ts">
 interface Props {
   article: Article
-  categoryColor: string
 }
 
 const props = defineProps<Props>()
@@ -13,6 +12,14 @@ const isExpanded = ref(false)
 const needsExpansion = computed(() => {
   return (props.article.summary?.length ?? 0) > 200
 })
+
+const author =  {
+    name: props.article.author || undefined,
+    description: props.article.sourceName || undefined,
+    avatar: {
+      src: 'https://favicon.is/' + props.article.sourceName
+    }
+  }
 </script>
 
 <template>
@@ -25,15 +32,7 @@ const needsExpansion = computed(() => {
       :date="article.publishedAt || undefined"
       :to="article.sourceUrl || undefined"
       :target="article.sourceUrl ? '_blank' : undefined"
-      :badge="article.category ? {
-        label: article.category,
-        color: categoryColor,
-        variant: 'subtle'
-      } : undefined"
-      :authors="article.author ? [{
-        name: article.author,
-        description: article.sourceName || undefined
-      }] : undefined"
+      :authors="[author]"
       orientation="vertical"
       variant="subtle"
     >

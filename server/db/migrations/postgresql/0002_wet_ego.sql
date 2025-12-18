@@ -1,0 +1,1 @@
+ALTER TABLE "sources" ALTER COLUMN "language" SET DEFAULT 'fr';

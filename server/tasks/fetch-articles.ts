@@ -2,6 +2,7 @@ import { db, schema } from 'hub:db'
 import { eq } from 'drizzle-orm'
 import { parseRssFeed } from '../services/rss.service'
 import { matchesKeywords } from '../services/keyword-filter.service'
+import { parseURL } from 'ufo'
 
 function generateSlug(title: string): string {
   return title
@@ -58,6 +59,7 @@ export default defineTask({
             try {
               // Generate slug from title
               const slug = generateSlug(item.title)
+              const parsedLink = parseURL(item.link)
 
               // Insert article
               const [article] = await db.insert(schema.articles).values({
@@ -65,7 +67,7 @@ export default defineTask({
                 slug: slug,
                 content: item.content || item.description,
                 summary: item.description,
-                sourceName: source.name,
+                sourceName: parsedLink.host,
                 sourceUrl: item.link,
                 author: item.author,
                 publishedAt: item.pubDate ? new Date(item.pubDate) : null,

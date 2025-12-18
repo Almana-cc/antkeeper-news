@@ -11,6 +11,50 @@ export default defineTask({
     // Seed sources
     const sources = [
       {
+        "name": "Passion Entomologie",
+        "type": "rss",
+        "url": "https://passion-entomologie.fr/",
+        "language": "fr",
+        "isActive": true,
+        "fetchIntervalMinutes": 60,
+        "config": {
+          "feedUrl": "https://passion-entomologie.fr/feed/"
+        }
+      },
+      {
+        "name": "Entomology Today",
+        "type": "rss",
+        "url": "https://entomologytoday.org/",
+        "language": "en",
+        "isActive": true,
+        "fetchIntervalMinutes": 60,
+        "config": {
+          "feedUrl": "https://entomologytoday.org/feed/"
+        }
+      },
+      {
+        "name": "ScienceDaily - Insects",
+        "type": "rss",
+        "url": "https://www.sciencedaily.com/news/plants_animals/insects_and_butterflies/",
+        "language": "en",
+        "isActive": true,
+        "fetchIntervalMinutes": 60,
+        "config": {
+          "feedUrl": "https://www.sciencedaily.com/rss/plants_animals/insects_and_butterflies.xml"
+        }
+      },
+      {
+        "name": "Google News - Fourmis",
+        "type": "rss",
+        "url": "https://news.google.com/",
+        "language": "fr",
+        "isActive": true,
+        "fetchIntervalMinutes": 60,
+        "config": {
+          "feedUrl": "https://news.google.com/rss/search?q=fourmis&hl=fr&gl=FR&ceid=FR:fr"
+        }
+      },
+      {
         name: 'Science et Avenir - Animaux',
         type: 'rss',
         url: 'https://www.sciencesetavenir.fr/animaux/',
@@ -18,6 +62,15 @@ export default defineTask({
         isActive: true,
         fetchIntervalMinutes: 60,
         config: { feedUrl: 'https://www.sciencesetavenir.fr/nature-environnement/rss.xml' }
+      },
+      {
+        name: 'Flipboard - Animaux',
+        type: 'rss',
+        url: 'https://flipboard.com/topic/fr-animaux',
+        language: 'fr',
+        isActive: true,
+        fetchIntervalMinutes: 60,
+        config: { feedUrl: 'https://flipboard.com/topic/fr-animaux.rss' }
       },
       {
         name: 'Myrmecological News Blog',
@@ -28,15 +81,6 @@ export default defineTask({
         fetchIntervalMinutes: 60,
         config: { feedUrl: 'https://blog.myrmecologicalnews.org/feed/' }
       },
-      {
-        name: 'Google News',
-        type: 'api',
-        url: 'https://news.google.com/search?q=fourmis+myrmecologie&hl=fr&gl=FR&ceid=FR:fr',
-        language: 'fr',
-        isActive: true,
-        fetchIntervalMinutes: 120,
-        config: { feedUrl: 'https://news.google.com/rss/search?q=fourmis+myrmecologie&hl=fr&gl=FR&ceid=FR:fr' }
-      }
     ]
 
     const insertedSources = await db.insert(schema.sources).values(sources).returning()
