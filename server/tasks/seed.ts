@@ -15,10 +15,11 @@ export default defineTask({
         "type": "rss",
         "url": "https://news.google.com/",
         "language": "fr",
-        "isActive": false,
+        "isActive": true,
         "fetchIntervalMinutes": 60,
         "config": {
-          "feedUrl": "https://news.google.com/rss/search?q=fourmis&hl=fr&gl=FR&ceid=FR:fr"
+          "feedUrl": "https://news.google.com/rss/search?q=fourmis&hl=fr&gl=FR&ceid=FR:fr",
+          "needsDecoding": true
         }
       },
       {
