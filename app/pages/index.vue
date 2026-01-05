@@ -59,10 +59,13 @@ const goToPage = (newPage: number) => {
 
 <template>
   <UMain>
-    <UHeader
-      title="Antkeeper News"
-      description="Latest news, research, and care guides from the antkeeping community"
-    />
+    <!-- Brand Hero Section -->
+    <div class="bg-purple-800 text-white py-16">
+      <UContainer>
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">Antkeeper News</h1>
+        <p class="text-xl opacity-90">Latest news, research, and care guides from the antkeeping community</p>
+      </UContainer>
+    </div>
 
     <UContainer class="py-10">
       <!-- Filters -->
@@ -112,39 +115,7 @@ const goToPage = (newPage: number) => {
         </div>
 
         <!-- Pagination -->
-        <div v-if="pagination && pagination.totalPages > 1" class="mt-10 flex justify-center gap-2">
-          <UButton
-            :disabled="!pagination.hasPrev"
-            color="gray"
-            variant="outline"
-            @click="goToPage(page - 1)"
-          >
-            Previous
-          </UButton>
-
-          <div class="flex items-center gap-2">
-            <template v-for="pageNum in pagination.totalPages" :key="pageNum">
-              <UButton
-                v-if="pageNum === 1 || pageNum === pagination.totalPages || Math.abs(pageNum - page) <= 1"
-                :color="pageNum === page ? 'primary' : 'gray'"
-                :variant="pageNum === page ? 'solid' : 'outline'"
-                @click="goToPage(pageNum)"
-              >
-                {{ pageNum }}
-              </UButton>
-              <span v-else-if="pageNum === 2 || pageNum === pagination.totalPages - 1" class="px-2">...</span>
-            </template>
-          </div>
-
-          <UButton
-            :disabled="!pagination.hasNext"
-            color="gray"
-            variant="outline"
-            @click="goToPage(page + 1)"
-          >
-            Next
-          </UButton>
-        </div>
+        <UPagination v-if="pagination && pagination.totalPages > 1" v-model:page="page" :items-per-page="pagination.limit" :total="pagination.total" class="mt-10 flex justify-center gap-2"/>
       </div>
 
       <!-- Empty state -->

@@ -8,7 +8,8 @@ export default defineNuxtConfig({
     '@nuxt/hints',
     '@nuxt/scripts',
     '@nuxt/ui',
-    '@nuxthub/core'
+    '@nuxthub/core',
+    '@nuxt/fonts'
   ],
   hub: {
     db: {

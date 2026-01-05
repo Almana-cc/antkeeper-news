@@ -23,9 +23,9 @@ const author =  {
 </script>
 
 <template>
-  <div class="h-full flex flex-col">
+  <div class="h-full flex flex-col group">
     <UBlogPost
-      class="h-full flex flex-col"
+      class="h-full flex flex-col transition-transform duration-200 hover:scale-[1.02]"
       :title="article.title"
       :description="article.summary || undefined"
       :image="article.imageUrl || undefined"
@@ -34,7 +34,7 @@ const author =  {
       :target="article.sourceUrl ? '_blank' : undefined"
       :authors="[author]"
       orientation="vertical"
-      variant="subtle"
+      variant="outline"
     >
       <template #description>
         <p
@@ -62,7 +62,7 @@ const author =  {
             :key="tag"
             :label="tag"
             size="sm"
-            color="neutral"
+            color="primary"
             variant="soft"
           />
         </div>

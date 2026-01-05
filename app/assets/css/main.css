@@ -1,2 +1,57 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
+
+@theme static {
+  --color-purple-50: #f8f3ff;
+  --color-purple-100: #f1e9fe;
+  --color-purple-200: #e6d6fe;
+  --color-purple-300: #d1b5fd;
+  --color-purple-400: #b68bfa;
+  --color-purple-500: #985cf6;
+  --color-purple-600: #803aed;
+  --color-purple-700: #6d28d9;
+  --color-purple-800: #5b21b6;
+  --color-purple-900: #4c1d95;
+  --color-purple-950: #311065;
+
+  --color-red-50: #fff1f1;
+  --color-red-100: #ffe1e1;
+  --color-red-200: #ffc7c7;
+  --color-red-300: #ffa0a0;
+  --color-red-400: #ff6666;
+  --color-red-500: #f83b3b;
+  --color-red-600: #e51d1d;
+  --color-red-700: #c11414;
+  --color-red-800: #a01414;
+  --color-red-900: #841818;
+  --color-red-950: #480707;
+
+  --color-yellow-50: #fcfbea;
+  --color-yellow-100: #f8f6c9;
+  --color-yellow-200: #f1e997;
+  --color-yellow-300: #e9d758;
+  --color-yellow-400: #e1c32e;
+  --color-yellow-500: #d2ac20;
+  --color-yellow-600: #b58719;
+  --color-yellow-700: #906318;
+  --color-yellow-800: #784f1b;
+  --color-yellow-900: #67431c;
+  --color-yellow-950: #3c230c;
+
+  --color-teal-50: #f2fbfa;
+  --color-teal-100: #d3f4ef;
+  --color-teal-200: #a6e9e0;
+  --color-teal-300: #72d6cc;
+  --color-teal-400: #45bcb4;
+  --color-teal-500: #2ca09b;
+  --color-teal-600: #218380;
+  --color-teal-700: #1e6766;
+  --color-teal-800: #1c5352;
+  --color-teal-900: #1b4646;
+  --color-teal-950: #0a2829;
+}
+
+/* Apply Montserrat Alternates font globally */
+body {
+  font-family: "Montserrat Alternates", sans-serif;
+}
