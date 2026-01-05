@@ -1,35 +1,41 @@
+import { tasks } from '@trigger.dev/sdk/v3'
+
+/**
+ * Manual trigger endpoint for article fetch orchestration
+ * The scheduled task runs automatically daily at 2 AM UTC,
+ * but this endpoint allows manual triggering for testing or emergency runs.
+ */
 export default defineEventHandler(async (event) => {
-  // Verify request is from Vercel Cron or authorized source
-  const userAgent = getHeader(event, 'user-agent')
+  // Only allow authorized requests
   const authHeader = getHeader(event, 'authorization')
   const apiKey = process.env.CRON_SECRET
   const isDev = import.meta.dev
-  
-  // Allow Vercel cron requests or requests with valid API key
-  const isVercelCron = userAgent?.includes('vercel-cron')
+
   const hasValidApiKey = apiKey && authHeader?.replace('Bearer ', '') === apiKey
 
-  if (!isDev && !isVercelCron && !hasValidApiKey) {
+  if (!isDev && !hasValidApiKey) {
     throw createError({
       statusCode: 401,
-      message: 'Unauthorized'
+      message: 'Unauthorized - API key required'
     })
   }
 
   try {
-    // Run the fetch articles task
-    const result = await runTask('fetch-articles')
+    // Manually trigger the scheduled orchestrator task
+    const handle = await tasks.trigger('orchestrate-article-fetch', {})
 
     return {
       success: true,
-      message: 'Article fetch task triggered successfully',
-      result
+      message: 'Article fetch orchestration triggered manually',
+      jobId: handle.id,
+      jobUrl: `https://cloud.trigger.dev/projects/${process.env.TRIGGER_PROJECT_ID}/runs/${handle.id}`,
+      note: 'This is a manual trigger. The task also runs automatically daily at 2 AM UTC.'
     }
   } catch (error) {
-    console.error('Error triggering fetch task:', error)
+    console.error('Error triggering fetch orchestration:', error)
     throw createError({
       statusCode: 500,
-      message: 'Failed to trigger fetch task',
+      message: 'Failed to trigger fetch orchestration',
       data: error
     })
   }
