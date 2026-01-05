@@ -6,12 +6,12 @@
 **Secondary Goal:** SEO-optimized website to drive traffic and visibility
 
 **Current Status:**
-- ✅ RSS aggregation from 11 sources (French & English)
-- ✅ Google News URL decoding
+- ✅ RSS aggregation from 13+ sources across 4 languages (FR, EN, ES, DE)
+- ✅ Google News integration for all 4 languages with URL decoding
 - ✅ OpenGraph metadata scraping
-- ✅ Keyword filtering (ant-related content)
+- ✅ Multi-language keyword filtering (FR: fourmis, EN: ants, ES: hormigas, DE: ameisen)
 - ✅ Basic pagination and filtering (language, category)
-- ✅ Trigger.dev job queue with scheduled tasks (replaces Vercel cron)
+- ✅ Trigger.dev job queue with scheduled tasks and parallel source fetching (4x faster)
 - ✅ Multi-language site (i18n) - FR, EN, ES, DE support
 - ✅ Antkeeper brand design system (Montserrat font, purple/coral colors)
 - ⚠️ No tags/categorization beyond basic "news"
