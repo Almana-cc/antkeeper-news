@@ -40,7 +40,7 @@ export default defineNuxtConfig({
   i18n: {
     locales: [
       { code: 'fr', language: 'fr-FR', name: 'Français', file: 'fr.json', flag: '🇫🇷' },
-      { code: 'en', language: 'en-US', name: 'English', file: 'en.json', flag: '🇬🇧' },
+      { code: 'en', language: 'en-GB', name: 'English', file: 'en.json', flag: '🇬🇧' },
       { code: 'es', language: 'es-ES', name: 'Español', file: 'es.json', flag: '🇪🇸' },
       { code: 'de', language: 'de-DE', name: 'Deutsch', file: 'de.json', flag: '🇩🇪' }
     ],
