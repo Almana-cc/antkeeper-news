@@ -4,6 +4,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const { t } = useI18n()
 
 // State for expand/collapse
 const isExpanded = ref(false)
@@ -23,9 +24,9 @@ const author =  {
 </script>
 
 <template>
-  <div class="h-full flex flex-col">
+  <div class="h-full flex flex-col group">
     <UBlogPost
-      class="h-full flex flex-col"
+      class="h-full flex flex-col transition-transform duration-200 hover:scale-[1.02]"
       :title="article.title"
       :description="article.summary || undefined"
       :image="article.imageUrl || undefined"
@@ -34,7 +35,7 @@ const author =  {
       :target="article.sourceUrl ? '_blank' : undefined"
       :authors="[author]"
       orientation="vertical"
-      variant="subtle"
+      variant="outline"
     >
       <template #description>
         <p
@@ -50,7 +51,7 @@ const author =  {
           @click.stop.prevent="isExpanded = !isExpanded"
           class="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mt-2 transition-colors inline-block relative z-10"
         >
-          {{ isExpanded ? 'Show less' : 'More...' }}
+          {{ isExpanded ? t('articles.showLess') : t('articles.showMore') }}
         </button>
       </template>
 
@@ -62,7 +63,7 @@ const author =  {
             :key="tag"
             :label="tag"
             size="sm"
-            color="neutral"
+            color="primary"
             variant="soft"
           />
         </div>

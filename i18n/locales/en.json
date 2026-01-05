@@ -1,0 +1,31 @@
+{
+  "site": {
+    "title": "Antkeeper News"
+  },
+  "filters": {
+    "allLanguages": "All Languages",
+    "allCategories": "All Categories",
+    "clearFilters": "Clear Filters"
+  },
+  "languages": {
+    "en": "English",
+    "fr": "French",
+    "es": "Spanish",
+    "de": "German"
+  },
+  "categories": {
+    "news": "News"
+  },
+  "articles": {
+    "loading": "Loading articles...",
+    "noArticlesFound": "No articles found.",
+    "articleCount": "{count} article",
+    "articleCount_plural": "{count} articles",
+    "showLess": "Show less",
+    "showMore": "More..."
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next"
+  }
+}
