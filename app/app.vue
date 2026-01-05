@@ -5,7 +5,7 @@ const updateLocale = (locale: string) => {
 }
 const items = computed(() => {
   return locales.value.map(i => ({
-    label: i.flag + ' ' + i.name,
+    label: i.code,
     value: i.code
   }))
 })
@@ -58,7 +58,7 @@ useHead({
 
       <template #right>
 
-        <USelect color="primary" variant="soft" :items :model-value="locale" @update:model-value="(value: any) => updateLocale(value as string)"/>
+        <USelect :ui="{base: 'uppercase', itemLabel: 'uppercase', trailingIcon: 'text-black'}" color="primary" variant="soft" :items :model-value="locale" @update:model-value="(value: any) => updateLocale(value as string)"/>
       
       </template>
     </UHeader>
