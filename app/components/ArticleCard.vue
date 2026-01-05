@@ -4,6 +4,7 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const { t } = useI18n()
 
 // State for expand/collapse
 const isExpanded = ref(false)
@@ -50,7 +51,7 @@ const author =  {
           @click.stop.prevent="isExpanded = !isExpanded"
           class="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 mt-2 transition-colors inline-block relative z-10"
         >
-          {{ isExpanded ? 'Show less' : 'More...' }}
+          {{ isExpanded ? t('articles.showLess') : t('articles.showMore') }}
         </button>
       </template>
 
