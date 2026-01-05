@@ -24,5 +24,10 @@ export default defineNuxtConfig({
       tasks: true
     }
   },
-  css: ['~/assets/css/main.css']
+  css: ['~/assets/css/main.css'],
+  $development: {
+    hub: {
+      db: 'postgresql'
+    }
+  }
 })

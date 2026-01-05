@@ -3,6 +3,8 @@ import { eq } from 'drizzle-orm'
 import { parseRssFeed } from '../services/rss.service'
 import { matchesKeywords } from '../services/keyword-filter.service'
 import { parseURL } from 'ufo'
+import { decodeGoogleNewsFeed } from '../services/google-news-decoder.service'
+import { scrapeArticleMetadata } from '../services/opengraph-scraper.service'
 
 function generateSlug(title: string): string {
   return title
@@ -39,17 +41,42 @@ export default defineTask({
       try {
         console.log(`Processing source: ${source.name}`)
 
-        const config = source.config as { feedUrl?: string }
+        const config = source.config as { feedUrl?: string; needsDecoding?: boolean }
         const feedUrl = config?.feedUrl
         const language = source.language
+        const needsDecoding = config?.needsDecoding || false
 
         if (!feedUrl) {
           console.warn(`Source ${source.name} has no feedUrl in config, skipping`)
           continue
         }
 
-        const items = await parseRssFeed(feedUrl)
-        console.log(`  Found ${items.length} items in feed`)
+        let items
+
+        // If source needs decoding, use decoder API instead of RSS parser
+        if (needsDecoding) {
+          console.log(`  Decoding feed URL with decoder API...`)
+          const decodedItems = await decodeGoogleNewsFeed(feedUrl)
+
+          if (!decodedItems) {
+            console.error(`  Failed to decode feed, skipping source`)
+            continue
+          }
+
+          items = decodedItems.map(item => ({
+            title: item.title,
+            description: '',  // Will be filled by scraping if needed
+            link: item.link,  // Already decoded
+            pubDate: item.pubdate,
+            author: undefined,
+            content: '',
+            imageUrl: undefined
+          }))
+          console.log(`  Decoded ${items.length} items from feed`)
+        } else {
+          items = await parseRssFeed(feedUrl)
+          console.log(`  Found ${items.length} items in feed`)
+        }
 
         let articlesAddedForSource = 0
 
@@ -59,20 +86,62 @@ export default defineTask({
             try {
               // Generate slug from title
               const slug = generateSlug(item.title)
+
+              // Check if article already exists by slug
+              const existingArticle = await db.query.articles.findFirst({
+                where: (articles, { eq }) => eq(articles.slug, slug)
+              })
+
+              if (existingArticle) {
+                console.log(`    Skipping duplicate: ${item.title.substring(0, 60)}...`)
+                continue
+              }
+
               const parsedLink = parseURL(item.link)
+
+              // Check if we need to scrape (missing image, summary, or author)
+              const needsScraping = !item.imageUrl || !item.description || !item.author
+
+              let scrapedData = {
+                ogImage: item.imageUrl,
+                ogDescription: item.description,
+                author: item.author,
+              }
+
+              if (needsScraping) {
+                try {
+                  console.log(`    Scraping metadata for: ${item.title.substring(0, 60)}...`)
+                  const metadata = await scrapeArticleMetadata(item.link)
+
+                  if (metadata.scrapedSuccessfully) {
+                    // Only override if scraped data exists
+                    if (metadata.ogImage) scrapedData.ogImage = metadata.ogImage
+                    if (metadata.ogDescription) scrapedData.ogDescription = metadata.ogDescription
+                    if (metadata.author) scrapedData.author = metadata.author
+                    console.log(`    ✓ Scraped successfully`)
+                  } else {
+                    console.warn(`    ⚠ Scraping failed: ${metadata.errorMessage}`)
+                  }
+                } catch (scrapeError) {
+                  console.warn(`    ⚠ Error scraping:`, scrapeError)
+                }
+
+                // Add delay to avoid rate limiting (500ms between scrapes)
+                await new Promise(resolve => setTimeout(resolve, 500))
+              }
 
               // Insert article
               const [article] = await db.insert(schema.articles).values({
                 title: item.title,
                 slug: slug,
-                content: item.content || item.description,
-                summary: item.description,
+                content: item.content || scrapedData.ogDescription || '',
+                summary: scrapedData.ogDescription || '',
                 sourceName: parsedLink.host,
                 sourceUrl: item.link,
-                author: item.author,
+                author: scrapedData.author,
                 publishedAt: item.pubDate ? new Date(item.pubDate) : null,
                 language: language,
-                imageUrl: item.imageUrl,
+                imageUrl: scrapedData.ogImage,
                 tags: [],
                 category: 'news',
               }).returning()
