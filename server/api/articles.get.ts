@@ -1,4 +1,4 @@
-import { and, eq, desc, arrayContains, sql } from 'drizzle-orm'
+import { and, eq, desc, sql } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
 
 export default eventHandler(async (event) => {
