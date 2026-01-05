@@ -15,5 +15,5 @@ export default defineConfig({
     },
   },
   dirs: ["./trigger"],
-  maxDuration: 5000,
+  maxDuration: 300000, // 5 minutes (was 5000 = 5 seconds)
 });

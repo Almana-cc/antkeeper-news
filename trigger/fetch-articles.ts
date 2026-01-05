@@ -42,12 +42,8 @@ export const fetchArticles = task({
 
     console.log(`Found ${sources.length} active RSS sources`)
 
-    let totalArticlesAdded = 0
-    const articlesNeedingScraping: number[] = []
-    const errors: string[] = []
-
-    // 2. Process each source
-    for (const source of sources) {
+    // 2. Process all sources in parallel
+    const sourceProcessingPromises = sources.map(async (source) => {
       try {
         console.log(`Processing source: ${source.name}`)
 
@@ -58,7 +54,13 @@ export const fetchArticles = task({
 
         if (!feedUrl) {
           console.warn(`Source ${source.name} has no feedUrl in config, skipping`)
-          continue
+          return {
+            sourceId: source.id,
+            sourceName: source.name,
+            articlesAdded: 0,
+            articlesNeedingScraping: [],
+            errors: [`Source ${source.name} has no feedUrl`]
+          }
         }
 
         let items
@@ -70,7 +72,13 @@ export const fetchArticles = task({
 
           if (!decodedItems) {
             console.error(`  Failed to decode feed, skipping source`)
-            continue
+            return {
+              sourceId: source.id,
+              sourceName: source.name,
+              articlesAdded: 0,
+              articlesNeedingScraping: [],
+              errors: [`Failed to decode feed for ${source.name}`]
+            }
           }
 
           items = decodedItems.map(item => ({
@@ -89,8 +97,10 @@ export const fetchArticles = task({
         }
 
         let articlesAddedForSource = 0
+        const articlesNeedingScrapingForSource: number[] = []
+        const sourceErrors: string[] = []
 
-        // 3. Filter and save articles
+        // 3. Filter and save articles (still sequential per source to avoid slug conflicts)
         for (const item of items) {
           if (matchesKeywords(item.title, item.description, language)) {
             try {
@@ -136,18 +146,17 @@ export const fetchArticles = task({
               })
 
               articlesAddedForSource++
-              totalArticlesAdded++
 
               // Track articles that need metadata scraping
               if (needsScraping) {
-                articlesNeedingScraping.push(article.id)
+                articlesNeedingScrapingForSource.push(article.id)
               }
 
               console.log(`    Added: ${item.title.substring(0, 60)}... ${needsScraping ? '(needs scraping)' : ''}`)
             }
             catch (articleError) {
               console.error(`  Error saving article "${item.title}":`, articleError)
-              errors.push(`Failed to save article "${item.title}" from ${source.name}`)
+              sourceErrors.push(`Failed to save article "${item.title}": ${articleError}`)
             }
           }
         }
@@ -158,12 +167,50 @@ export const fetchArticles = task({
         await db.update(schema.sources)
           .set({ lastFetchedAt: new Date() })
           .where(eq(schema.sources.id, source.id))
+
+        return {
+          sourceId: source.id,
+          sourceName: source.name,
+          articlesAdded: articlesAddedForSource,
+          articlesNeedingScraping: articlesNeedingScrapingForSource,
+          errors: sourceErrors
+        }
       }
       catch (error) {
         console.error(`Error processing source ${source.name}:`, error)
-        errors.push(`Failed to process source ${source.name}: ${error}`)
+        return {
+          sourceId: source.id,
+          sourceName: source.name,
+          articlesAdded: 0,
+          articlesNeedingScraping: [],
+          errors: [`Failed to process source ${source.name}: ${error}`]
+        }
       }
-    }
+    })
+
+    // Wait for all sources to complete (including failures)
+    const sourceResults = await Promise.allSettled(sourceProcessingPromises)
+
+    // Aggregate results
+    let totalArticlesAdded = 0
+    const articlesNeedingScraping: number[] = []
+    const errors: string[] = []
+
+    sourceResults.forEach((result, index) => {
+      if (result.status === 'fulfilled') {
+        const sourceResult = result.value
+        totalArticlesAdded += sourceResult.articlesAdded
+        articlesNeedingScraping.push(...sourceResult.articlesNeedingScraping)
+        if (sourceResult.errors.length > 0) {
+          errors.push(...sourceResult.errors)
+        }
+      } else {
+        // Should never happen since we catch errors in the promise, but handle it
+        const source = sources[index]
+        console.error(`Unexpected rejection for source ${source?.name}:`, result.reason)
+        errors.push(`Unexpected failure for source ${source?.name}: ${result.reason}`)
+      }
+    })
 
     console.log(`\n✓ Completed! Added ${totalArticlesAdded} articles total`)
     console.log(`  ${articlesNeedingScraping.length} articles need metadata scraping`)

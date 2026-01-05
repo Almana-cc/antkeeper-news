@@ -23,6 +23,42 @@ export default defineTask({
         }
       },
       {
+        "name": "Google News - Ants",
+        "type": "rss",
+        "url": "https://news.google.com/",
+        "language": "en",
+        "isActive": true,
+        "fetchIntervalMinutes": 60,
+        "config": {
+          "feedUrl": "https://news.google.com/rss/search?q=ants&hl=en&gl=GB&ceid=GB:en",
+          "needsDecoding": true
+        }
+      },
+      {
+        "name": "Google News - Hormigas",
+        "type": "rss",
+        "url": "https://news.google.com/",
+        "language": "es",
+        "isActive": true,
+        "fetchIntervalMinutes": 60,
+        "config": {
+          "feedUrl": "https://news.google.com/rss/search?q=hormigas&hl=es&gl=ES&ceid=ES:es",
+          "needsDecoding": true
+        }
+      },
+      {
+        "name": "Google News - Ameisen",
+        "type": "rss",
+        "url": "https://news.google.com/",
+        "language": "de",
+        "isActive": true,
+        "fetchIntervalMinutes": 60,
+        "config": {
+          "feedUrl": "https://news.google.com/rss/search?q=ameisen&hl=de&gl=DE&ceid=DE:de",
+          "needsDecoding": true
+        }
+      },
+      {
         "name": "Passion Entomologie",
         "type": "rss",
         "url": "https://passion-entomologie.fr/",
