@@ -25,9 +25,9 @@ export default defineNuxtConfig({
     }
   },
   css: ['~/assets/css/main.css'],
-  // $development: {
-  //   hub: {
-  //     db: 'postgresql'
-  //   }
-  // }
+  $development: {
+    hub: {
+      db: 'postgresql'
+    }
+  }
 })
