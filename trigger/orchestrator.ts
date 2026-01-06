@@ -1,12 +1,14 @@
 import { schedules } from "@trigger.dev/sdk/v3";
 import { fetchArticles } from "./fetch-articles";
 import { scrapeMetadata } from "./scrape-metadata";
+import { categorizeArticles } from "./categorize-articles";
 
 interface OrchestratorResult {
   success: boolean
   message: string
   fetchResult: any
   scrapeResult?: any
+  categorizeResult?: any
   errors?: string[]
 }
 
@@ -17,6 +19,7 @@ interface OrchestratorResult {
  * Workflow:
  * 1. Fetches articles from RSS sources
  * 2. Triggers metadata scraping for articles that need it
+ * 3. Triggers AI categorization and tagging for new articles
  */
 export const orchestrateArticleFetch = schedules.task({
   id: "orchestrate-article-fetch",
@@ -99,6 +102,58 @@ export const orchestrateArticleFetch = schedules.task({
       console.log('Step 2: No articles need metadata scraping, skipping...')
     }
 
+    // Step 3: Categorize articles with AI
+    let categorizeResult = null
+    const allArticleIds = fetchResult.output.articlesNeedingScraping
+
+    if (allArticleIds.length > 0) {
+      console.log(`Step 3: Categorizing ${allArticleIds.length} articles with AI...`)
+
+      // Batch into groups of 50
+      const BATCH_SIZE = 50
+      const batches: number[][] = []
+
+      for (let i = 0; i < allArticleIds.length; i += BATCH_SIZE) {
+        batches.push(allArticleIds.slice(i, i + BATCH_SIZE))
+      }
+
+      console.log(`  Processing ${batches.length} batch(es) of up to ${BATCH_SIZE} articles each`)
+
+      // Trigger all batches in parallel
+      const categorizeResults = await categorizeArticles.batchTriggerAndWait(
+        batches.map(batch => ({
+          payload: { articleIds: batch }
+        }))
+      )
+
+      // Aggregate results
+      const aggregatedCategorizeResult = {
+        articlesProcessed: 0,
+        articlesUpdated: 0,
+        errors: [] as string[]
+      }
+
+      categorizeResults.forEach((result, index) => {
+        if (result.ok) {
+          aggregatedCategorizeResult.articlesProcessed += result.output.articlesProcessed
+          aggregatedCategorizeResult.articlesUpdated += result.output.articlesUpdated
+          aggregatedCategorizeResult.errors.push(...result.output.errors)
+        } else {
+          console.error(`Batch ${index + 1} failed:`, result.error)
+          aggregatedCategorizeResult.errors.push(`Batch ${index + 1} failed: ${result.error}`)
+        }
+      })
+
+      categorizeResult = aggregatedCategorizeResult
+      console.log(`✓ Categorized ${categorizeResult.articlesUpdated} articles`)
+
+      if (aggregatedCategorizeResult.errors.length > 0) {
+        errors.push(...aggregatedCategorizeResult.errors)
+      }
+    } else {
+      console.log('Step 3: No articles to categorize, skipping...')
+    }
+
     // Combine any errors
     if (fetchResult.output.errors) {
       errors.push(...fetchResult.output.errors)
@@ -111,6 +166,7 @@ export const orchestrateArticleFetch = schedules.task({
       message: 'Article fetch orchestration completed',
       fetchResult: fetchResult.output,
       scrapeResult,
+      categorizeResult,
       errors: errors.length > 0 ? errors : undefined
     }
   }
