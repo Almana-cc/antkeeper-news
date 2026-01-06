@@ -24,12 +24,7 @@ const { data: tagsData } = await useFetch('/api/tags', {
   watch: [language, category]
 })
 
-const availableTags = computed(() =>
-  (tagsData.value?.tags || []).map(tag => ({
-    value: tag,
-    label: tag
-  }))
-)
+const availableTags = computed(() =>tagsData.value?.tags || [])
 
 // Fetch articles with filters
 const { data, pending } = await useFetch('/api/articles', {
@@ -125,7 +120,7 @@ watch([language, category, featured, tags], () => {
         <UButton
           v-if="language || category || featured || tags.length > 0"
           color="neutral"
-          variant="ghost"
+          variant="link"
           @click="() => { language = undefined; category = undefined; featured = undefined; tags = [] }"
         >
           {{ t('filters.clearFilters') }}
