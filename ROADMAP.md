@@ -10,13 +10,16 @@
 - ✅ Google News integration for all 4 languages with URL decoding
 - ✅ OpenGraph metadata scraping
 - ✅ Multi-language keyword filtering (FR: fourmis, EN: ants, ES: hormigas, DE: ameisen)
-- ✅ Basic pagination and filtering (language, category)
+- ✅ Advanced pagination and filtering (language, category, tags with multi-select)
 - ✅ Trigger.dev job queue with scheduled tasks and parallel source fetching (4x faster)
 - ✅ Multi-language site (i18n) - FR, EN, ES, DE support
 - ✅ Antkeeper brand design system (Montserrat font, purple/coral colors)
-- ⚠️ No tags/categorization beyond basic "news"
+- ✅ AI-powered tagging and categorization (8 categories, auto-generated tags)
+- ✅ Tag filtering UI with searchable multi-select dropdown
+- ✅ OpenRouter integration with free tier models (rate-limited, exponential backoff)
+- ⚠️ Tags are in English only (need internationalization)
 - ⚠️ No duplicate detection
-- ⚠️ No AI processing
+- ⚠️ No individual article pages yet
 
 ---
 
@@ -138,36 +141,82 @@ de.antkeeper.com     → German
 
 ---
 
-### 🤖 **Phase 2: AI Enhancement (2-4 weeks)**
+### 🤖 **Phase 2: AI Enhancement**
 
-#### 2.1 Auto-Tag Generation ⭐⭐⭐ [HIGH PRIORITY]
-**Why:** Improves discoverability, enables tag filtering
+#### 2.1 Auto-Tag Generation & Categorization ✅ [COMPLETED]
+**Why:** Improves discoverability, enables tag filtering, content quality
 **Effort:** Medium
-**How:**
-- Use OpenAI/Anthropic API to analyze article title + summary
-- Extract relevant tags (species names, topics: care, research, behavior, etc.)
-- Store tags in existing `tags` array field
-- Run as background job via Trigger.dev
+**Completed Implementation:**
+- ✅ OpenRouter API integration with free tier models (Mistral 7B)
+- ✅ AI analyzes article title + summary + content preview
+- ✅ Extracts 3-5 relevant tags (species names, topics, content types, geographic regions)
+- ✅ Assigns one of 8 categories: research, care, conservation, behavior, ecology, community, news, off-topic
+- ✅ Runs as Trigger.dev background job (Step 3 in orchestrator)
+- ✅ Batch processing (50 articles per batch)
+- ✅ Rate limiting: 5s delay between requests (12 req/min, well under 20/min limit)
+- ✅ Exponential backoff retry on 429 errors (2 retries: 5s, 10s)
+- ✅ Multi-language prompt support (EN, FR, ES, DE)
+- ✅ Detects off-topic articles (idiomatic expressions, false keyword matches)
+- ✅ Backfill task for existing articles
+- ✅ Tag filtering UI with searchable multi-select dropdown
+- ✅ Category badges displayed on article cards (color-coded)
+- ✅ All 8 categories translated in 4 languages
 
-**Suggested Tag Categories:**
-- **Species:** Lasius niger, Camponotus, Atta, etc.
-- **Topics:** care, research, behavior, conservation, breeding
-- **Content Type:** study, news, guide, community
-- **Difficulty:** beginner, advanced, expert
+**Tag Categories Extracted:**
+- **Species:** Lasius niger, Camponotus pennsylvanicus, Atta cephalotes
+- **Topics:** care, research, behavior, conservation, breeding, ecology
+- **Content Type:** study, news, guide, tutorial, community, opinion
+- **Geographic regions:** North America, Europe, Amazon, Mediterranean, etc.
 
-**Example Prompt:**
-```
-Analyze this ant-related article and extract 3-5 relevant tags.
-Focus on: species names, topic (care/research/behavior/conservation),
-and content type (study/news/guide).
+**Categories:**
+- research, care, conservation, behavior, ecology, community, news, off-topic
 
-Title: "New study reveals communication patterns in Atta cephalotes"
-Summary: "Researchers discover..."
+**Known Limitation:**
+- ⚠️ Tags are generated in English only (regardless of article language)
+- ⚠️ Future: Need tag translation/internationalization system
 
-Return as JSON array: ["Atta cephalotes", "research", "behavior", "study"]
-```
+**Impact:** ✅ Massively improved content organization, discoverability, and filtering. Users can filter by multiple tags and category.
 
-**Impact:** Enables tag filtering, improves content organization
+---
+
+#### 2.1.1 Tag Internationalization ⭐⭐ [TODO - FUTURE]
+**Why:** Tags are currently English-only, limiting UX for non-English users
+**Effort:** Medium-High
+**Challenges:**
+- AI generates tags in English (e.g., "ant care", "north america")
+- Users viewing French site see English tags
+- Tag filtering works but labels aren't localized
+
+**Potential Solutions:**
+
+**Option A: AI Multi-Language Tag Generation**
+- Modify prompts to generate tags in article's language
+- FR article → tags in French ("soins des fourmis", "amérique du nord")
+- EN article → tags in English
+- **Pros:** Native language tags per article
+- **Cons:** Inconsistent tag keys across languages, filtering complexity
+
+**Option B: Tag Translation Layer**
+- Generate canonical English tags (as now)
+- Create translation mapping table: `tag_translations (tag_key, language, label)`
+- Display translated labels in UI based on site language
+- Example: `"ant-care"` → FR: "Soins des fourmis", EN: "Ant care"
+- **Pros:** Consistent filtering, translatable UI
+- **Cons:** Need to maintain translations, initial effort
+
+**Option C: Hybrid - Canonical + Auto-Translate**
+- Keep English canonical tags for filtering
+- Use AI to translate tag labels on-demand
+- Cache translations in database
+- **Pros:** Best UX, scalable
+- **Cons:** API cost for translations
+
+**Recommendation:** **Option B** - Most maintainable and scalable
+- Build tag translation system similar to category translations
+- Start with common tags, auto-add new ones
+- Allows manual curation of tag labels
+
+**Impact:** Better UX for non-English users, professional multi-language experience
 
 ---
 
@@ -268,16 +317,25 @@ article_duplicates {
 
 ---
 
-#### 4.2 Tag Filtering UI ⭐ [NICE TO HAVE]
-**Why:** Better content discovery (depends on 2.1)
+#### 4.2 Tag Filtering UI ✅ [COMPLETED]
+**Why:** Better content discovery
 **Effort:** Low
-**Features:**
-- Tag cloud on homepage
-- Click tag → filter articles
-- `/tag/[tag]` pages for SEO
-- Show tag counts
+**Completed Features:**
+- ✅ Multi-select tag dropdown with search
+- ✅ Tags dynamically loaded from database (unique tags across all articles)
+- ✅ Filter by multiple tags simultaneously (OR logic)
+- ✅ Tags update based on language/category filters
+- ✅ URL persistence (tags stored as array in query params)
+- ✅ Responsive design with proper wrapping
 
-**Impact:** Improved navigation
+**Future Enhancements:**
+- ⏳ Tag cloud visualization
+- ⏳ Click tag on article card → filter by that tag
+- ⏳ `/tag/[tag]` SEO pages
+- ⏳ Show article counts per tag
+- ⏳ Tag internationalization (see 2.1.1)
+
+**Impact:** ✅ Significantly improved content discovery and navigation
 
 ---
 
@@ -420,10 +478,11 @@ ui: {
 5. ✅ **Multi-language Site (i18n)** - FR, EN, ES, DE support
 6. ✅ **Design System Customization** - Antkeeper brand design implemented
 
-### 🚀 **Next Sprint (High Impact, Unblocks Future Work)**
-1. **AI Tag Generation** - Enables better UX and content discovery
+### 🚀 **Next Sprint (High Impact)**
+1. ✅ ~~**AI Tag Generation**~~ - COMPLETED
 2. **Smart Duplicate Detection** - Content quality improvement
 3. **Article Pages** - SEO critical for discoverability
+4. **Tag Internationalization** - Better UX for non-English users
 
 ### 📱 **Following Sprint (Mobile Focus)**
 4. **Mobile API Enhancements** - Primary use case
@@ -559,15 +618,24 @@ ui: {
 - Neon Free tier
 - No AI usage
 
-### With Recommended Additions:
+### With Current Additions:
 
-**Trigger.dev:** Free tier (100k job runs/month) - should be enough
-**AI API (Claude/OpenAI):**
-- ~1000 articles/month × 2 API calls (tags + duplicates)
-- ~$2-5/month at current volume
-**Image CDN:** Cloudinary free tier (25GB/month) - enough for now
+**Trigger.dev:** Free tier (100k job runs/month) ✅ - Currently using ~1-2k/month
+**OpenRouter API (Free Tier):**
+- Free tier: 1000 requests/day with $10 credits
+- Current usage: ~30-50 articles/day = ~900-1500 requests/month
+- **Cost: $0/month** (within free tier) ✅
+- Rate limiting: 20 req/min for :free models → 5s delay between requests = 12 req/min (buffer)
+**Image CDN:** Not yet implemented
 
-**Total estimate:** $5-10/month
+**Total current cost:** $0/month ✅
+
+**Future cost if scaling:**
+- OpenRouter: If >1000 articles/day → consider paid tier (~$0.0001/article)
+- Image CDN: Cloudinary free tier (25GB/month)
+- Trigger.dev: >100k jobs/month → $20/month
+
+**Total estimate at scale:** $5-10/month
 
 When to upgrade:
 - Trigger.dev: >100k jobs/month → $20/month
