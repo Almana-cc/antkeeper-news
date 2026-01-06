@@ -9,6 +9,27 @@ const page = ref(Number(route.query.page) || 1)
 const language = ref<string | undefined>((route.query.language as string) || locale.value)
 const category = ref<string | undefined>((route.query.category as string) || undefined)
 const featured = ref<boolean | undefined>(route.query.featured === 'true' ? true : undefined)
+const tags = ref<string[]>(
+  route.query.tags ?
+    (Array.isArray(route.query.tags) ? route.query.tags : [route.query.tags])
+    : []
+)
+
+// Fetch available tags for filter
+const { data: tagsData } = await useFetch('/api/tags', {
+  query: computed(() => ({
+    ...(language.value && { language: language.value }),
+    ...(category.value && { category: category.value })
+  })),
+  watch: [language, category]
+})
+
+const availableTags = computed(() =>
+  (tagsData.value?.tags || []).map(tag => ({
+    value: tag,
+    label: tag
+  }))
+)
 
 // Fetch articles with filters
 const { data, pending } = await useFetch('/api/articles', {
@@ -17,21 +38,23 @@ const { data, pending } = await useFetch('/api/articles', {
     limit: 20,
     ...(language.value && { language: language.value }),
     ...(category.value && { category: category.value }),
-    ...(featured.value && { featured: 'true' })
+    ...(featured.value && { featured: 'true' }),
+    ...(tags.value.length > 0 && { tags: tags.value })
   })),
-  watch: [page, language, category, featured]
+  watch: [page, language, category, featured, tags]
 })
 
 const articles = computed(() => data.value?.articles || [])
 const pagination = computed(() => data.value?.pagination)
 
 // Update URL when filters change
-watch([page, language, category, featured], () => {
+watch([page, language, category, featured, tags], () => {
   const query: any = {}
   if (page.value > 1) query.page = page.value
   if (language.value) query.language = language.value
   if (category.value) query.category = category.value
   if (featured.value) query.featured = 'true'
+  if (tags.value.length > 0) query.tags = tags.value
 
   router.replace({ query })
 })
@@ -54,11 +77,18 @@ const languageOptions = computed(() => [
 
 // Category options
 const categoryOptions = computed(() => [
-  { value: 'news', label: t('categories.news') }
+  { value: 'research', label: t('categories.research') },
+  { value: 'care', label: t('categories.care') },
+  { value: 'conservation', label: t('categories.conservation') },
+  { value: 'behavior', label: t('categories.behavior') },
+  { value: 'ecology', label: t('categories.ecology') },
+  { value: 'community', label: t('categories.community') },
+  { value: 'news', label: t('categories.news') },
+  { value: 'off-topic', label: t('categories.off-topic') }
 ])
 
 // Reset to page 1 when filters change
-watch([language, category, featured], () => {
+watch([language, category, featured, tags], () => {
   page.value = 1
 })
 </script>
@@ -82,11 +112,21 @@ watch([language, category, featured], () => {
           class="w-48"
         />
 
+        <USelectMenu
+          v-model="tags"
+          :items="availableTags"
+          :placeholder="t('filters.allTags')"
+          :search-placeholder="t('filters.searchTags')"
+          multiple
+          searchable
+          class="w-64"
+        />
+
         <UButton
-          v-if="language || category || featured"
-          color="gray"
+          v-if="language || category || featured || tags.length > 0"
+          color="neutral"
           variant="ghost"
-          @click="() => { language = undefined; category = undefined; featured = undefined }"
+          @click="() => { language = undefined; category = undefined; featured = undefined; tags = [] }"
         >
           {{ t('filters.clearFilters') }}
         </UButton>
@@ -120,11 +160,11 @@ watch([language, category, featured], () => {
       <div v-else class="text-center py-12">
         <p class="text-muted">{{ t('articles.noArticlesFound') }}</p>
         <UButton
-          v-if="language || category || featured"
+          v-if="language || category || featured || tags.length > 0"
           color="secondary"
           variant="ghost"
           class="mt-4"
-          @click="() => { language = undefined; category = undefined; featured = undefined }"
+          @click="() => { language = undefined; category = undefined; featured = undefined; tags = [] }"
         >
           {{ t('filters.clearFilters') }}
         </UButton>

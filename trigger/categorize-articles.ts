@@ -74,9 +74,10 @@ export const categorizeArticles = task({
           errors.push(`Failed to categorize article ${articleId}: ${categorization.error}`)
         }
 
-        // Rate limiting: 100ms delay between API calls
-        // Free tier: 1000 req/day = ~1 req/minute safe rate
-        await wait.for({ seconds: 0.1 })
+        // Rate limiting: 5s delay between API calls
+        // Free tier: 20 req/min for :free models → 12 requests/min with 5s delay provides buffer
+        // This ensures we stay well under the limit even with timing variations
+        await wait.for({ seconds: 5 })
 
       } catch (error) {
         console.error(`  Error processing article ${articleId}:`, error)
