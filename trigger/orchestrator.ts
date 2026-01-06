@@ -64,14 +64,12 @@ export const orchestrateArticleFetch = schedules.task({
 
       console.log(`  Processing ${batches.length} batch(es) of up to ${BATCH_SIZE} articles each`)
 
-      // Trigger all batches in parallel for efficiency
-      const scrapePromises = batches.map((batch, index) =>
-        scrapeMetadata.triggerAndWait({
-          articleIds: batch
-        })
+      // Trigger all batches using batchTriggerAndWait (parallel execution supported)
+      const scrapeResults = await scrapeMetadata.batchTriggerAndWait(
+        batches.map(batch => ({
+          payload: { articleIds: batch }
+        }))
       )
-
-      const scrapeResults = await Promise.all(scrapePromises)
 
       // Aggregate results
       const aggregatedScrapeResult = {
