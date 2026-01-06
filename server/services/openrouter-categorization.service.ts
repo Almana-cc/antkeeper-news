@@ -18,7 +18,7 @@ const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 // Using free model - no paid fallback
 const MODEL = 'mistralai/mistral-7b-instruct:free'
 
-export async function categorizeArticle(input: ArticleInput): Promise<CategorizationResult> {
+export async function categorizeArticle(input: ArticleInput, retryCount = 0): Promise<CategorizationResult> {
   if (!OPENROUTER_API_KEY) {
     console.warn('OPENROUTER_API_KEY not configured, skipping categorization')
     return {
@@ -28,6 +28,9 @@ export async function categorizeArticle(input: ArticleInput): Promise<Categoriza
       error: 'OPENROUTER_API_KEY not configured'
     }
   }
+
+  const MAX_RETRIES = 2
+  const RETRY_DELAY_MS = 5000 // 5 seconds base delay
 
   try {
     const controller = new AbortController()
@@ -60,14 +63,25 @@ export async function categorizeArticle(input: ArticleInput): Promise<Categoriza
 
     clearTimeout(timeoutId)
 
-    // Handle rate limiting - skip categorization if free tier exhausted
+    // Handle rate limiting with exponential backoff
     if (response.status === 429) {
-      console.warn('OpenRouter rate limit hit (429) - skipping categorization')
+      if (retryCount < MAX_RETRIES) {
+        const delay = RETRY_DELAY_MS * Math.pow(2, retryCount)
+        console.warn(`OpenRouter rate limit hit (429) - retrying in ${delay/1000}s (attempt ${retryCount + 1}/${MAX_RETRIES})`)
+
+        // Wait before retry
+        await new Promise(resolve => setTimeout(resolve, delay))
+
+        // Recursive retry
+        return categorizeArticle(input, retryCount + 1)
+      }
+
+      console.warn('OpenRouter rate limit hit (429) - max retries exceeded, skipping')
       return {
         success: false,
         tags: [],
         category: 'news',
-        error: 'Rate limit exceeded - will retry next day'
+        error: 'Rate limit exceeded - max retries reached'
       }
     }
 

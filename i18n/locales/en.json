@@ -5,6 +5,8 @@
   "filters": {
     "allLanguages": "All Languages",
     "allCategories": "All Categories",
+    "allTags": "All Tags",
+    "searchTags": "Search tags...",
     "clearFilters": "Clear Filters"
   },
   "languages": {
@@ -14,7 +16,14 @@
     "de": "German"
   },
   "categories": {
-    "news": "News"
+    "research": "Research",
+    "care": "Care",
+    "conservation": "Conservation",
+    "behavior": "Behavior",
+    "ecology": "Ecology",
+    "community": "Community",
+    "news": "News",
+    "off-topic": "Off-Topic"
   },
   "articles": {
     "loading": "Loading articles...",

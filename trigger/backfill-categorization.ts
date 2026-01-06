@@ -35,7 +35,7 @@ export const backfillCategorization = task({
         isNull(schema.articles.category),
       ),
       limit,
-      orderBy: (articles, { desc }) => [desc(articles.scrapedAt)]
+      orderBy: (articles, { desc }) => [desc(articles.publishedAt)]
     })
 
     console.log(`Found ${uncategorizedArticles.length} articles needing categorization`)
