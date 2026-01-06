@@ -135,7 +135,7 @@ export const fetchArticles = task({
                 language: language,
                 imageUrl: item.imageUrl,
                 tags: [],
-                category: 'news',
+                category: null,
               }).returning()
 
               // Link article to source
