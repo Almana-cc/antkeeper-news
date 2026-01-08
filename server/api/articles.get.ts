@@ -1,4 +1,4 @@
-import { and, eq, desc, sql, ne } from 'drizzle-orm'
+import { and, eq, desc, sql, ne, gte } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
 
 export default eventHandler(async (event) => {
@@ -14,6 +14,7 @@ export default eventHandler(async (event) => {
   const category = query.category as string | undefined
   const featured = query.featured === 'true' ? true : undefined
   const tags = query.tags ? (Array.isArray(query.tags) ? query.tags : [query.tags]) as string[] : undefined
+  const dateRange = query.dateRange as string | undefined
 
   // Build where clause
   const conditions = []
@@ -41,6 +42,28 @@ export default eventHandler(async (event) => {
     conditions.push(
       sql`${schema.articles.tags} && ARRAY[${sql.join(tags.map(tag => sql`${tag}`), sql`, `)}]::text[]`
     )
+  }
+
+  // Date range filtering
+  if (dateRange && dateRange !== 'all') {
+    const now = new Date()
+    let cutoffDate: Date
+
+    switch (dateRange) {
+      case '24h':
+        cutoffDate = new Date(now.getTime() - 24 * 60 * 60 * 1000)
+        break
+      case 'week':
+        cutoffDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+        break
+      case 'month':
+        cutoffDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000)
+        break
+      default:
+        cutoffDate = now
+    }
+
+    conditions.push(gte(schema.articles.publishedAt, cutoffDate))
   }
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined
