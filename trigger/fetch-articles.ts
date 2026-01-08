@@ -20,6 +20,7 @@ interface FetchArticlesResult {
   message: string
   sourcesProcessed: number
   articlesAdded: number
+  allArticleIds: number[]
   articlesNeedingScraping: number[]
   errors?: string[]
 }
@@ -97,6 +98,7 @@ export const fetchArticles = task({
         }
 
         let articlesAddedForSource = 0
+        const allArticleIdsForSource: number[] = []
         const articlesNeedingScrapingForSource: number[] = []
         const sourceErrors: string[] = []
 
@@ -147,6 +149,9 @@ export const fetchArticles = task({
 
               articlesAddedForSource++
 
+              // Track all article IDs
+              allArticleIdsForSource.push(article.id)
+
               // Track articles that need metadata scraping
               if (needsScraping) {
                 articlesNeedingScrapingForSource.push(article.id)
@@ -172,6 +177,7 @@ export const fetchArticles = task({
           sourceId: source.id,
           sourceName: source.name,
           articlesAdded: articlesAddedForSource,
+          allArticleIds: allArticleIdsForSource,
           articlesNeedingScraping: articlesNeedingScrapingForSource,
           errors: sourceErrors
         }
@@ -182,6 +188,7 @@ export const fetchArticles = task({
           sourceId: source.id,
           sourceName: source.name,
           articlesAdded: 0,
+          allArticleIds: [],
           articlesNeedingScraping: [],
           errors: [`Failed to process source ${source.name}: ${error}`]
         }
@@ -193,6 +200,7 @@ export const fetchArticles = task({
 
     // Aggregate results
     let totalArticlesAdded = 0
+    const allArticleIds: number[] = []
     const articlesNeedingScraping: number[] = []
     const errors: string[] = []
 
@@ -200,6 +208,7 @@ export const fetchArticles = task({
       if (result.status === 'fulfilled') {
         const sourceResult = result.value
         totalArticlesAdded += sourceResult.articlesAdded
+        allArticleIds.push(...sourceResult.allArticleIds)
         articlesNeedingScraping.push(...sourceResult.articlesNeedingScraping)
         if (sourceResult.errors.length > 0) {
           errors.push(...sourceResult.errors)
@@ -225,6 +234,7 @@ export const fetchArticles = task({
       message: 'Articles fetched successfully',
       sourcesProcessed: sources.length,
       articlesAdded: totalArticlesAdded,
+      allArticleIds: allArticleIds,
       articlesNeedingScraping: articlesNeedingScraping,
       errors: errors.length > 0 ? errors : undefined
     }

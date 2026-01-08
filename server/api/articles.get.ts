@@ -1,4 +1,4 @@
-import { and, eq, desc, sql } from 'drizzle-orm'
+import { and, eq, desc, sql, ne } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
 
 export default eventHandler(async (event) => {
@@ -23,7 +23,13 @@ export default eventHandler(async (event) => {
   }
 
   if (category) {
-    conditions.push(eq(schema.articles.category, category))
+    if (category === 'all') {
+      // When 'all' is selected, exclude off-topic articles
+      conditions.push(ne(schema.articles.category, 'off-topic'))
+    } else {
+      // Show specific category (including off-topic if explicitly selected)
+      conditions.push(eq(schema.articles.category, category))
+    }
   }
 
   if (featured !== undefined) {

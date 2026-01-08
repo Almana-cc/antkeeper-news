@@ -1,4 +1,4 @@
-import { sql, eq, and } from 'drizzle-orm'
+import { sql, eq, and, ne } from 'drizzle-orm'
 import { db, schema } from '../utils/db'
 
 export default eventHandler(async (event) => {
@@ -9,7 +9,15 @@ export default eventHandler(async (event) => {
   // Build optional filters
   const conditions = []
   if (language) conditions.push(eq(schema.articles.language, language))
-  if (category) conditions.push(eq(schema.articles.category, category))
+  if (category) {
+    if (category === 'all') {
+      // When 'all' is selected, exclude off-topic articles
+      conditions.push(ne(schema.articles.category, 'off-topic'))
+    } else {
+      // Show specific category (including off-topic if explicitly selected)
+      conditions.push(eq(schema.articles.category, category))
+    }
+  }
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined
 

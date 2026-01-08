@@ -81,7 +81,7 @@ export const orchestrateArticleFetch = schedules.task({
         errors: [] as string[]
       }
 
-      scrapeResults.forEach((result, index) => {
+      scrapeResults.runs.forEach((result, index) => {
         if (result.ok) {
           aggregatedScrapeResult.articlesProcessed += result.output.articlesProcessed
           aggregatedScrapeResult.articlesUpdated += result.output.articlesUpdated
@@ -104,7 +104,7 @@ export const orchestrateArticleFetch = schedules.task({
 
     // Step 3: Categorize articles with AI
     let categorizeResult = null
-    const allArticleIds = fetchResult.output.articlesNeedingScraping
+    const allArticleIds = fetchResult.output.allArticleIds
 
     if (allArticleIds.length > 0) {
       console.log(`Step 3: Categorizing ${allArticleIds.length} articles with AI...`)
@@ -133,7 +133,7 @@ export const orchestrateArticleFetch = schedules.task({
         errors: [] as string[]
       }
 
-      categorizeResults.forEach((result, index) => {
+      categorizeResults.runs.forEach((result, index) => {
         if (result.ok) {
           aggregatedCategorizeResult.articlesProcessed += result.output.articlesProcessed
           aggregatedCategorizeResult.articlesUpdated += result.output.articlesUpdated
