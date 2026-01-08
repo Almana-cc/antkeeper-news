@@ -10,7 +10,7 @@
 - ✅ Google News integration for all 4 languages with URL decoding
 - ✅ OpenGraph metadata scraping
 - ✅ Multi-language keyword filtering (FR: fourmis, EN: ants, ES: hormigas, DE: ameisen)
-- ✅ Advanced pagination and filtering (language, category, tags with multi-select)
+- ✅ Advanced pagination and filtering (language, category, tags with multi-select, date range)
 - ✅ Trigger.dev job queue with scheduled tasks and parallel source fetching (4x faster)
 - ✅ Multi-language site (i18n) - FR, EN, ES, DE support
 - ✅ Antkeeper brand design system (Montserrat font, purple/coral colors)
@@ -352,15 +352,26 @@ article_duplicates {
 
 ---
 
-#### 4.4 Date Range Filtering ⭐ [NICE TO HAVE]
+#### 4.4 Date Range Filtering ✅ [COMPLETED]
 **Why:** Find historical content
 **Effort:** Low
-**Features:**
-- "Last 24h", "This week", "This month" filters
-- Custom date range picker
-- Useful for researchers
+**Completed Features:**
+- ✅ "Last 24h", "Last Week", "Last Month" filters
+- ✅ Date range state and options in index.vue
+- ✅ Date range UI controls in filter section
+- ✅ API query includes date range params
+- ✅ URL query params for date range persistence
+- ✅ Date filtering logic in articles API endpoint (filters by publishedAt)
+- ✅ Clear filters resets date range
+- ✅ All translations added (EN, FR, ES, DE)
 
-**Impact:** Better content discovery
+**Implementation Details:**
+- Date filtering uses `publishedAt` field from articles
+- Filter options: "All Time", "Last 24 hours", "Last Week", "Last Month"
+- Backend filters using `gte` (greater than or equal) comparison
+- Fully integrated with existing filter system
+
+**Impact:** ✅ Better content discovery, especially for recent content
 
 ---
 
@@ -489,9 +500,9 @@ ui: {
 5. **AI Content Summarization** - Better mobile app experience
 
 ### 🎨 **Polish Phase (Lower Priority)**
-6. Tag filtering UI
+6. ✅ Tag filtering UI - COMPLETED
 7. Source filtering
-8. Date range filtering
+8. ✅ Date range filtering - COMPLETED
 9. Content moderation tools
 
 ---
