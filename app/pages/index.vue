@@ -14,6 +14,7 @@ const tags = ref<string[]>(
     (Array.isArray(route.query.tags) ? route.query.tags : [route.query.tags])
     : []
 )
+const dateRange = ref<string>((route.query.dateRange as string) || 'all')
 
 // Fetch available tags for filter
 const { data: tagsData } = await useFetch('/api/tags', {
@@ -34,22 +35,24 @@ const { data, pending } = await useFetch('/api/articles', {
     ...(language.value !== 'all' && { language: language.value }),
     category: category.value,
     ...(featured.value && { featured: 'true' }),
-    ...(tags.value.length > 0 && { tags: tags.value })
+    ...(tags.value.length > 0 && { tags: tags.value }),
+    ...(dateRange.value !== 'all' && { dateRange: dateRange.value })
   })),
-  watch: [page, language, category, featured, tags]
+  watch: [page, language, category, featured, tags, dateRange]
 })
 
 const articles = computed(() => data.value?.articles || [])
 const pagination = computed(() => data.value?.pagination)
 
 // Update URL when filters change
-watch([page, language, category, featured, tags], () => {
+watch([page, language, category, featured, tags, dateRange], () => {
   const query: any = {}
   if (page.value > 1) query.page = page.value
   if (language.value !== 'all') query.language = language.value
   if (category.value !== 'all') query.category = category.value
   if (featured.value) query.featured = 'true'
   if (tags.value.length > 0) query.tags = tags.value
+  if (dateRange.value !== 'all') query.dateRange = dateRange.value
 
   router.replace({ query })
 })
@@ -81,12 +84,20 @@ const categoryOptions = computed(() => [
   { value: 'ecology', label: t('categories.ecology') },
   { value: 'community', label: t('categories.community') },
   { value: 'news', label: t('categories.news') },
-  { type: 'separator' },
+  { value: 'separator', label: '──────────', disabled: true },
   { value: 'off-topic', label: t('categories.off-topic') }
 ])
 
+// Date range options
+const dateRangeOptions = computed(() => [
+  { value: 'all', label: t('filters.allTime') },
+  { value: '24h', label: t('filters.last24h') },
+  { value: 'week', label: t('filters.lastWeek') },
+  { value: 'month', label: t('filters.lastMonth') }
+])
+
 // Reset to page 1 when filters change
-watch([language, category, featured, tags], () => {
+watch([language, category, featured, tags, dateRange], () => {
   page.value = 1
 })
 </script>
@@ -120,11 +131,18 @@ watch([language, category, featured, tags], () => {
           class="w-64"
         />
 
+        <USelect
+          v-model="dateRange"
+          :items="dateRangeOptions"
+          :placeholder="t('filters.allTime')"
+          class="w-48"
+        />
+
         <UButton
-          v-if="language !== 'all' || category !== 'all' || featured || tags.length > 0"
+          v-if="language !== 'all' || category !== 'all' || featured || tags.length > 0 || dateRange !== 'all'"
           color="neutral"
           variant="link"
-          @click="() => { language = 'all'; category = 'all'; featured = undefined; tags = [] }"
+          @click="() => { language = 'all'; category = 'all'; featured = undefined; tags = []; dateRange = 'all' }"
         >
           {{ t('filters.clearFilters') }}
         </UButton>
@@ -158,11 +176,11 @@ watch([language, category, featured, tags], () => {
       <div v-else class="text-center py-12">
         <p class="text-muted">{{ t('articles.noArticlesFound') }}</p>
         <UButton
-          v-if="language !== 'all' || category !== 'all' || featured || tags.length > 0"
+          v-if="language !== 'all' || category !== 'all' || featured || tags.length > 0 || dateRange !== 'all'"
           color="secondary"
           variant="ghost"
           class="mt-4"
-          @click="() => { language = 'all'; category = 'all'; featured = undefined; tags = [] }"
+          @click="() => { language = 'all'; category = 'all'; featured = undefined; tags = []; dateRange = 'all' }"
         >
           {{ t('filters.clearFilters') }}
         </UButton>

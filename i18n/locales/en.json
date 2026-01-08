@@ -7,7 +7,11 @@
     "allCategories": "All Categories",
     "allTags": "All Tags",
     "searchTags": "Search tags...",
-    "clearFilters": "Clear Filters"
+    "clearFilters": "Clear Filters",
+    "allTime": "All Time",
+    "last24h": "Last 24 hours",
+    "lastWeek": "Last Week",
+    "lastMonth": "Last Month"
   },
   "languages": {
     "en": "English",
