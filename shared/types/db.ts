@@ -12,3 +12,23 @@ export type NewSource = typeof sources.$inferInsert
 export interface RssSourceConfig {
   feedUrl: string
 }
+
+// Duplicate article types
+export interface DuplicateArticleInfo {
+  id: number
+  title: string
+  sourceName: string | null
+  sourceUrl: string | null
+  language: string | null
+  publishedAt: Date | null
+  similarityScore: number | null
+}
+
+export interface ArticleDuplicates {
+  count: number
+  articles: DuplicateArticleInfo[]
+}
+
+export interface ArticleWithDuplicates extends Article {
+  duplicates?: ArticleDuplicates
+}

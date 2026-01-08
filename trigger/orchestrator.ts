@@ -2,6 +2,7 @@ import { schedules } from "@trigger.dev/sdk/v3";
 import { fetchArticles } from "./fetch-articles";
 import { scrapeMetadata } from "./scrape-metadata";
 import { categorizeArticles } from "./categorize-articles";
+import { detectDuplicates } from "./detect-duplicates";
 
 interface OrchestratorResult {
   success: boolean
@@ -9,6 +10,7 @@ interface OrchestratorResult {
   fetchResult: any
   scrapeResult?: any
   categorizeResult?: any
+  duplicateResult?: any
   errors?: string[]
 }
 
@@ -154,6 +156,32 @@ export const orchestrateArticleFetch = schedules.task({
       console.log('Step 3: No articles to categorize, skipping...')
     }
 
+    // Step 4: Detect duplicates
+    let duplicateResult = null
+    if (allArticleIds.length > 0) {
+      console.log(`Step 4: Detecting duplicates for ${allArticleIds.length} articles...`)
+
+      const detectResult = await detectDuplicates.triggerAndWait({
+        articleIds: allArticleIds,
+        lookbackDays: 90,              // Can be increased (e.g., 90, 180) or 0 for unlimited
+        similarityThreshold: 0.75      // Lowered to catch articles about same event with different wording
+      })
+
+      if (!detectResult.ok) {
+        console.error('Duplicate detection failed:', detectResult.error)
+        errors.push(`Duplicate detection failed: ${detectResult.error}`)
+      } else {
+        duplicateResult = detectResult.output
+        console.log(`✓ Found ${duplicateResult.duplicatesFound} duplicates, created ${duplicateResult.duplicateRecordsCreated} records`)
+
+        if (detectResult.output.errors.length > 0) {
+          errors.push(...detectResult.output.errors)
+        }
+      }
+    } else {
+      console.log('Step 4: No articles to check for duplicates, skipping...')
+    }
+
     // Combine any errors
     if (fetchResult.output.errors) {
       errors.push(...fetchResult.output.errors)
@@ -167,6 +195,7 @@ export const orchestrateArticleFetch = schedules.task({
       fetchResult: fetchResult.output,
       scrapeResult,
       categorizeResult,
+      duplicateResult,
       errors: errors.length > 0 ? errors : undefined
     }
   }

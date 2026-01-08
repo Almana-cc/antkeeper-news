@@ -1,4 +1,4 @@
-import { and, eq, desc, sql, ne, gte } from 'drizzle-orm'
+import { and, eq, desc, sql, ne, gte, or, inArray } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
 
 export default eventHandler(async (event) => {
@@ -74,7 +74,114 @@ export default eventHandler(async (event) => {
     orderBy: [desc(schema.articles.publishedAt)],
     limit,
     offset
-  })
+  }) as ArticleWithDuplicates[]
+
+  // Fetch duplicates for all articles in this page
+  if (articles.length > 0) {
+    const articleIds = articles.map(a => a.id)
+
+    // Single query for all duplicate relationships involving these articles
+    const allDuplicateRelations = await db.query.articleDuplicates.findMany({
+      where: or(
+        inArray(schema.articleDuplicates.canonicalArticleId, articleIds),
+        inArray(schema.articleDuplicates.duplicateArticleId, articleIds)
+      )
+    })
+
+    if (allDuplicateRelations.length > 0) {
+      // Extract unique related article IDs (excluding current page articles)
+      const relatedArticleIds = [...new Set(
+        allDuplicateRelations.flatMap(rel =>
+          [rel.canonicalArticleId, rel.duplicateArticleId]
+        )
+      )].filter(id => !articleIds.includes(id))
+
+      // Create a map with current page articles + related articles
+      const allArticlesMap = new Map(articles.map(a => [a.id, {
+        id: a.id,
+        title: a.title,
+        sourceName: a.sourceName,
+        sourceUrl: a.sourceUrl,
+        language: a.language,
+        publishedAt: a.publishedAt
+      }]))
+
+      // Fetch related articles not in current page
+      if (relatedArticleIds.length > 0) {
+        const relatedArticles = await db.query.articles.findMany({
+          where: inArray(schema.articles.id, relatedArticleIds),
+          columns: {
+            id: true,
+            title: true,
+            sourceName: true,
+            sourceUrl: true,
+            language: true,
+            publishedAt: true
+          }
+        })
+
+        // Add related articles to the map
+        relatedArticles.forEach(a => allArticlesMap.set(a.id, a))
+      }
+
+      // Map duplicates to each article
+      articles.forEach(article => {
+        const articleDuplicateRelations = allDuplicateRelations.filter(rel =>
+          rel.canonicalArticleId === article.id || rel.duplicateArticleId === article.id
+        )
+
+        if (articleDuplicateRelations.length > 0) {
+          const duplicateArticles = articleDuplicateRelations
+            .map(rel => {
+              const duplicateId = rel.canonicalArticleId === article.id
+                ? rel.duplicateArticleId
+                : rel.canonicalArticleId
+              const duplicateArticle = allArticlesMap.get(duplicateId)
+
+              return duplicateArticle ? {
+                id: duplicateArticle.id,
+                title: duplicateArticle.title,
+                sourceName: duplicateArticle.sourceName,
+                sourceUrl: duplicateArticle.sourceUrl,
+                language: duplicateArticle.language,
+                publishedAt: duplicateArticle.publishedAt,
+                similarityScore: rel.similarityScore
+              } : null
+            })
+            .filter((dup) => dup !== null)
+
+          if (duplicateArticles.length > 0) {
+            article.duplicates = {
+              count: duplicateArticles.length,
+              articles: duplicateArticles
+            }
+          }
+        }
+      })
+
+      // Filter out articles that are duplicates of other articles in this page
+      // Keep only one article per duplicate group
+      const articleIdsToRemove = new Set<number>()
+
+      allDuplicateRelations.forEach(rel => {
+        // If both canonical and duplicate are in current page
+        const canonicalInPage = articleIds.includes(rel.canonicalArticleId)
+        const duplicateInPage = articleIds.includes(rel.duplicateArticleId)
+
+        if (canonicalInPage && duplicateInPage) {
+          // Remove the duplicate (newer article), keep the canonical (older)
+          articleIdsToRemove.add(rel.duplicateArticleId)
+        }
+      })
+
+      // Filter articles array
+      const filteredArticles = articles.filter(a => !articleIdsToRemove.has(a.id))
+
+      // Update articles reference
+      articles.length = 0
+      articles.push(...filteredArticles)
+    }
+  }
 
   // Get total count for pagination
   const totalResult = await db
