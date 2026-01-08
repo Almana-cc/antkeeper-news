@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer, boolean, real, varchar, primaryKey, jsonb } from 'drizzle-orm/pg-core'
+import { pgTable, text, serial, timestamp, integer, boolean, real, varchar, primaryKey, jsonb, vector } from 'drizzle-orm/pg-core'
 
 export const articles = pgTable('articles', {
   id: serial('id').primaryKey(),
@@ -17,6 +17,7 @@ export const articles = pgTable('articles', {
   category: varchar('category', { length: 50 }),
   viewCount: integer('view_count').default(0),
   featured: boolean('featured').default(false),
+  embedding: vector('embedding', { dimensions: 1536 }), // pgvector for semantic similarity search
 })
 
 export const sources = pgTable('sources', {

@@ -9,6 +9,8 @@
  * - scrapeMetadata: Scrapes OpenGraph metadata for articles that need enrichment
  * - categorizeArticles: AI-powered tagging and categorization using OpenRouter
  * - backfillCategorization: One-time task to categorize existing untagged articles
+ * - detectDuplicates: AI-powered duplicate detection using pgvector similarity search
+ * - backfillEmbeddings: One-time task to generate embeddings for existing articles
  */
 
 export { orchestrateArticleFetch } from './orchestrator'
@@ -16,3 +18,5 @@ export { fetchArticles } from './fetch-articles'
 export { scrapeMetadata } from './scrape-metadata'
 export { categorizeArticles } from './categorize-articles'
 export { backfillCategorization } from './backfill-categorization'
+export { detectDuplicates } from './detect-duplicates'
+export { backfillEmbeddings } from './backfill-embeddings'
