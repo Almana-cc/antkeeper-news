@@ -1,6 +1,6 @@
 import { task, wait } from "@trigger.dev/sdk/v3";
 import { db, schema } from '../server/utils/db'
-import { eq, isNull, sql } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 import { generateEmbedding } from '../server/services/embedding.service'
 import { detectDuplicates } from './detect-duplicates'
 
@@ -144,7 +144,7 @@ export const backfillEmbeddings = task({
         const detectResult = await detectDuplicates.triggerAndWait({
           articleIds,
           lookbackDays,
-          similarityThreshold: 0.85
+          similarityThreshold: 0.75
         })
 
         if (detectResult.ok) {

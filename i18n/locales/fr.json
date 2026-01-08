@@ -35,7 +35,11 @@
     "articleCount": "{count} article",
     "articleCount_plural": "{count} articles",
     "showLess": "Voir moins",
-    "showMore": "Plus..."
+    "showMore": "Plus...",
+    "duplicates": {
+      "alsoCoveredBy": "Également couvert par {count} autre source | Également couvert par {count} autres sources",
+      "unknownSource": "Source inconnue"
+    }
   },
   "pagination": {
     "previous": "Précédent",

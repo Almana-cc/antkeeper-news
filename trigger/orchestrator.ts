@@ -164,7 +164,7 @@ export const orchestrateArticleFetch = schedules.task({
       const detectResult = await detectDuplicates.triggerAndWait({
         articleIds: allArticleIds,
         lookbackDays: 90,              // Can be increased (e.g., 90, 180) or 0 for unlimited
-        similarityThreshold: 0.85
+        similarityThreshold: 0.75      // Lowered to catch articles about same event with different wording
       })
 
       if (!detectResult.ok) {

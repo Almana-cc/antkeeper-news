@@ -41,8 +41,8 @@ export const detectDuplicates = task({
     console.log(`Detecting duplicates for ${payload.articleIds.length} articles...`)
 
     const lookbackDays = payload.lookbackDays !== undefined ? payload.lookbackDays : 30
-    const similarityThreshold = payload.similarityThreshold || 0.85
-    const distanceThreshold = 1 - similarityThreshold // Convert to distance: 0.85 similarity = 0.15 distance
+    const similarityThreshold = payload.similarityThreshold || 0.75
+    const distanceThreshold = 1 - similarityThreshold // Convert to distance: 0.75 similarity = 0.25 distance
 
     const errors: string[] = []
     let articlesProcessed = 0
