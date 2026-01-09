@@ -17,8 +17,9 @@
 - ✅ AI-powered tagging and categorization (8 categories, auto-generated tags)
 - ✅ Tag filtering UI with searchable multi-select dropdown
 - ✅ OpenRouter integration with free tier models (rate-limited, exponential backoff)
+- ✅ Smart duplicate detection with AI embeddings (backend + UI with expandable duplicate sections)
+- ✅ Weekly newsletter generator (autonomous Claude Code agent, French content)
 - ⚠️ Tags are in English only (need internationalization)
-- ⚠️ No duplicate detection
 - ⚠️ No individual article pages yet
 
 ---
@@ -225,7 +226,7 @@ de.antkeeper.com     → German
 **Effort:** High
 **Completed Implementation:**
 
-✅ **Option A: AI-Based Similarity with pgvector**
+✅ **Backend: AI-Based Similarity with pgvector**
 - ✅ Uses OpenAI text-embedding-3-small via OpenRouter API (1,536 dimensions)
 - ✅ pgvector extension enabled with HNSW index for fast similarity search
 - ✅ Embedding column added to articles table
@@ -235,10 +236,18 @@ de.antkeeper.com     → German
 - ✅ Stores results in articleDuplicates table for fast UI queries
 - ✅ Backfill task for generating embeddings for existing articles
 
+✅ **Frontend: ArticleCard Duplicate Display**
+- ✅ Expandable duplicate section on article cards
+- ✅ Shows all sources covering the same story with similarity scores
+- ✅ Language flags for each duplicate source
+- ✅ Enhanced API returns articles with duplicate information
+- ✅ Multi-language support for duplicate-related messages (FR, EN, ES, DE)
+
 **Files Created:**
 - `server/services/embedding.service.ts` - Embedding generation with rate limiting
 - `trigger/detect-duplicates.ts` - Duplicate detection task with pgvector similarity search
 - `trigger/backfill-embeddings.ts` - Backfill task with automatic duplicate detection
+- `app/components/ArticleCard.vue` - UI component with duplicate display
 
 **Advanced Features:**
 - ✅ **Configurable lookback period**: Set `lookbackDays: 0` for unlimited search across all articles
@@ -265,7 +274,7 @@ article_duplicates {
 - Querying duplicates: <1ms (pre-computed table)
 - Cost: ~$0.009/month (100 articles/day)
 
-**Impact:** ✅ Cleaner feed, semantic duplicate detection, pre-computed for fast UI queries
+**Impact:** ✅ Cleaner feed, semantic duplicate detection, multi-source verification visible to users
 
 ---
 
@@ -281,7 +290,149 @@ article_duplicates {
 
 ---
 
-### 📱 **Phase 3: Mobile App Integration (2-3 weeks)**
+#### 2.4 Newsletter Generator ✅ [COMPLETED]
+**Why:** Weekly digest for community engagement, content distribution channel
+**Effort:** Medium
+**Completed Implementation:**
+
+✅ **Autonomous Agent for Weekly French Newsletters**
+- ✅ Custom Claude Code agent (`newsletter-generator`) for automated newsletter creation
+- ✅ Fetches articles from last week via API (`?dateRange=week&limit=50`)
+- ✅ AI-powered selection of top 3 most interesting articles
+- ✅ Generates French content: introduction, article summaries, and key points
+- ✅ Handles duplicate articles (shows all sources covering same story)
+- ✅ Creates ready-to-publish Markdown files in `./newsletters/YYYY-MM-DD.md`
+- ✅ First newsletter generated for week of January 2-9, 2026
+
+**Selection Criteria:**
+1. Scientific importance (research discoveries, advances)
+2. General interest (stories appealing to ant enthusiasts)
+3. Originality (unusual or surprising news)
+4. Content quality (well-written, substantial information)
+5. Diversity (covering different aspects of myrmecology)
+
+**Newsletter Format:**
+- French introduction with weekly overview
+- Top 3 articles with:
+  - Original article title
+  - Featured image
+  - French hook/summary (2-3 sentences)
+  - 3 key points in French
+  - Source attribution with clickable links
+  - Multi-source coverage (if duplicates exist)
+
+**Files Created:**
+- `.claude/agents/newsletter-generator.md` - Agent definition with autonomous execution rules
+- `newsletters/2026-01-09.md` - First generated newsletter
+- Enhanced API to return duplicate information for newsletters
+
+**Autonomous Execution Features:**
+- 100% autonomous - no user confirmation required
+- Self-contained workflow from API fetch to file save
+- Error handling with fallback strategies
+- Guaranteed execution order (fetch → select → generate → save)
+
+**Impact:** ✅ New content distribution channel, community engagement tool, automated weekly content curation
+
+**Current Limitations:**
+- ⚠️ Requires human approval for Write operations (blocks autonomous execution)
+- ⚠️ No newsletter history/continuity checking (each edition is independent)
+- ⚠️ Manual invocation required (no scheduled automation)
+
+**Future Enhancements:**
+- ⏳ **Automated Generation via GitHub Actions** (HIGH PRIORITY)
+  - Weekly scheduled workflow (e.g., Friday mornings)
+  - Runs newsletter-generator agent autonomously
+  - Creates PR with generated newsletter for human review
+  - Maintains human-in-the-loop via PR approval, not Write approval
+- ⏳ **Newsletter History & Continuity**
+  - Agent reads previous newsletters from `./newsletters/` directory
+  - Avoids re-covering same stories from previous weeks
+  - Maintains editorial continuity and references past editions
+  - Suggests follow-up stories when relevant
+- ⏳ Email delivery via Resend/Sendgrid
+- ⏳ Multi-language newsletters (EN, ES, DE)
+- ⏳ Social media integration (auto-share highlights)
+- ⏳ Newsletter archive page on website
+
+---
+
+#### 2.5 Newsletter Automation & Continuity ⭐⭐⭐ [HIGH PRIORITY - TODO]
+**Why:** Enable fully automated weekly newsletter generation with human review via PR
+**Effort:** Medium
+**Current Problem:**
+- Agent requires interactive Write approval (blocks CI/CD)
+- No awareness of previous newsletters (repeats stories)
+- Manual invocation every week
+
+**Proposed Solution:**
+
+**Part A: GitHub Actions Workflow**
+```yaml
+name: Generate Weekly Newsletter
+on:
+  schedule:
+    - cron: '0 9 * * 5'  # Friday 9 AM UTC
+  workflow_dispatch:      # Manual trigger option
+
+jobs:
+  generate-newsletter:
+    runs-on: ubuntu-latest
+    steps:
+      - Checkout repo
+      - Setup Node.js
+      - Install dependencies
+      - Run newsletter generation script
+      - Create PR with generated newsletter
+```
+
+**Part B: Newsletter Generation Script**
+- Standalone Node.js script (not interactive agent)
+- Uses same logic as newsletter-generator agent
+- Calls API: `GET /api/articles?dateRange=week&limit=50`
+- Reads `./newsletters/*.md` to check previous editions
+- AI selection with continuity awareness:
+  - Excludes stories already covered
+  - Suggests follow-ups if relevant
+  - References previous newsletters when appropriate
+- Writes newsletter file directly (no approval needed)
+- Commits and pushes to branch
+- Creates PR via GitHub API (`gh pr create`)
+
+**Part C: Newsletter History Integration**
+- Before selecting articles, scan `./newsletters/` directory
+- Extract covered article titles/topics from previous weeks
+- Pass to AI prompt: "Avoid these already covered stories: [list]"
+- Optionally: "Consider follow-up angle if story evolved: [list]"
+- Maintains editorial coherence across weeks
+
+**Implementation Steps:**
+1. Create `.github/workflows/newsletter.yml` workflow
+2. Create `scripts/generate-newsletter.js` (autonomous version)
+3. Update newsletter prompt to accept "previous topics" list
+4. Add continuity checking logic
+5. Test manual trigger before enabling cron schedule
+
+**Benefits:**
+- ✅ Fully automated weekly execution
+- ✅ Human review via PR (approval gate)
+- ✅ Editorial continuity across editions
+- ✅ No interactive approval blocking
+- ✅ Git history of all newsletters
+- ✅ Can review diff before publishing
+
+**Technical Notes:**
+- Script needs GitHub token for PR creation (use `secrets.GITHUB_TOKEN`)
+- Newsletter file: `newsletters/$(date +%Y-%m-%d).md`
+- PR title: "Newsletter for week of [date range]"
+- Auto-assign reviewer(s) for approval
+- Could add preview comment with rendered markdown
+
+**Impact:** Reduces manual work, ensures consistency, maintains human oversight
+
+---
+
+### 📱 **Phase 3: Mobile App Integration**
 
 #### 3.1 API Enhancements for Mobile ⭐⭐⭐ [HIGH PRIORITY]
 **Why:** Primary use case is mobile app
@@ -509,9 +660,11 @@ ui: {
 
 ### 🚀 **Next Sprint (High Impact)**
 1. ✅ ~~**AI Tag Generation**~~ - COMPLETED
-2. ✅ ~~**Smart Duplicate Detection**~~ - COMPLETED (backend only, UI pending)
-3. **Article Pages** - SEO critical for discoverability
-4. **Tag Internationalization** - Better UX for non-English users
+2. ✅ ~~**Smart Duplicate Detection**~~ - COMPLETED (backend + UI)
+3. ✅ ~~**Newsletter Generator**~~ - COMPLETED
+4. **Newsletter Automation & Continuity** - Automate weekly generation via GitHub Actions with PR review
+5. **Article Pages** - SEO critical for discoverability
+6. **Tag Internationalization** - Better UX for non-English users
 
 ### 📱 **Following Sprint (Mobile Focus)**
 4. **Mobile API Enhancements** - Primary use case
@@ -540,12 +693,17 @@ ui: {
 - Comments (maybe via Disqus to avoid moderation)
 **Concern:** Moderation burden
 
-### 3. **Newsletter**
-**Idea:** Weekly digest email
-- Top 5-10 articles of the week
-- Auto-generated with AI summary
-- Send via Resend/Sendgrid
-**Impact:** Another content distribution channel
+### 3. **Newsletter** ✅ [IMPLEMENTED]
+**Implemented:** Weekly digest content generation
+- ✅ Top 3 articles of the week (AI-curated)
+- ✅ Auto-generated French summaries and key points
+- ✅ Autonomous Claude Code agent
+- ✅ Markdown files ready for distribution
+**Next Steps:**
+- ⏳ Email delivery via Resend/Sendgrid
+- ⏳ Multi-language versions (EN, ES, DE)
+- ⏳ Newsletter archive page on website
+**Impact:** ✅ Content distribution channel established
 
 ### 4. **Social Media Auto-Post**
 **Idea:** Auto-share articles to Twitter/Bluesky
