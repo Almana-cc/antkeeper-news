@@ -115,8 +115,8 @@
         "Typecheck passes"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added tagTranslations table to server/db/schema.ts with id, tagKey, language, label fields. Created indexes on tagKey and language, plus unique composite index. Created migration 0004_tag_translations.sql and seed 0005_seed_tag_translations.sql with 20 common tags (topics, content types, regions, species) in FR/EN/ES/DE."
     },
     {
       "id": "US-008",

@@ -158,3 +158,31 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Used explicit type annotation `(tag: string)` to avoid implicit any error
 
 ### Next Priority: US-007
+
+---
+
+## Iteration 7 - 2026-01-09T16:00:00Z
+### Completed: US-007 - Create tag translations database table
+### Implementation:
+- Updated `server/db/schema.ts`:
+  - Added `tagTranslations` table with fields: id, tagKey, language, label
+  - Added imports for `index` and `uniqueIndex` from drizzle-orm/pg-core
+  - Created indexes: `tag_translations_tag_key_idx`, `tag_translations_language_idx`
+  - Created unique composite index: `tag_translations_tag_key_language_unique`
+- Created `server/db/migrations/postgresql/0004_tag_translations.sql`:
+  - Creates table with all required columns and indexes
+- Created `server/db/migrations/postgresql/0005_seed_tag_translations.sql`:
+  - Seeds 20 common tags in FR/EN/ES/DE (80 total translations)
+  - Topics: care, research, behavior, conservation, breeding, ecology
+  - Content types: study, news, guide, tutorial, community, opinion
+  - Geographic regions: north america, europe, amazon, mediterranean, asia, africa
+  - Common species: lasius niger, camponotus, formica, leaf-cutter ants, fire ants
+  - Uses `ON CONFLICT ... DO UPDATE` for idempotent seeding
+
+### Learnings:
+- Drizzle schema indexes are defined in a callback function as second argument to pgTable
+- Pre-existing typecheck errors in codebase unrelated to this work (ArticleWithDuplicates, hub:db:schema)
+- ESLint passes on schema.ts with no issues
+- Migration files are plain SQL in this project (not Drizzle Kit generated)
+
+### Next Priority: US-008
