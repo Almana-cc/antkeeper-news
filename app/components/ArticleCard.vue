@@ -9,9 +9,6 @@ const { t } = useI18n()
 // State for expand/collapse
 const isExpanded = ref(false)
 
-// NEW: State for duplicate expansion
-const isDuplicatesExpanded = ref(false)
-
 // Map categories to badge colors
 const categoryColors: Record<string, 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral' | 'tertiary'> = {
   research: 'warning',
@@ -77,7 +74,7 @@ const author =  {
       variant: 'solid'
     }"
     orientation="vertical"
-    variant="outline"
+    variant="soft"
   >
     <template #description>
       <p
@@ -95,64 +92,35 @@ const author =  {
       >
         {{ isExpanded ? t('articles.showLess') : t('articles.showMore') }}
       </button>
-              <!-- Duplicate Articles Section -->
+      <!-- Duplicate Articles Section -->
       <div v-if="hasDuplicates" class="mt-2 pt-3">
-          <button
-            class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors w-full text-left"
-            @click.stop.prevent="isDuplicatesExpanded = !isDuplicatesExpanded"
-          >
-            <UIcon
-              :name="isDuplicatesExpanded ? 'i-heroicons-chevron-down' : 'i-heroicons-chevron-right'"
-              class="w-4 h-4"
-            />
-            <span>{{ t('articles.duplicates.alsoCoveredBy', { count: article.duplicates.count }) }}</span>
-          </button>
-
-          <!-- Expanded duplicate list -->
-          <div v-if="isDuplicatesExpanded" class="mt-2 ml-6 space-y-2">
-            <div
-              v-for="duplicate in article.duplicates.articles"
-              :key="duplicate.id"
-              class="flex items-start gap-2 p-2 rounded-lg bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              <!-- Favicon -->
-              <img
-                v-if="duplicate.sourceName"
-                :src="`https://favicon.is/${duplicate.sourceName}`"
-                :alt="duplicate.sourceName"
-                class="w-4 h-4 mt-0.5 flex-shrink-0"
-                @error="(e) => (e.target as HTMLImageElement).style.display = 'none'"
+        <UCollapsible class="w-full">
+          <UButton
+            as="span"
+            :label="t('articles.duplicates.alsoCoveredBy', { count: article.duplicates.count })"
+            color="neutral"
+            variant="link"
+            trailing-icon="i-lucide-chevron-down"
+            block
+          />
+          <template #content>
+            <div class="mt-2 ml-6 flex flex-col gap-2">
+              <UUser
+                v-for="duplicate in article.duplicates.articles"
+                :key="duplicate.id"
+                :to="duplicate.sourceUrl || undefined"
+                :name="duplicate.author || undefined"
+                :description="duplicate.sourceName || undefined"
+                :avatar="{
+                  src: `https://favicon.is/${duplicate.sourceName}`,
+                  icon: 'i-lucide-image'
+                }"
+                size="sm"
               />
-
-              <div class="flex-1 min-w-0">
-                <!-- Source name + language flag -->
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                    {{ duplicate.sourceName || t('articles.duplicates.unknownSource') }}
-                  </span>
-                  <UBadge
-                    :label="getLanguageFlag(duplicate.language)"
-                    size="xs"
-                    color="neutral"
-                    variant="soft"
-                  />
-                </div>
-
-                <!-- Source URL -->
-                <a
-                  v-if="duplicate.sourceUrl"
-                  :href="duplicate.sourceUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-xs text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 truncate block"
-                  @click.stop
-                >
-                  {{ duplicate.sourceUrl }}
-                </a>
-              </div>
             </div>
-          </div>
-        </div>
+          </template>
+        </UCollapsible>
+      </div>
     </template>
 
     <!-- Tags in footer slot -->

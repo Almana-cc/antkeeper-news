@@ -73,7 +73,22 @@ export default eventHandler(async (event) => {
     where: whereClause,
     orderBy: [desc(schema.articles.publishedAt)],
     limit,
-    offset
+    offset,
+    columns: {
+      id: true,
+      title: true,
+      imageUrl: true,
+      author: true,
+      content: true,
+      summary: true,
+      slug: true,
+      sourceName: true,
+      sourceUrl: true,
+      language: true,
+      category: true,
+      tags: true,
+      publishedAt: true
+    }
   }) as ArticleWithDuplicates[]
 
   // Fetch duplicates for all articles in this page
@@ -100,6 +115,7 @@ export default eventHandler(async (event) => {
       const allArticlesMap = new Map(articles.map(a => [a.id, {
         id: a.id,
         title: a.title,
+        author: a.author,
         sourceName: a.sourceName,
         sourceUrl: a.sourceUrl,
         language: a.language,
@@ -113,6 +129,7 @@ export default eventHandler(async (event) => {
           columns: {
             id: true,
             title: true,
+            author: true,
             sourceName: true,
             sourceUrl: true,
             language: true,
@@ -141,6 +158,7 @@ export default eventHandler(async (event) => {
               return duplicateArticle ? {
                 id: duplicateArticle.id,
                 title: duplicateArticle.title,
+                author: duplicateArticle.author,
                 sourceName: duplicateArticle.sourceName,
                 sourceUrl: duplicateArticle.sourceUrl,
                 language: duplicateArticle.language,

@@ -27,16 +27,17 @@ export default defineNuxtConfig({
         'info',
         'success',
         'warning',
-        'error'
+        'error',
+        'antral'
       ]
     }
   },
   i18n: {
     locales: [
-      { code: 'fr', language: 'fr-FR', name: 'Français', file: 'fr.json', flag: '🇫🇷' },
-      { code: 'en', language: 'en-GB', name: 'English', file: 'en.json', flag: '🇬🇧' },
-      { code: 'es', language: 'es-ES', name: 'Español', file: 'es.json', flag: '🇪🇸' },
-      { code: 'de', language: 'de-DE', name: 'Deutsch', file: 'de.json', flag: '🇩🇪' }
+      { code: 'fr', language: 'fr-FR', name: 'Français', file: 'fr.json', flag: '🇫🇷', icon: 'i-flagpack-fr' },
+      { code: 'en', language: 'en-GB', name: 'English', file: 'en.json', flag: '🇬🇧', icon: 'i-flagpack-gb-ukm' },
+      { code: 'es', language: 'es-ES', name: 'Español', file: 'es.json', flag: '🇪🇸', icon: 'i-flagpack-es' },
+      { code: 'de', language: 'de-DE', name: 'Deutsch', file: 'de.json', flag: '🇩🇪', icon: 'i-flagpack-de' }
     ],
     defaultLocale: 'fr',
     strategy: 'prefix_except_default',
