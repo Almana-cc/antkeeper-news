@@ -66,8 +66,8 @@
         "Typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created API endpoint server/api/articles/[slug].get.ts and Vue page app/pages/articles/[slug].vue. Includes category badge, meta info, featured image, summary, content, tags, and source link. Added i18n keys for backToList, readOriginal, notFound in all 4 languages. Uses useSeoMeta for SEO. Pre-existing typecheck errors unrelated to this change."
     },
     {
       "id": "US-005",

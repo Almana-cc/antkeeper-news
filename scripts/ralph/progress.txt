@@ -75,3 +75,31 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 
 ### Next Priority: US-004
 
+---
+
+## Iteration 4 - 2026-01-09T13:00:00Z
+### Completed: US-004 - Create /articles/[slug] dynamic route
+### Implementation:
+- Created `server/api/articles/[slug].get.ts`:
+  - Fetches article by slug from database
+  - Returns 404 if article not found
+  - Returns article with all relevant fields
+- Created `app/pages/articles/[slug].vue`:
+  - Fetches article via useFetch()
+  - Displays: category badge, title, meta info (source, author, date)
+  - Shows featured image, summary, content, and tags
+  - Back button to return to article list
+  - Source link to read original article
+  - Uses useSeoMeta for SEO (title, description)
+  - Server-side rendered (SSR) by default in Nuxt
+- Added i18n keys in all 4 languages (fr, en, es, de):
+  - `articles.notFound`, `articles.backToList`, `articles.readOriginal`
+
+### Learnings:
+- Nuxt dynamic routes use `[param]` syntax (brackets)
+- API routes in subdirectory need `mkdir -p` first
+- `useSeoMeta()` is the Nuxt 3 way to set meta tags reactively
+- Pre-existing typecheck errors still present - filter with grep to verify new files
+
+### Next Priority: US-005
+
