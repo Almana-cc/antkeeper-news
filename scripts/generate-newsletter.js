@@ -22,6 +22,84 @@ const API_BASE_URL = process.env.API_BASE_URL || 'https://news.antkeeper.com';
 
 const NEWSLETTERS_DIR = path.join(__dirname, '..', 'newsletters');
 
+/**
+ * Read and parse previous newsletters to extract covered stories
+ * @returns {Object} { recentStories: string[], newsletterDates: string[] }
+ */
+function getPreviousNewsletterContext() {
+  console.log('📚 Reading previous newsletters for context...');
+
+  const context = {
+    recentStories: [],
+    newsletterDates: [],
+    rawContent: []
+  };
+
+  if (!fs.existsSync(NEWSLETTERS_DIR)) {
+    console.log('ℹ️ No newsletters directory found');
+    return context;
+  }
+
+  const files = fs.readdirSync(NEWSLETTERS_DIR)
+    .filter(f => f.endsWith('.md'))
+    .sort()
+    .reverse()
+    .slice(0, 4); // Last 4 newsletters (1 month)
+
+  if (files.length === 0) {
+    console.log('ℹ️ No previous newsletters found');
+    return context;
+  }
+
+  for (const file of files) {
+    const filepath = path.join(NEWSLETTERS_DIR, file);
+    const content = fs.readFileSync(filepath, 'utf-8');
+    const dateMatch = file.match(/(\d{4}-\d{2}-\d{2})/);
+    
+    if (dateMatch) {
+      context.newsletterDates.push(dateMatch[1]);
+    }
+
+    // Extract article titles (lines starting with ## followed by a number)
+    const titleMatches = content.match(/^## \d+\.\s+(.+)$/gm);
+    if (titleMatches) {
+      for (const match of titleMatches) {
+        const title = match.replace(/^## \d+\.\s+/, '').trim();
+        context.recentStories.push(title);
+      }
+    }
+
+    // Store raw content for deeper context (limited)
+    context.rawContent.push({
+      date: dateMatch ? dateMatch[1] : file,
+      content: content.substring(0, 2000)
+    });
+  }
+
+  console.log(`✅ Found ${context.recentStories.length} stories from ${files.length} previous newsletter(s)`);
+  return context;
+}
+
+/**
+ * Format previous stories for AI prompt
+ */
+function formatPreviousStoriesForPrompt(context) {
+  if (context.recentStories.length === 0) {
+    return '';
+  }
+
+  let prompt = '\n\nSTORIES ALREADY COVERED (avoid selecting these or very similar topics):\n';
+  context.recentStories.forEach((story) => {
+    prompt += `- ${story}\n`;
+  });
+
+  if (context.newsletterDates.length > 0) {
+    prompt += `\nPrevious newsletter dates: ${context.newsletterDates.join(', ')}\n`;
+  }
+
+  return prompt;
+}
+
 async function fetchArticles() {
   console.log('📰 Fetching articles from the last week...');
   
@@ -109,7 +187,7 @@ async function callOpenRouter(systemPrompt, userPrompt, retryCount = 0) {
   }
 }
 
-async function selectTopArticles(articles) {
+async function selectTopArticles(articles, previousContext = { recentStories: [], newsletterDates: [] }) {
   console.log('🤖 Using AI to select top 3 articles...');
 
   if (articles.length === 0) {
@@ -131,6 +209,8 @@ async function selectTopArticles(articles) {
    Date: ${article.publishedAt}`;
   }).join('\n\n');
 
+  const previousStoriesContext = formatPreviousStoriesForPrompt(previousContext);
+
   const systemPrompt = `Tu es un expert en myrmécologie et rédacteur de newsletter scientifique. 
 Ton rôle est de sélectionner les 3 articles les plus intéressants pour une newsletter hebdomadaire.
 
@@ -140,11 +220,14 @@ Critères de sélection:
 3. Qualité et fiabilité de la source
 4. Originalité du sujet (éviter les sujets trop communs)
 5. Variété des thèmes (ne pas prendre 3 articles sur le même sujet)
+6. ÉVITER les sujets déjà traités dans les newsletters précédentes (sauf nouveaux développements majeurs)
+
+Si un sujet a été couvert récemment mais a une évolution significative, tu peux le sélectionner en le mentionnant.
 
 Réponds UNIQUEMENT avec les numéros des 3 articles sélectionnés, séparés par des virgules.
 Exemple: 1, 5, 12`;
 
-  const userPrompt = `Voici les articles de cette semaine:\n\n${articleSummaries}\n\nSélectionne les 3 articles les plus intéressants pour la newsletter.`;
+  const userPrompt = `Voici les articles de cette semaine:\n\n${articleSummaries}${previousStoriesContext}\n\nSélectionne les 3 articles les plus intéressants pour la newsletter.`;
 
   try {
     const response = await callOpenRouter(systemPrompt, userPrompt);
@@ -178,7 +261,7 @@ Exemple: 1, 5, 12`;
   }
 }
 
-async function generateNewsletterContent(articles) {
+async function generateNewsletterContent(articles, previousContext = { recentStories: [], newsletterDates: [], rawContent: [] }) {
   console.log('✍️ Generating newsletter content...');
 
   if (articles.length === 0) {
@@ -201,6 +284,18 @@ Résumé: ${article.summary || 'Pas de résumé'}
 Contenu: ${(article.content || '').substring(0, 1000)}...`;
   }).join('\n\n---\n\n');
 
+  // Build previous context for content generation
+  let previousNewsletterInfo = '';
+  if (previousContext.recentStories.length > 0) {
+    previousNewsletterInfo = `\n\nCONTEXTE DES NEWSLETTERS PRÉCÉDENTES:
+Sujets récemment couverts:
+${previousContext.recentStories.map(s => `- ${s}`).join('\n')}
+
+Dates des éditions précédentes: ${previousContext.newsletterDates.join(', ')}
+
+Si un article fait suite à un sujet déjà couvert, mentionne-le brièvement dans l'introduction de cet article (ex: "Suite à notre article de la semaine dernière sur X, voici les dernières évolutions...").`;
+  }
+
   const systemPrompt = `Tu es le rédacteur de la newsletter "Antkeeper News", une publication hebdomadaire francophone dédiée à l'actualité myrmécologique.
 
 Ton style:
@@ -214,11 +309,13 @@ Tu dois générer le contenu Markdown de la newsletter avec:
 3. Pour chaque article:
    - Un titre numéroté accrocheur
    - L'image si disponible (format Markdown)
-   - Un paragraphe de présentation captivant
+   - Un paragraphe de présentation captivant (si c'est une suite d'un sujet précédemment couvert, mentionne-le!)
    - 3 points clés en bullet points
    - La source avec lien et date
    - Les "Également couvert par" si pertinent (inventé si non fourni)
 4. Une signature de clôture
+
+IMPORTANT: Si un sujet fait suite à une histoire précédemment couverte, fais le lien avec l'édition précédente pour donner de la continuité aux lecteurs réguliers.
 
 Format Markdown strict. Pas de balises HTML.`;
 
@@ -226,7 +323,7 @@ Format Markdown strict. Pas de balises HTML.`;
 
 Articles sélectionnés:
 
-${articlesContext}
+${articlesContext}${previousNewsletterInfo}
 
 Génère la newsletter complète en français.`;
 
@@ -319,11 +416,16 @@ async function main() {
       process.exit(1);
     }
 
+    // Get context from previous newsletters
+    const previousContext = getPreviousNewsletterContext();
+    
     const articles = await fetchArticles();
     
-    const topArticles = await selectTopArticles(articles);
+    // Pass previous context to avoid repeating stories
+    const topArticles = await selectTopArticles(articles, previousContext);
     
-    const content = await generateNewsletterContent(topArticles);
+    // Pass previous context for follow-up references
+    const content = await generateNewsletterContent(topArticles, previousContext);
     
     const filepath = writeNewsletter(content);
 
