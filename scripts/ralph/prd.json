@@ -34,8 +34,8 @@
         "Script can run without user interaction (CI/CD compatible)"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created scripts/generate-newsletter.js with OpenRouter API integration. Uses mistral-7b-instruct:free model. Includes: fetchArticles (API call), selectTopArticles (AI-based selection), generateNewsletterContent (AI content generation), and fallback strategies for empty articles and AI failures."
     },
     {
       "id": "US-003",

@@ -25,3 +25,26 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 
 ### Next Priority: US-002
 
+---
+
+## Iteration 2 - 2026-01-09T11:15:00Z
+### Completed: US-002 - Create standalone newsletter generation script
+### Implementation:
+- Created `scripts/generate-newsletter.js` (339 lines)
+- Uses OpenRouter API with `mistralai/mistral-7b-instruct:free` model
+- `fetchArticles()`: Calls GET /api/articles?dateRange=week&limit=50
+- `selectTopArticles()`: AI selects top 3 based on scientific importance, originality, quality
+- `generateNewsletterContent()`: AI generates French content with intro, summaries, key points
+- `writeNewsletter()`: Writes to `newsletters/YYYY-MM-DD.md`
+- Fallback strategies: Empty newsletter if no articles, uses first 3 if AI selection fails, generates basic content if AI generation fails
+- Rate limit handling with exponential backoff (3 retries, 5s base delay)
+- CI/CD compatible: No user interaction required, exits with code 1 on failure
+
+### Learnings:
+- Existing `openrouter-categorization.service.ts` provides good patterns for OpenRouter API calls
+- Script uses CommonJS (`require`) since it runs standalone with Node.js
+- Pre-existing typecheck errors are unrelated to this work (confirmed in progress.txt iteration 1)
+- Verified script syntax with `node --check scripts/generate-newsletter.js`
+
+### Next Priority: US-003
+
