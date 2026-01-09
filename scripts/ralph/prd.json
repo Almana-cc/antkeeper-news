@@ -49,8 +49,8 @@
         "Newsletter references previous editions when relevant"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added getPreviousNewsletterContext() to read last 4 newsletters, extract titles via regex, and build context. Updated selectTopArticles() and generateNewsletterContent() to receive and use this context. AI prompts now include previous stories list and instructions to reference prior editions for follow-up stories."
     },
     {
       "id": "US-004",

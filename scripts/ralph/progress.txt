@@ -48,3 +48,30 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 
 ### Next Priority: US-003
 
+---
+
+## Iteration 3 - 2026-01-09T12:00:00Z
+### Completed: US-003 - Add newsletter history and continuity checking
+### Implementation:
+- Added `getPreviousNewsletterContext()` function:
+  - Reads up to 4 previous newsletters from `./newsletters/*.md`
+  - Extracts article titles using regex (`## \d+\.\s+(.+)`)
+  - Returns `{ recentStories: [], newsletterDates: [], rawContent: [] }`
+- Added `formatPreviousStoriesForPrompt()` to format context for AI prompts
+- Updated `selectTopArticles(articles, previousContext)`:
+  - Added criterion 6: "ÉVITER les sujets déjà traités dans les newsletters précédentes"
+  - Added instruction for follow-up selection if story evolved
+  - Includes previous stories list in user prompt
+- Updated `generateNewsletterContent(articles, previousContext)`:
+  - Adds previous context section to prompt
+  - Instructs AI to reference prior editions when covering follow-up stories
+- Updated `main()` to fetch and pass previous context to both functions
+
+### Learnings:
+- Newsletter title format is consistent: `## {n}. {title}` - easy to parse with regex
+- No typecheck script in package.json, use `pnpm nuxt typecheck`
+- Pre-existing typecheck errors still present (ArticleWithDuplicates type) - unrelated to this work
+- ESLint available via `pnpm eslint <file>`
+
+### Next Priority: US-004
+
