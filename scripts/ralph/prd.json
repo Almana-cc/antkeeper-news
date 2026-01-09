@@ -17,8 +17,8 @@
         "PR title format: 'Newsletter for week of [date range]'"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created .github/workflows/newsletter.yml with Friday 9 AM UTC schedule, workflow_dispatch, Node.js 20 + pnpm setup, and PR creation via peter-evans/create-pull-request@v6"
     },
     {
       "id": "US-002",

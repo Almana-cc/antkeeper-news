@@ -5,3 +5,23 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 
 ---
 
+## Iteration 1 - 2026-01-09T10:30:00Z
+### Completed: US-001 - Create GitHub Actions workflow for weekly newsletter
+### Implementation:
+- Created `.github/workflows/newsletter.yml`
+- Scheduled for Friday 9 AM UTC (`cron: '0 9 * * 5'`)
+- Added `workflow_dispatch` for manual triggering
+- Setup: checkout@v4, node@v4 (Node.js 20), pnpm/action-setup@v3
+- Runs `node scripts/generate-newsletter.js` (requires US-002)
+- Uses peter-evans/create-pull-request@v6 to create PRs
+- PR title format: "Newsletter for week of [START_DATE] to [END_DATE]"
+- Environment secrets required: OPENROUTER_API_KEY, DATABASE_URL
+
+### Learnings:
+- Branch `ralph/newsletter-articles-tags` was already checked out elsewhere, used `ralph/newsletter-articles-tags-amp` instead
+- Pre-existing typecheck errors in codebase (ArticleWithDuplicates type issues, hub:db:schema module) - not related to this story
+- No `pnpm lint` script exists, use `pnpm eslint` instead
+- Date calculation in shell: use `date -d "7 days ago"` (Linux) or `date -v-7d` (macOS) with fallback
+
+### Next Priority: US-002
+
