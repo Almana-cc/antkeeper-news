@@ -17,6 +17,7 @@ export interface RssSourceConfig {
 export interface DuplicateArticleInfo {
   id: number
   title: string
+  author: string | null
   sourceName: string | null
   sourceUrl: string | null
   language: string | null

@@ -115,6 +115,7 @@ export default eventHandler(async (event) => {
       const allArticlesMap = new Map(articles.map(a => [a.id, {
         id: a.id,
         title: a.title,
+        author: a.author,
         sourceName: a.sourceName,
         sourceUrl: a.sourceUrl,
         language: a.language,
@@ -128,6 +129,7 @@ export default eventHandler(async (event) => {
           columns: {
             id: true,
             title: true,
+            author: true,
             sourceName: true,
             sourceUrl: true,
             language: true,
@@ -156,6 +158,7 @@ export default eventHandler(async (event) => {
               return duplicateArticle ? {
                 id: duplicateArticle.id,
                 title: duplicateArticle.title,
+                author: duplicateArticle.author,
                 sourceName: duplicateArticle.sourceName,
                 sourceUrl: duplicateArticle.sourceUrl,
                 language: duplicateArticle.language,

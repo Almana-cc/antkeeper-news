@@ -49,6 +49,30 @@
   --color-teal-800: #1c5352;
   --color-teal-900: #1b4646;
   --color-teal-950: #0a2829;
+
+  --color-antral-50: #f8fafc;
+  --color-antral-100: #f4f4f5;
+  --color-antral-200: #e4e4e7;
+  --color-antral-300: #d4d4d4;
+  --color-antral-400: #94a3b8;
+  --color-antral-500: #71717a;
+  --color-antral-600: #52525b;
+  --color-antral-700: #3f3f46;
+  --color-antral-800: #1f2937;
+  --color-antral-900: #0d1117;
+  --color-antral-950: #09090b;
+
+  --app-color-background: #0d1117;
+  --app-color-textPrimary: #f8fafc;
+  --app-color-textSecondary: #94a3b8;
+  --app-color-border: #1f2937;
+
+  --app-color-surface: #161b22;
+  --app-color-primary: #7c3aed;
+  --app-color-primaryHover: #a78bfa;
+  --app-color-error: #f87171;
+  --app-color-warning: #fb923c;
+  --app-color-success: #16a34a;
 }
 
 /* Apply Montserrat Alternates font globally */
