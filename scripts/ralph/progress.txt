@@ -186,3 +186,27 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Migration files are plain SQL in this project (not Drizzle Kit generated)
 
 ### Next Priority: US-008
+
+---
+
+## Iteration 8 - 2026-01-09T17:00:00Z
+### Completed: US-008 - Build tag translation service
+### Implementation:
+- Created `server/services/tag-translation.service.ts`:
+  - `getTranslatedTags(tags: string[], locale: string)`: Fetches translations for specific tags
+  - `getAllTranslationsForLocale(locale: string)`: Fetches all translations for a locale
+  - `clearTranslationCache()`: Utility to clear cache after DB updates
+  - In-memory cache with 5-minute TTL for performance
+  - Falls back to tag key if translation missing
+- Created `server/api/tags/translations.get.ts`:
+  - GET /api/tags/translations?locale=fr returns all translations for locale
+  - GET /api/tags/translations?locale=fr&tags[]=care&tags[]=research returns specific tags
+  - Uses existing ../utils/db pattern for database access
+
+### Learnings:
+- Services should import from `../utils/db` not `hub:db` for consistency
+- Simple in-memory Map cache works well for this use case (no external dependency)
+- Pre-existing typecheck errors continue (ArticleWithDuplicates, hub:db:schema) - unrelated to this work
+- Nested API routes (tags/translations.get.ts) create clean REST endpoints
+
+### Next Priority: US-009
