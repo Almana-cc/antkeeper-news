@@ -75,7 +75,7 @@ async function fetchArticles(): Promise<Article[]> {
 /**
  * Select the top 3 articles using AI
  */
-async function selectTopArticles(articles: Article[]): Promise<Article[]> {
+async function selectTopArticles(articles: Article[], previousStories: string[] = []): Promise<Article[]> {
   if (!OPENROUTER_API_KEY) {
     console.warn('⚠ OPENROUTER_API_KEY not configured - using fallback selection')
     // Fallback: select by category and duplicates
@@ -92,7 +92,7 @@ async function selectTopArticles(articles: Article[]): Promise<Article[]> {
   }
 
   try {
-    const prompt = buildArticleSelectionPrompt(articles)
+    const prompt = buildArticleSelectionPrompt(articles, previousStories)
     const response = await fetch(`${OPENROUTER_BASE_URL}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -106,7 +106,7 @@ async function selectTopArticles(articles: Article[]): Promise<Article[]> {
         messages: [
           {
             role: 'system',
-            content: 'You are an expert in myrmecology (ant science). Select the 3 most interesting and important articles about ants/myrmecology.'
+            content: 'You are an expert in myrmecology (ant science). Select the 3 most interesting and important articles about ants/myrmecology, avoiding stories that were recently covered.'
           },
           {
             role: 'user',
@@ -173,24 +173,103 @@ function selectTopArticlesHeuristic(articles: Article[]): Article[] {
 }
 
 /**
- * Build prompt for article selection
+ * Read previous newsletters
  */
-function buildArticleSelectionPrompt(articles: Article[]): string {
+async function readPreviousNewsletters(newsletterDir: string): Promise<string[]> {
+  try {
+    const files = await fs.readdir(newsletterDir)
+    const markdownFiles = files.filter(f => f.endsWith('.md')).sort().reverse()
+
+    if (markdownFiles.length === 0) {
+      console.log('  No previous newsletters found')
+      return []
+    }
+
+    console.log(`  Found ${markdownFiles.length} previous newsletters`)
+
+    const content = await Promise.all(
+      markdownFiles.slice(0, 4).map(async (file) => {
+        const path = join(newsletterDir, file)
+        return fs.readFile(path, 'utf-8')
+      })
+    )
+
+    return content
+  } catch (error) {
+    console.warn('  ⚠ Could not read previous newsletters:', error)
+    return []
+  }
+}
+
+/**
+ * Extract covered stories from newsletter content
+ */
+function extractCoveredStories(newsletterContent: string[]): string[] {
+  const stories: string[] = []
+
+  newsletterContent.forEach((content) => {
+    // Extract article titles (lines starting with ## )
+    const titleMatches = content.match(/^## .+$/gm)
+    if (titleMatches) {
+      titleMatches.forEach((match) => {
+        const title = match.replace(/^## /, '').trim()
+        stories.push(title)
+      })
+    }
+  })
+
+  return stories
+}
+
+/**
+ * Build prompt for article selection with history
+ */
+function buildArticleSelectionPrompt(articles: Article[], previousStories: string[]): string {
   const articlesDescription = articles.slice(0, 10)
     .map((a, i) => `${i + 1}. "${a.title}" (ID: ${a.id}, Category: ${a.category}, Duplicates: ${a.duplicates?.count || 0})`)
     .join('\n')
 
+  let historyNote = ''
+  if (previousStories.length > 0) {
+    historyNote = `\n\nPREVIOUSLY COVERED STORIES (avoid repeating these):\n${previousStories.map((s, i) => `- ${s}`).join('\n')}`
+  }
+
   return `Select the 3 most interesting and scientifically important articles from this list:
 
-${articlesDescription}
+${articlesDescription}${historyNote}
 
 Return JSON with an array of selected article IDs: { "ids": [id1, id2, id3] }`
 }
 
 /**
+ * Check if article is a follow-up to a previously covered story
+ */
+function findFollowUpReference(articleTitle: string, previousStories: string[]): string | null {
+  const titleLower = articleTitle.toLowerCase()
+
+  for (const prevStory of previousStories) {
+    const prevLower = prevStory.toLowerCase()
+
+    // Check for common keywords suggesting a follow-up
+    const keywords = ['update', 'nouvelle', 'new', 'follow', 'suite', 'continued', 'continues', 'developments', 'évolution']
+
+    // Check if titles share significant common words (title similarity)
+    const titleWords = titleLower.split(/\s+/).filter(w => w.length > 3)
+    const prevWords = prevLower.split(/\s+/).filter(w => w.length > 3)
+    const commonWords = titleWords.filter(w => prevWords.includes(w))
+
+    if (commonWords.length >= 2 || keywords.some(k => titleLower.includes(k) && prevLower.includes(k.replace(/e$/, '')))) {
+      return prevStory
+    }
+  }
+
+  return null
+}
+
+/**
  * Generate French content for an article
  */
-async function generateArticleContent(article: Article): Promise<{ hook: string; keyPoints: string[] }> {
+async function generateArticleContent(article: Article, followUpRef?: string | null): Promise<{ hook: string; keyPoints: string[] }> {
   if (!OPENROUTER_API_KEY) {
     // Fallback: simple extraction
     return {
@@ -334,7 +413,7 @@ function formatArticleDate(dateString: string): string {
 /**
  * Build newsletter markdown
  */
-async function buildNewsletter(articles: Article[]): Promise<string> {
+async function buildNewsletter(articles: Article[], previousStories: string[] = []): Promise<string> {
   const dateRange = getWeekDateRange()
   const timestamp = new Date().toLocaleString('fr-FR', {
     dateStyle: 'full',
@@ -344,7 +423,8 @@ async function buildNewsletter(articles: Article[]): Promise<string> {
   // Generate content for each article
   const articlesContent = await Promise.all(
     articles.map(async (article) => {
-      const { hook, keyPoints } = await generateArticleContent(article)
+      const followUpRef = findFollowUpReference(article.title, previousStories)
+      const { hook, keyPoints } = await generateArticleContent(article, followUpRef)
 
       // Build duplicate sources line if available
       let duplicatesLine = ''
@@ -353,6 +433,12 @@ async function buildNewsletter(articles: Article[]): Promise<string> {
           .map(dup => `[${dup.sourceName}](${dup.sourceUrl})`)
           .join(', ')
         duplicatesLine = `\n\n**Également couvert par** : ${sources}`
+      }
+
+      // Add follow-up reference if this is a continuation of a previous story
+      let followUpLine = ''
+      if (followUpRef) {
+        followUpLine = `\n\n**Suite de** : ${followUpRef}`
       }
 
       return `## ${article.title}
@@ -365,7 +451,7 @@ ${hook}
 - ${keyPoints[1]}
 - ${keyPoints[2]}
 
-**Source** : [${article.sourceName}](${article.sourceUrl}) | ${formatArticleDate(article.publishedAt)}${duplicatesLine}`
+**Source** : [${article.sourceName}](${article.sourceUrl}) | ${formatArticleDate(article.publishedAt)}${duplicatesLine}${followUpLine}`
     })
   )
 
@@ -422,15 +508,27 @@ async function main() {
   try {
     console.log('🚀 Starting newsletter generation...\n')
 
+    // Ensure newsletter directory exists
+    const newsletterDir = await ensureNewsletterDir()
+
+    // Read previous newsletters for continuity
+    console.log('\nChecking newsletter history...')
+    const previousNewsletterContent = await readPreviousNewsletters(newsletterDir)
+    const previousStories = extractCoveredStories(previousNewsletterContent)
+    if (previousStories.length > 0) {
+      console.log(`  Previous stories to avoid: ${previousStories.length} titles`)
+    }
+
     // Fetch articles
+    console.log('\nFetching articles...')
     const articles = await fetchArticles()
     if (articles.length === 0) {
       throw new Error('No articles found for this week')
     }
 
-    // Select top 3 articles
+    // Select top 3 articles with history awareness
     console.log('\nSelecting top 3 articles...')
-    const topArticles = await selectTopArticles(articles)
+    const topArticles = await selectTopArticles(articles, previousStories)
     console.log(`✓ Selected ${topArticles.length} articles`)
 
     if (topArticles.length < 3) {
@@ -438,15 +536,16 @@ async function main() {
     }
 
     topArticles.forEach((a, i) => {
-      console.log(`  ${i + 1}. "${a.title}" (${a.category})`)
+      const followUpRef = findFollowUpReference(a.title, previousStories)
+      const followUpNote = followUpRef ? ' (follow-up to previous coverage)' : ''
+      console.log(`  ${i + 1}. "${a.title}" (${a.category})${followUpNote}`)
     })
 
-    // Generate newsletter
+    // Generate newsletter with history context
     console.log('\nGenerating newsletter content...')
-    const newsletter = await buildNewsletter(topArticles)
+    const newsletter = await buildNewsletter(topArticles, previousStories)
 
     // Save to file
-    const newsletterDir = await ensureNewsletterDir()
     const filename = getNewsletterFilename()
     const filepath = await saveNewsletter(newsletter, filename, newsletterDir)
 
@@ -455,6 +554,7 @@ async function main() {
     console.log(`\n📊 Summary:`)
     console.log(`   Articles processed: ${articles.length}`)
     console.log(`   Top articles selected: ${topArticles.length}`)
+    console.log(`   Previous newsletters reviewed: ${previousNewsletterContent.length}`)
     console.log(`   Newsletter date: ${filename}`)
   } catch (error) {
     console.error('\n❌ Newsletter generation failed:', error)
