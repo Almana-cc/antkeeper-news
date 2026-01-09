@@ -73,7 +73,22 @@ export default eventHandler(async (event) => {
     where: whereClause,
     orderBy: [desc(schema.articles.publishedAt)],
     limit,
-    offset
+    offset,
+    columns: {
+      id: true,
+      title: true,
+      imageUrl: true,
+      author: true,
+      content: true,
+      summary: true,
+      slug: true,
+      sourceName: true,
+      sourceUrl: true,
+      language: true,
+      category: true,
+      tags: true,
+      publishedAt: true
+    }
   }) as ArticleWithDuplicates[]
 
   // Fetch duplicates for all articles in this page
