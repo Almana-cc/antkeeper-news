@@ -2,6 +2,7 @@
 const route = useRoute()
 const { t } = useI18n()
 const config = useRuntimeConfig()
+const { getTagLabel } = useTagTranslations()
 
 const slug = route.params.slug as string
 
@@ -171,7 +172,7 @@ useHead({
           <UBadge
             v-for="tag in article.tags"
             :key="tag"
-            :label="tag"
+            :label="getTagLabel(tag)"
             size="sm"
             :color="categoryColor"
             variant="soft"

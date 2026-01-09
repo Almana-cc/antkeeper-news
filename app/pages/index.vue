@@ -2,6 +2,7 @@
 const route = useRoute()
 const router = useRouter()
 const { t, locale } = useI18n()
+const { getTagLabel } = useTagTranslations()
 
 // Filters from URL query params
 const page = ref(Number(route.query.page) || 1)
@@ -25,7 +26,13 @@ const { data: tagsData } = await useFetch('/api/tags', {
   watch: [language, category]
 })
 
-const availableTags = computed(() =>tagsData.value?.tags || [])
+const availableTags = computed(() => {
+  const rawTags = tagsData.value?.tags || []
+  return rawTags.map((tag: string) => ({
+    value: tag,
+    label: getTagLabel(tag)
+  }))
+})
 
 // Fetch articles with filters
 const { data, pending } = await useFetch('/api/articles', {
@@ -124,6 +131,7 @@ watch([language, category, featured, tags, dateRange], () => {
         <USelectMenu
           v-model="tags"
           :items="availableTags"
+          value-key="value"
           :placeholder="t('filters.allTags')"
           :search-placeholder="t('filters.searchTags')"
           multiple
