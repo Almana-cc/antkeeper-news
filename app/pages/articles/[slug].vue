@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const { t } = useI18n()
+const config = useRuntimeConfig()
 
 const slug = route.params.slug as string
 
@@ -35,9 +36,61 @@ const formattedDate = computed(() => {
   return new Date(article.value.publishedAt).toLocaleDateString()
 })
 
+const siteUrl = computed(() => config.public.siteUrl || 'https://antkeeper.news')
+const articleUrl = computed(() => `${siteUrl.value}/articles/${slug}`)
+const isoDate = computed(() => article.value?.publishedAt ? new Date(article.value.publishedAt).toISOString() : '')
+
 useSeoMeta({
   title: () => article.value?.title || '',
-  description: () => article.value?.summary || ''
+  description: () => article.value?.summary || '',
+  ogType: 'article',
+  ogTitle: () => article.value?.title || '',
+  ogDescription: () => article.value?.summary || '',
+  ogImage: () => article.value?.imageUrl || '',
+  ogUrl: () => articleUrl.value,
+  ogSiteName: 'Antkeeper News',
+  articlePublishedTime: () => isoDate.value,
+  articleAuthor: () => article.value?.author || article.value?.sourceName || 'Antkeeper News',
+  twitterCard: 'summary_large_image',
+  twitterTitle: () => article.value?.title || '',
+  twitterDescription: () => article.value?.summary || '',
+  twitterImage: () => article.value?.imageUrl || ''
+})
+
+const jsonLd = computed(() => {
+  if (!article.value) return null
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.value.title,
+    description: article.value.summary || '',
+    image: article.value.imageUrl || '',
+    datePublished: isoDate.value,
+    dateModified: isoDate.value,
+    author: {
+      '@type': article.value.author ? 'Person' : 'Organization',
+      name: article.value.author || article.value.sourceName || 'Antkeeper News'
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Antkeeper News',
+      url: siteUrl.value
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': articleUrl.value
+    },
+    url: articleUrl.value
+  }
+})
+
+useHead({
+  script: [
+    {
+      type: 'application/ld+json',
+      innerHTML: () => jsonLd.value ? JSON.stringify(jsonLd.value) : ''
+    }
+  ]
 })
 </script>
 
