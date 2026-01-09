@@ -1,0 +1,7 @@
+# Ralph Progress Log
+
+This file tracks learnings and progress across iterations.
+Each iteration appends new entries - NEVER delete or replace existing content.
+
+---
+
