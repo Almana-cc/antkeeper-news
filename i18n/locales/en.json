@@ -39,6 +39,7 @@
     "showMore": "More...",
     "backToList": "Back to articles",
     "readOriginal": "Read original article",
+    "relatedArticles": "Related articles",
     "duplicates": {
       "alsoCoveredBy": "Also covered by {count} other source | Also covered by {count} other sources",
       "unknownSource": "Unknown Source"

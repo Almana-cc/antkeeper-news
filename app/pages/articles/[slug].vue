@@ -6,6 +6,7 @@ const config = useRuntimeConfig()
 const slug = route.params.slug as string
 
 const { data: article, error } = await useFetch(`/api/articles/${slug}`)
+const { data: relatedData } = await useFetch(`/api/articles/${slug}/related`)
 
 if (error.value?.statusCode === 404) {
   throw createError({
@@ -188,6 +189,36 @@ useHead({
           >
             {{ t('articles.readOriginal') }}
           </UButton>
+        </div>
+
+        <!-- Related articles -->
+        <div v-if="relatedData?.relatedArticles && relatedData.relatedArticles.length > 0" class="border-t pt-8 mt-8">
+          <h2 class="text-xl font-semibold mb-6">{{ t('articles.relatedArticles') }}</h2>
+          <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <NuxtLink
+              v-for="related in relatedData.relatedArticles"
+              :key="related.id"
+              :to="`/articles/${related.slug}`"
+              class="group block rounded-lg border p-4 hover:border-primary transition-colors"
+            >
+              <div v-if="related.imageUrl" class="mb-3 aspect-video overflow-hidden rounded-md">
+                <img
+                  :src="related.imageUrl"
+                  :alt="related.title"
+                  class="h-full w-full object-cover group-hover:scale-105 transition-transform"
+                >
+              </div>
+              <h3 class="font-medium line-clamp-2 group-hover:text-primary transition-colors">
+                {{ related.title }}
+              </h3>
+              <div class="mt-2 text-sm text-muted flex items-center gap-2">
+                <span v-if="related.sourceName">{{ related.sourceName }}</span>
+                <span v-if="related.publishedAt">
+                  {{ new Date(related.publishedAt).toLocaleDateString() }}
+                </span>
+              </div>
+            </NuxtLink>
+          </div>
         </div>
       </article>
     </UContainer>

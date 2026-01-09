@@ -39,6 +39,7 @@
     "showMore": "Más...",
     "backToList": "Volver a la lista",
     "readOriginal": "Leer artículo original",
+    "relatedArticles": "Artículos relacionados",
     "duplicates": {
       "alsoCoveredBy": "También cubierto por {count} otra fuente | También cubierto por {count} otras fuentes",
       "unknownSource": "Fuente desconocida"

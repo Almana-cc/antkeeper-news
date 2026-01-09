@@ -39,6 +39,7 @@
     "showMore": "Mehr...",
     "backToList": "Zurück zur Liste",
     "readOriginal": "Originalartikel lesen",
+    "relatedArticles": "Ähnliche Artikel",
     "duplicates": {
       "alsoCoveredBy": "Auch von {count} anderer Quelle abgedeckt | Auch von {count} anderen Quellen abgedeckt",
       "unknownSource": "Unbekannte Quelle"
