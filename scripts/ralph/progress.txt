@@ -129,3 +129,32 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 
 ### Next Priority: US-006
 
+
+---
+
+## Iteration 6 - 2026-01-09T15:00:00Z
+### Completed: US-006 - Add related articles section by tags
+### Implementation:
+- Created `server/api/articles/[slug]/related.get.ts`:
+  - Fetches article by slug, extracts tags
+  - Queries for articles sharing at least one tag (PostgreSQL array overlap `&&`)
+  - Excludes current article, limits to 5 results
+  - Returns id, title, slug, imageUrl, publishedAt, sourceName
+- Updated `app/pages/articles/[slug].vue`:
+  - Added useFetch for related articles endpoint
+  - Displays related articles in responsive grid (1/2/3 columns)
+  - Cards show image, title, source, and date
+  - Hover effects and smooth transitions
+- Added i18n key `articles.relatedArticles` in all 4 languages:
+  - FR: "Articles similaires"
+  - EN: "Related articles"
+  - ES: "Artículos relacionados"
+  - DE: "Ähnliche Artikel"
+
+### Learnings:
+- PostgreSQL array overlap operator `&&` works well for tag matching
+- Nested dynamic routes work in Nuxt: `[slug]/related.get.ts` creates `/api/articles/:slug/related`
+- Pre-existing typecheck errors unrelated to this work (ArticleWithDuplicates, hub:db:schema)
+- Used explicit type annotation `(tag: string)` to avoid implicit any error
+
+### Next Priority: US-007

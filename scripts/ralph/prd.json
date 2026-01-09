@@ -98,8 +98,8 @@
         "Typecheck passes"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created server/api/articles/[slug]/related.get.ts API endpoint. Updated [slug].vue to fetch and display up to 5 related articles in a responsive grid with image, title, source, and date. Added i18n key 'relatedArticles' in FR/EN/ES/DE."
     },
     {
       "id": "US-007",
