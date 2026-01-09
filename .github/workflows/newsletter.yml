@@ -1,0 +1,44 @@
+name: Weekly Newsletter Generation
+
+on:
+  schedule:
+    # Every Friday at 9 AM UTC
+    - cron: '0 9 * * 5'
+  workflow_dispatch:
+
+jobs:
+  generate-newsletter:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate newsletter
+        run: npm run generate-newsletter
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: 'Newsletter for week of ${{ github.event.head_commit.timestamp || format('{0:yyyy-MM-dd}', now()) }}'
+          title: 'Newsletter for week of ${{ github.event.head_commit.timestamp || format('{0:yyyy-MM-dd}', now()) }}'
+          body: |
+            Automated weekly newsletter generation
+
+            This PR contains the generated newsletter for this week's top articles.
+          branch: newsletter/${{ github.run_number }}
+          delete-branch: true
