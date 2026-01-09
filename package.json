@@ -9,7 +9,8 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "trigger:dev": "npx trigger.dev@latest dev",
-    "trigger:deploy": "npx trigger.dev@latest deploy"
+    "trigger:deploy": "npx trigger.dev@latest deploy",
+    "generate-newsletter": "npx tsx scripts/generate-newsletter.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.3.14",
