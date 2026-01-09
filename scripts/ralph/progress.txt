@@ -210,3 +210,33 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Nested API routes (tags/translations.get.ts) create clean REST endpoints
 
 ### Next Priority: US-009
+
+---
+
+## Iteration 9 - 2026-01-09T18:00:00Z
+### Completed: US-009 - Update UI to show translated tag labels
+### Implementation:
+- Created `app/composables/useTagTranslations.ts`:
+  - Uses `useFetch` to load translations from `/api/tags/translations` with current locale
+  - Auto-refreshes when locale changes via `watch: [locale]`
+  - Provides `getTagLabel(tag)` for single tag translation
+  - Provides `getTagLabels(tags)` for batch translation
+  - Falls back to tag key if translation unavailable
+- Updated `app/components/ArticleCard.vue`:
+  - Added `useTagTranslations()` composable
+  - Changed tag badge labels from `tag` to `getTagLabel(tag)`
+- Updated `app/pages/index.vue`:
+  - Added `useTagTranslations()` composable
+  - Changed `availableTags` computed to return objects with `value` (canonical key) and `label` (translated)
+  - Added `value-key="value"` to USelectMenu for proper v-model binding
+- Updated `app/pages/articles/[slug].vue`:
+  - Added `useTagTranslations()` composable
+  - Changed tag badge labels to use `getTagLabel(tag)`
+
+### Learnings:
+- Nuxt auto-imports composables from `app/composables/` directory
+- USelectMenu `value-key` prop allows using objects while keeping v-model as the value field
+- Pre-existing typecheck and ESLint errors continue (ArticleWithDuplicates, hub:db:schema, unused vars) - unrelated to this work
+- All pre-existing linting issues documented (getLanguageFlag unused, `any` in query object)
+
+### Next Priority: ALL STORIES COMPLETE

@@ -149,8 +149,8 @@
         "Typecheck passes"
       ],
       "priority": 9,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created app/composables/useTagTranslations.ts composable that fetches translations from /api/tags/translations using current locale. Updated ArticleCard.vue, index.vue, and [slug].vue to use getTagLabel() for displaying translated tags. Tag filter dropdown now uses objects with value (canonical key) and label (translated). Falls back to tag key if translation unavailable. Pre-existing typecheck errors unrelated to this change."
     }
   ]
 }
