@@ -82,8 +82,8 @@
         "Typecheck passes"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added JSON-LD structured data via useHead() with @type Article, headline, description, image, datePublished, dateModified, author (Person/Organization), publisher. Added OpenGraph tags: og:type, og:title, og:description, og:image, og:url, og:site_name, article:published_time, article:author. Added Twitter card: summary_large_image with title, description, image."
     },
     {
       "id": "US-006",

@@ -103,3 +103,29 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 
 ### Next Priority: US-005
 
+---
+
+## Iteration 5 - 2026-01-09T14:00:00Z
+### Completed: US-005 - Add Schema.org structured data to article pages
+### Implementation:
+- Updated `app/pages/articles/[slug].vue`:
+  - Added JSON-LD structured data via `useHead()` with script type `application/ld+json`
+  - Schema.org Article type with: headline, description, image, datePublished, dateModified
+  - Author as Person (if author exists) or Organization (fallback to sourceName)
+  - Publisher as Organization (Antkeeper News)
+  - mainEntityOfPage and url fields
+- Extended `useSeoMeta()` with OpenGraph tags:
+  - og:type (article), og:title, og:description, og:image, og:url, og:site_name
+  - article:published_time, article:author
+- Added Twitter card meta tags:
+  - twitter:card (summary_large_image), twitter:title, twitter:description, twitter:image
+- Uses `useRuntimeConfig()` for site URL with fallback to 'https://antkeeper.news'
+
+### Learnings:
+- `useSeoMeta()` handles OpenGraph and Twitter meta tags natively in Nuxt 3
+- JSON-LD must be added via `useHead({ script: [...] })` with `type: 'application/ld+json'`
+- Pre-existing typecheck errors continue (ArticleWithDuplicates type) - not related to this work
+- No errors introduced in `[slug].vue` file
+
+### Next Priority: US-006
+
