@@ -1,0 +1,156 @@
+{
+  "project": "Antkeeper News",
+  "branchName": "ralph/newsletter-articles-tags",
+  "description": "Implement newsletter automation, individual article pages, and tag internationalization",
+  "userStories": [
+    {
+      "id": "US-001",
+      "title": "Create GitHub Actions workflow for weekly newsletter",
+      "description": "As a maintainer, I want automated weekly newsletter generation so that newsletters are created without manual intervention.",
+      "acceptanceCriteria": [
+        "Create .github/workflows/newsletter.yml",
+        "Schedule runs Friday 9 AM UTC (cron: '0 9 * * 5')",
+        "Add workflow_dispatch for manual triggering",
+        "Workflow checks out repo and sets up Node.js",
+        "Workflow runs the newsletter generation script",
+        "Workflow creates a PR with the generated newsletter",
+        "PR title format: 'Newsletter for week of [date range]'"
+      ],
+      "priority": 1,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-002",
+      "title": "Create standalone newsletter generation script",
+      "description": "As a developer, I need a Node.js script that generates newsletters autonomously without interactive approval.",
+      "acceptanceCriteria": [
+        "Create scripts/generate-newsletter.js (or .ts)",
+        "Script fetches articles from API: GET /api/articles?dateRange=week&limit=50",
+        "Script uses AI to select top 3 most interesting articles",
+        "Script generates French content: intro, summaries, key points",
+        "Script writes newsletter to newsletters/YYYY-MM-DD.md",
+        "Script handles errors gracefully with fallback strategies",
+        "Script can run without user interaction (CI/CD compatible)"
+      ],
+      "priority": 2,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-003",
+      "title": "Add newsletter history and continuity checking",
+      "description": "As a reader, I want newsletters to avoid repeating stories from previous weeks.",
+      "acceptanceCriteria": [
+        "Script reads previous newsletters from ./newsletters/*.md",
+        "Script extracts covered article titles/topics",
+        "AI prompt includes 'Avoid these already covered stories: [list]'",
+        "Script suggests follow-up angles if story evolved",
+        "Newsletter references previous editions when relevant"
+      ],
+      "priority": 3,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-004",
+      "title": "Create /articles/[slug] dynamic route",
+      "description": "As a user, I want to view individual articles on dedicated pages for better reading experience and shareability.",
+      "acceptanceCriteria": [
+        "Create app/pages/articles/[slug].vue",
+        "Page fetches article by slug from API",
+        "Display full article: title, image, summary, source, date",
+        "Add back button to return to article list",
+        "Handle 404 for non-existent articles",
+        "Page is server-side rendered for SEO",
+        "Typecheck passes"
+      ],
+      "priority": 4,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-005",
+      "title": "Add Schema.org structured data to article pages",
+      "description": "As an SEO, I want articles to have structured data so search engines can better index them.",
+      "acceptanceCriteria": [
+        "Add JSON-LD script with Schema.org Article type",
+        "Include: headline, image, datePublished, author, publisher",
+        "Add OpenGraph meta tags (og:title, og:image, og:description)",
+        "Add Twitter card meta tags",
+        "Validate with Google Rich Results Test (manual verification)",
+        "Typecheck passes"
+      ],
+      "priority": 5,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-006",
+      "title": "Add related articles section by tags",
+      "description": "As a user, I want to see related articles so I can discover more content on topics I'm interested in.",
+      "acceptanceCriteria": [
+        "Create API endpoint or extend existing to fetch related articles",
+        "Related articles share at least one tag with current article",
+        "Display 3-5 related articles at bottom of article page",
+        "Exclude the current article from related list",
+        "Show article card with title, image, and date",
+        "Typecheck passes"
+      ],
+      "priority": 6,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-007",
+      "title": "Create tag translations database table",
+      "description": "As a developer, I need a database table to store tag translations for internationalization.",
+      "acceptanceCriteria": [
+        "Create tagTranslations table in Drizzle schema",
+        "Fields: id, tagKey (unique English key), language, label",
+        "Create migration and run it",
+        "Add indexes on tagKey and language",
+        "Seed initial translations for common tags (10-20 tags)",
+        "Support FR, EN, ES, DE languages",
+        "Typecheck passes"
+      ],
+      "priority": 7,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-008",
+      "title": "Build tag translation service",
+      "description": "As a developer, I need a service to fetch translated tag labels based on current locale.",
+      "acceptanceCriteria": [
+        "Create server/services/tag-translation.service.ts",
+        "Function: getTranslatedTags(tags: string[], locale: string)",
+        "Returns object mapping tag keys to translated labels",
+        "Falls back to English tag key if translation missing",
+        "Cache translations for performance",
+        "Add API endpoint or extend /api/articles to include translations",
+        "Typecheck passes"
+      ],
+      "priority": 8,
+      "passes": false,
+      "notes": ""
+    },
+    {
+      "id": "US-009",
+      "title": "Update UI to show translated tag labels",
+      "description": "As a user, I want to see tags in my language for better understanding.",
+      "acceptanceCriteria": [
+        "Update ArticleCard component to display translated tags",
+        "Update tag filter dropdown to show translated labels",
+        "Use current locale from i18n",
+        "Tags still filter by canonical English key (backend unchanged)",
+        "Graceful fallback if translation unavailable",
+        "Verify in browser that tags display correctly",
+        "Typecheck passes"
+      ],
+      "priority": 9,
+      "passes": false,
+      "notes": ""
+    }
+  ]
+}
