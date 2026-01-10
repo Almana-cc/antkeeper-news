@@ -3,7 +3,7 @@ name: Weekly Newsletter Generation
 on:
   schedule:
     # Every Friday at 9 AM UTC
-    - cron: '0 9 * * 5'
+    - cron: "0 9 * * 5"
   workflow_dispatch:
 
 jobs:
@@ -24,8 +24,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'pnpm'
+          node-version: "20"
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -33,7 +33,7 @@ jobs:
       - name: Generate newsletter
         run: pnpm run generate-newsletter
         env:
-          API_BASE_URL: ${{ vars.API_BASE_URL }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 
