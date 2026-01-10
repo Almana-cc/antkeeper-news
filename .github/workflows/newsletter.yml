@@ -31,11 +31,15 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
 
+      - name: Get current date
+        id: date
+        run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
+
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          commit-message: 'Newsletter for week of ${{ github.event.head_commit.timestamp || format('{0:yyyy-MM-dd}', now()) }}'
-          title: 'Newsletter for week of ${{ github.event.head_commit.timestamp || format('{0:yyyy-MM-dd}', now()) }}'
+          commit-message: "Newsletter for week of ${{ github.event.head_commit.timestamp || steps.date.outputs.date }}"
+          title: "Newsletter for week of ${{ github.event.head_commit.timestamp || steps.date.outputs.date }}"
           body: |
             Automated weekly newsletter generation
 
