@@ -5,6 +5,7 @@ interface Props {
 
 const props = defineProps<Props>()
 const { t } = useI18n()
+const { getTagLabel } = useTagTranslations()
 
 // State for expand/collapse
 const isExpanded = ref(false)
@@ -130,7 +131,7 @@ const author =  {
           <UBadge
             v-for="tag in article.tags"
             :key="tag"
-            :label="tag"
+            :label="getTagLabel(tag)"
             size="sm"
             :color="categoryColor"
             variant="soft"

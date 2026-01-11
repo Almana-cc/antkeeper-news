@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer, boolean, real, varchar, primaryKey, jsonb, vector } from 'drizzle-orm/pg-core'
+import { pgTable, text, serial, timestamp, integer, boolean, real, varchar, primaryKey, jsonb, vector, index, uniqueIndex } from 'drizzle-orm/pg-core'
 
 export const articles = pgTable('articles', {
   id: serial('id').primaryKey(),
@@ -47,3 +47,14 @@ export const articleDuplicates = pgTable('article_duplicates', {
   similarityScore: real('similarity_score'),
   mergedAt: timestamp('merged_at').defaultNow(),
 })
+
+export const tagTranslations = pgTable('tag_translations', {
+  id: serial('id').primaryKey(),
+  tagKey: varchar('tag_key', { length: 100 }).notNull(),
+  language: varchar('language', { length: 5 }).notNull(),
+  label: varchar('label', { length: 200 }).notNull(),
+}, (table) => ({
+  tagKeyIdx: index('tag_translations_tag_key_idx').on(table.tagKey),
+  languageIdx: index('tag_translations_language_idx').on(table.language),
+  tagKeyLanguageUnique: uniqueIndex('tag_translations_tag_key_language_unique').on(table.tagKey, table.language),
+}))

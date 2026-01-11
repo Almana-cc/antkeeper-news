@@ -110,7 +110,7 @@ $(cat "$PROGRESS_FILE" 2>/dev/null || echo "No previous progress")
 
     # Run Amp
     echo -e "${BLUE}Running Amp...${NC}"
-    OUTPUT=$(amp -p "$FULL_PROMPT" 2>&1) || true
+    OUTPUT=$(amp --dangerously-allow-all -x "$FULL_PROMPT" 2>&1) || true
 
     echo "$OUTPUT"
 

@@ -32,10 +32,14 @@
   "articles": {
     "loading": "Chargement des articles...",
     "noArticlesFound": "Aucun article trouvé.",
+    "notFound": "Article non trouvé",
     "articleCount": "{count} article",
     "articleCount_plural": "{count} articles",
     "showLess": "Voir moins",
     "showMore": "Plus...",
+    "backToList": "Retour à la liste",
+    "readOriginal": "Lire l'article original",
+    "relatedArticles": "Articles similaires",
     "duplicates": {
       "alsoCoveredBy": "Également couvert par {count} autre source | Également couvert par {count} autres sources",
       "unknownSource": "Source inconnue"

@@ -66,8 +66,8 @@
         "Typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created API endpoint server/api/articles/[slug].get.ts and Vue page app/pages/articles/[slug].vue. Includes category badge, meta info, featured image, summary, content, tags, and source link. Added i18n keys for backToList, readOriginal, notFound in all 4 languages. Uses useSeoMeta for SEO. Pre-existing typecheck errors unrelated to this change."
     },
     {
       "id": "US-005",
@@ -82,8 +82,8 @@
         "Typecheck passes"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added JSON-LD structured data via useHead() with @type Article, headline, description, image, datePublished, dateModified, author (Person/Organization), publisher. Added OpenGraph tags: og:type, og:title, og:description, og:image, og:url, og:site_name, article:published_time, article:author. Added Twitter card: summary_large_image with title, description, image."
     },
     {
       "id": "US-006",
@@ -98,8 +98,8 @@
         "Typecheck passes"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created server/api/articles/[slug]/related.get.ts API endpoint. Updated [slug].vue to fetch and display up to 5 related articles in a responsive grid with image, title, source, and date. Added i18n key 'relatedArticles' in FR/EN/ES/DE."
     },
     {
       "id": "US-007",
@@ -115,8 +115,8 @@
         "Typecheck passes"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added tagTranslations table to server/db/schema.ts with id, tagKey, language, label fields. Created indexes on tagKey and language, plus unique composite index. Created migration 0004_tag_translations.sql and seed 0005_seed_tag_translations.sql with 20 common tags (topics, content types, regions, species) in FR/EN/ES/DE."
     },
     {
       "id": "US-008",
@@ -132,8 +132,8 @@
         "Typecheck passes"
       ],
       "priority": 8,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created server/services/tag-translation.service.ts with getTranslatedTags() and getAllTranslationsForLocale() functions. Implements in-memory cache with 5-minute TTL. Falls back to tag key if translation missing. Created API endpoint server/api/tags/translations.get.ts supporting ?locale=xx and optional ?tags[]=tag1 query params."
     },
     {
       "id": "US-009",
@@ -149,8 +149,8 @@
         "Typecheck passes"
       ],
       "priority": 9,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created app/composables/useTagTranslations.ts composable that fetches translations from /api/tags/translations using current locale. Updated ArticleCard.vue, index.vue, and [slug].vue to use getTagLabel() for displaying translated tags. Tag filter dropdown now uses objects with value (canonical key) and label (translated). Falls back to tag key if translation unavailable. Pre-existing typecheck errors unrelated to this change."
     }
   ]
 }
