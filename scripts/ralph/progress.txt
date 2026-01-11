@@ -115,3 +115,24 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Pre-existing TypeScript errors (ArticleWithDuplicates types, hub:db:schema module) and ESLint errors (unused getLanguageFlag) continue but don't affect new code
 ### Next Priority: US-008
 
+## Iteration 8 - 2026-01-11T06:00:00Z
+### Completed: US-008 - Add empty state illustrations
+### Implementation:
+- Created `app/assets/empty-state.svg` with Antkeeper brand illustration:
+  - Magnifying glass with question marks (search metaphor)
+  - Stylized ant in coral color (#f87171)
+  - Decorative dots in purple, coral, and teal
+- Modified `app/pages/index.vue`:
+  - Enhanced empty state section with SVG illustration
+  - Added proper heading and hint text styling
+  - Added dark mode support with text-gray-700/300 and text-gray-500/400
+  - Changed clear filters button to primary/soft variant
+- Added `emptyStateHint` translations to all 4 locale files (fr, en, es, de)
+### Learnings:
+- The implementation was partially in place already - index.vue had a basic empty state that needed enhancement
+- Brand colors from existing design: purple (#7c3aed), coral (#f87171), teal (#45bcb4)
+- SVG illustrations should be placed in `app/assets/` directory
+- Nuxt resolves `~/assets/` paths automatically
+- Pre-existing TypeScript errors (ArticleWithDuplicates types, hub:db:schema module) and ESLint errors continue but don't affect new code
+### Next Priority: US-009
+
