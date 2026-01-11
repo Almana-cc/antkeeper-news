@@ -132,8 +132,8 @@
         "Typecheck passes"
       ],
       "priority": 9,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created useReadingTime composable with getArticleReadingTime function (200 words/min, minimum 1 min). Added reading time display with clock icon to ArticleCard footer and article detail page meta section. Added readingTime i18n key to all 4 locales (fr: 'X min de lecture', en: 'X min read', es: 'X min de lectura', de: 'X Min. Lesezeit')."
     },
     {
       "id": "US-010",

@@ -136,3 +136,30 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Pre-existing TypeScript errors (ArticleWithDuplicates types, hub:db:schema module) and ESLint errors continue but don't affect new code
 ### Next Priority: US-009
 
+## Iteration 9 - 2026-01-11T07:00:00Z
+### Completed: US-009 - Add article reading time estimate
+### Implementation:
+- Created `app/composables/useReadingTime.ts`:
+  - `calculateReadingTime(content)` - counts words and divides by 200 words/min
+  - `getArticleReadingTime(summary, content)` - uses content if available, falls back to summary
+  - Returns minimum 1 minute for short content
+- Modified `app/components/ArticleCard.vue`:
+  - Added `useReadingTime` composable import
+  - Added `readingTime` computed property
+  - Added reading time display in footer with clock icon (i-lucide-clock)
+- Modified `app/pages/articles/[slug].vue`:
+  - Added same `useReadingTime` composable and computed property
+  - Added reading time display in meta info section with clock icon
+- Added `readingTime` i18n key to all 4 locale files:
+  - fr: "{minutes} min de lecture"
+  - en: "{minutes} min read"
+  - es: "{minutes} min de lectura"
+  - de: "{minutes} Min. Lesezeit"
+### Learnings:
+- Nuxt auto-imports composables from `app/composables/` directory
+- 200 words/minute is standard reading speed estimate
+- `Math.ceil` ensures we always round up (better UX than underestimating)
+- Using `UIcon` component with `size-4` class for consistent icon sizing
+- Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema) and ESLint errors (unused getLanguageFlag) continue but don't affect new code
+### Next Priority: US-010
+
