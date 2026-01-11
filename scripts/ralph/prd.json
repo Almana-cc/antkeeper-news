@@ -58,8 +58,8 @@
         "Typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Set detectBrowserLanguage: false in nuxt.config.ts i18n section. French remains default locale. Language persists via URL prefix strategy (prefix_except_default) - e.g., /en/, /es/, /de/ for non-French languages."
     },
     {
       "id": "US-005",

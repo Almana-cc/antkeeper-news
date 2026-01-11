@@ -51,3 +51,18 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - `pnpm exec nuxi typecheck` runs Nuxt's typecheck command
 ### Next Priority: US-004
 
+## Iteration 4 - 2026-01-11T02:00:00Z
+### Completed: US-004 - Remove auto language detection
+### Implementation:
+- Modified `nuxt.config.ts`: Set `detectBrowserLanguage: false` in i18n configuration
+- Previous config had `detectBrowserLanguage` object with useCookie, cookieKey, redirectOn settings
+- Now disabled entirely with `false` value
+### Learnings:
+- @nuxtjs/i18n `detectBrowserLanguage` accepts `false` to completely disable auto-detection
+- With `strategy: 'prefix_except_default'`, language preference persists via URL:
+  - French (default): no prefix (e.g., `/articles/...`)
+  - Other languages: prefixed (e.g., `/en/articles/...`, `/es/articles/...`)
+- The language switcher in `app.vue` uses `setLocale()` which handles URL navigation
+- Pre-existing TypeScript errors remain (ArticleWithDuplicates types, hub:db:schema module) but don't affect this story
+### Next Priority: US-005
+
