@@ -58,8 +58,8 @@
         "Typecheck passes"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Set detectBrowserLanguage: false in nuxt.config.ts. Language preference still persists via @nuxtjs/i18n default cookie behavior when user manually switches language."
     },
     {
       "id": "US-005",

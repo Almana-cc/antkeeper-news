@@ -147,6 +147,11 @@ const dateRangeOptions = computed(() => [
 watch([language, category, featured, tags, dateRange], () => {
   page.value = 1
 })
+
+// Scroll to top when page changes
+watch(page, () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+})
 </script>
 
 <template>

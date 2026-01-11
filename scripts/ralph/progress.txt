@@ -46,3 +46,15 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Generic arrow functions `<T>() =>` cause Vue template parsing errors, use `function` declarations instead
 - Pre-existing ESLint errors (like `any` type) don't need to be fixed as part of unrelated stories
 ### Next Priority: US-004
+
+## Iteration 4 - 2026-01-11T14:00:00Z
+### Completed: US-004 - Remove auto language detection
+### Implementation:
+- Modified `nuxt.config.ts`: set `detectBrowserLanguage: false` instead of the object config
+- Default language remains French (fr)
+- Language preference still persists via @nuxtjs/i18n built-in cookie when user manually changes language
+### Learnings:
+- Setting `detectBrowserLanguage: false` completely disables browser language detection
+- @nuxtjs/i18n still stores user language preference in a cookie when they manually switch, so persistence works without explicit config
+- Very simple one-line change - the i18n module handles language persistence automatically
+### Next Priority: US-005
