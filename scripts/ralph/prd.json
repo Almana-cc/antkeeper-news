@@ -87,8 +87,8 @@
         "Typecheck passes"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added filterByTag function using navigateTo with useLocalePath for i18n support. Tags now have cursor-pointer and hover:opacity-80 styles. Uses @click.stop.prevent on ArticleCard to prevent navigating to article when clicking tag."
     },
     {
       "id": "US-007",

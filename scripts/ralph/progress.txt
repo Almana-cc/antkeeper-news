@@ -79,3 +79,22 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Pre-existing TypeScript errors continue (ArticleWithDuplicates types, hub:db:schema module) but don't affect new code
 ### Next Priority: US-006
 
+## Iteration 6 - 2026-01-11T04:00:00Z
+### Completed: US-006 - Add click-to-filter on article tags
+### Implementation:
+- Modified `app/components/ArticleCard.vue`:
+  - Added `useLocalePath` composable for i18n-aware routing
+  - Added `filterByTag(tag)` function that navigates to index with tag query param
+  - Added `@click.stop.prevent` handler on tag badges to call filterByTag
+  - Added `cursor-pointer hover:opacity-80 transition-opacity` classes for visual feedback
+- Modified `app/pages/articles/[slug].vue`:
+  - Added same `useLocalePath` and `filterByTag` function
+  - Added `@click` handler and hover styles on tag badges
+### Learnings:
+- `@click.stop.prevent` is needed on ArticleCard tags to prevent the parent card link from triggering
+- `useLocalePath('/')` returns the locale-aware root path (e.g., `/en/` for English)
+- `navigateTo` with query params like `{ tags: [tag] }` automatically encodes as `?tags[]=tagValue`
+- On the article detail page, just `@click` is sufficient since tags aren't nested in a link
+- Pre-existing TypeScript and ESLint errors (ArticleWithDuplicates types, unused getLanguageFlag) don't affect new code
+### Next Priority: US-007
+
