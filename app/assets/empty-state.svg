@@ -1,0 +1,30 @@
+<svg width="200" height="160" viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Magnifying glass -->
+  <circle cx="90" cy="70" r="40" stroke="#7c3aed" stroke-width="6" fill="none" opacity="0.8"/>
+  <line x1="120" y1="100" x2="150" y2="130" stroke="#7c3aed" stroke-width="8" stroke-linecap="round" opacity="0.8"/>
+
+  <!-- Question marks inside magnifying glass -->
+  <text x="75" y="65" font-family="sans-serif" font-size="24" fill="#d1b5fd" opacity="0.6">?</text>
+  <text x="90" y="80" font-family="sans-serif" font-size="18" fill="#d1b5fd" opacity="0.4">?</text>
+
+  <!-- Stylized ant (simplified version of logo) -->
+  <g transform="translate(130, 45) scale(0.08)">
+    <!-- Ant body parts in coral/teal accent -->
+    <ellipse cx="300" cy="350" rx="80" ry="50" fill="#f87171"/>
+    <ellipse cx="380" cy="320" rx="60" ry="40" fill="#f87171"/>
+    <circle cx="440" cy="290" r="35" fill="#f87171"/>
+    <!-- Ant antennae -->
+    <path d="M455 270 Q480 230 500 240" stroke="#f87171" stroke-width="8" fill="none"/>
+    <path d="M460 260 Q475 220 465 200" stroke="#f87171" stroke-width="8" fill="none"/>
+    <!-- Ant legs -->
+    <line x1="280" y1="380" x2="250" y2="430" stroke="#f87171" stroke-width="6"/>
+    <line x1="310" y1="385" x2="300" y2="440" stroke="#f87171" stroke-width="6"/>
+    <line x1="340" y1="385" x2="360" y2="440" stroke="#f87171" stroke-width="6"/>
+  </g>
+
+  <!-- Decorative dots -->
+  <circle cx="30" cy="40" r="4" fill="#d1b5fd" opacity="0.5"/>
+  <circle cx="170" cy="30" r="3" fill="#f87171" opacity="0.4"/>
+  <circle cx="25" cy="130" r="5" fill="#45bcb4" opacity="0.4"/>
+  <circle cx="180" cy="140" r="4" fill="#d1b5fd" opacity="0.3"/>
+</svg>

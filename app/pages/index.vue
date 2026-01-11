@@ -220,13 +220,22 @@ function clearFilters() {
       </div>
 
       <!-- Empty state -->
-      <div v-else class="text-center py-12">
-        <p class="text-muted">{{ t('articles.noArticlesFound') }}</p>
+      <div v-else class="text-center py-16">
+        <img
+          src="~/assets/empty-state.svg"
+          alt=""
+          class="w-48 h-auto mx-auto mb-6 opacity-80"
+        >
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          {{ t('articles.noArticlesFound') }}
+        </h3>
+        <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
+          {{ t('articles.emptyStateHint') }}
+        </p>
         <UButton
           v-if="language !== 'all' || category !== 'all' || featured || tags.length > 0 || dateRange !== 'all'"
-          color="secondary"
-          variant="ghost"
-          class="mt-4"
+          color="primary"
+          variant="soft"
           @click="clearFilters"
         >
           {{ t('filters.clearFilters') }}
