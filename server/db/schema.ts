@@ -1,4 +1,10 @@
-import { pgTable, text, serial, timestamp, integer, boolean, real, varchar, primaryKey, jsonb, vector, index, uniqueIndex } from 'drizzle-orm/pg-core'
+import { pgTable, text, serial, timestamp, integer, boolean, real, varchar, primaryKey, jsonb, vector, index, uniqueIndex, customType } from 'drizzle-orm/pg-core'
+
+const tsvector = customType<{ data: string }>({
+  dataType() {
+    return 'tsvector'
+  },
+})
 
 export const articles = pgTable('articles', {
   id: serial('id').primaryKey(),
@@ -18,6 +24,7 @@ export const articles = pgTable('articles', {
   viewCount: integer('view_count').default(0),
   featured: boolean('featured').default(false),
   embedding: vector('embedding', { dimensions: 1536 }), // pgvector for semantic similarity search
+  searchVector: tsvector('search_vector'), // full-text search vector (auto-updated via trigger)
 })
 
 export const sources = pgTable('sources', {
