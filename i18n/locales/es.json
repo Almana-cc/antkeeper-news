@@ -13,7 +13,8 @@
     "noResultsFor": "Sin resultados para \"{query}\"",
     "noResultsHint": "Prueba con otro término de búsqueda o amplía tus criterios.",
     "resultCount": "{count} resultado",
-    "resultCount_plural": "{count} resultados"
+    "resultCount_plural": "{count} resultados",
+    "article": "Artículo"
   },
   "filters": {
     "allLanguages": "Todos los idiomas",
