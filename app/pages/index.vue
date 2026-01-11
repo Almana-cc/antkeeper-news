@@ -4,13 +4,13 @@ const router = useRouter()
 const { t, locale } = useI18n()
 const { getTagLabel } = useTagTranslations()
 
-// Persistent filter storage
-const storedLanguage = useLocalStorage<string>('antkeeper-filter-language', 'all')
-const storedCategory = useLocalStorage<string>('antkeeper-filter-category', 'all')
-const storedTags = useLocalStorage<string[]>('antkeeper-filter-tags', [])
-const storedDateRange = useLocalStorage<string>('antkeeper-filter-dateRange', 'all')
+// Persistent filter storage (cookies work on SSR, no hydration flash)
+const storedLanguage = useCookie<string>('antkeeper-filter-language', { default: () => 'all', maxAge: 60 * 60 * 24 * 365 })
+const storedCategory = useCookie<string>('antkeeper-filter-category', { default: () => 'all', maxAge: 60 * 60 * 24 * 365 })
+const storedTags = useCookie<string[]>('antkeeper-filter-tags', { default: () => [], maxAge: 60 * 60 * 24 * 365 })
+const storedDateRange = useCookie<string>('antkeeper-filter-dateRange', { default: () => 'all', maxAge: 60 * 60 * 24 * 365 })
 
-// Get initial value: URL params take priority over localStorage
+// Get initial value: URL params take priority over cookies
 function getInitialValue<T>(queryValue: string | string[] | undefined, storedValue: T, defaultValue: T): T {
   if (queryValue !== undefined) {
     return queryValue as unknown as T
@@ -18,9 +18,9 @@ function getInitialValue<T>(queryValue: string | string[] | undefined, storedVal
   return storedValue ?? defaultValue
 }
 
-// Filters from URL query params (with localStorage fallback)
+// Filters from URL query params (with cookie fallback)
 const page = ref(Number(route.query.page) || 1)
-// Default to 'all' if not specified in query or localStorage
+// Default to 'all' if not specified in query or cookie
 const language = ref<string>(getInitialValue(route.query.language as string | undefined, storedLanguage.value, 'all'))
 const category = ref<string>(getInitialValue(route.query.category as string | undefined, storedCategory.value, 'all'))
 const featured = ref<boolean | undefined>(route.query.featured === 'true' ? true : undefined)
@@ -133,14 +133,14 @@ watch(page, () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 })
 
-// Clear all filters and localStorage
+// Clear all filters and cookies
 function clearFilters() {
   language.value = 'all'
   category.value = 'all'
   featured.value = undefined
   tags.value = []
   dateRange.value = 'all'
-  // Clear localStorage - watchers will sync these values
+  // Clear cookies - watchers will sync these values
   storedLanguage.value = 'all'
   storedCategory.value = 'all'
   storedTags.value = []

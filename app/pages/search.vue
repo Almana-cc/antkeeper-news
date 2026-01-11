@@ -6,8 +6,12 @@ const { t } = useI18n()
 // Get search query from URL
 const searchQuery = computed(() => (route.query.q as string || '').trim())
 
-// Language filter
-const language = ref<string>('all')
+// Language filter - use same cookie as index page for consistency
+const storedLanguage = useCookie<string>('antkeeper-filter-language', { default: () => 'all', maxAge: 60 * 60 * 24 * 365 })
+const language = ref<string>(storedLanguage.value)
+
+// Sync language changes to cookie
+watch(language, (val) => { storedLanguage.value = val })
 
 // Pagination
 const page = ref(1)
