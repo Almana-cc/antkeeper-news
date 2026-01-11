@@ -70,3 +70,16 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - No need to add event handlers to pagination component - watching the model value is cleaner
 - Pre-existing type errors in project don't block story completion (build passes, just strict typecheck has pre-existing issues)
 ### Next Priority: US-006
+
+## Iteration 6 - 2026-01-11T16:00:00Z
+### Completed: US-006 - Add click-to-filter on article tags
+### Implementation:
+- Modified `app/components/ArticleCard.vue`
+- Added `useRouter()` and `handleTagClick(tag)` function that navigates to `{ path: '/', query: { tags: tag } }`
+- Used `@click.stop.prevent` on UBadge to prevent card link navigation when clicking tags
+- Added hover styling with `cursor-pointer hover:opacity-80 transition-opacity`
+### Learnings:
+- UBadge supports @click event handlers directly
+- Using `.stop.prevent` modifiers is essential since the card itself is a link (UBlogPost with :to prop)
+- Pre-existing ESLint errors (like unused getLanguageFlag) don't block story completion
+### Next Priority: US-007
