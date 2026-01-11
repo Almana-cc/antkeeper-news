@@ -145,6 +145,7 @@ const author = {
                 v-for="duplicate in article.duplicates.articles"
                 :key="duplicate.id"
                 :to="duplicate.sourceUrl || undefined"
+                target="_blank"
                 :name="duplicate.author || undefined"
                 :description="duplicate.sourceName || undefined"
                 :avatar="{
