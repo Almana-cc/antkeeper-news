@@ -113,3 +113,17 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Build timeout is normal - it's a long process but the build succeeds
 - Pre-existing ESLint `any` type error in index.vue doesn't block the story
 ### Next Priority: US-009
+
+## Iteration 9 - 2026-01-11T19:00:00Z
+### Completed: US-009 - Add article reading time estimate
+### Implementation:
+- Created `app/composables/useReadingTime.ts` with `calculateReadingTime` and `formatReadingTime` functions
+- Calculation uses 200 words/min average, minimum 1 minute
+- Updated `app/components/ArticleCard.vue` to display reading time with clock icon in footer
+- Updated `app/pages/articles/[slug].vue` to display reading time in meta info section
+- Added `readingTime` translation key to all 4 locale files (en, fr, es, de)
+### Learnings:
+- Nuxt auto-imports composables from app/composables directory
+- UIcon component works well for inline icons with text
+- Content field is preferred for reading time, falling back to summary
+### Next Priority: US-010

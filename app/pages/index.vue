@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { onKeyStroke } from '@vueuse/core'
+
 const route = useRoute()
 const router = useRouter()
 const { t, locale } = useI18n()
@@ -152,18 +154,28 @@ watch([language, category, featured, tags, dateRange], () => {
 watch(page, () => {
   window.scrollTo({ top: 0, behavior: 'smooth' })
 })
+
+// Keyboard navigation: Escape key clears all filters
+onKeyStroke('Escape', (e) => {
+  const hasActiveFilters = language.value !== 'all' || category.value !== 'all' || featured.value || tags.value.length > 0 || dateRange.value !== 'all'
+  if (hasActiveFilters) {
+    e.preventDefault()
+    clearFilters()
+  }
+})
 </script>
 
 <template>
   <UMain>
     <UContainer class="py-10">
-      <!-- Filters -->
-      <div class="mb-8 flex flex-wrap gap-4 items-center">
+      <!-- Filters - Tab navigation works natively, Escape clears all filters -->
+      <div class="mb-8 flex flex-wrap gap-4 items-center" role="search" aria-label="Article filters">
         <USelect
           v-model="language"
           :items="languageOptions"
           :placeholder="t('filters.allLanguages')"
           class="w-48"
+          :ui="{ base: 'focus:ring-2 focus:ring-primary-500 focus:ring-offset-2' }"
         />
 
         <USelect
@@ -171,6 +183,7 @@ watch(page, () => {
           :items="categoryOptions"
           :placeholder="t('filters.allCategories')"
           class="w-48"
+          :ui="{ base: 'focus:ring-2 focus:ring-primary-500 focus:ring-offset-2' }"
         />
 
         <USelectMenu
@@ -182,6 +195,7 @@ watch(page, () => {
           multiple
           searchable
           class="w-64"
+          :ui="{ base: 'focus:ring-2 focus:ring-primary-500 focus:ring-offset-2' }"
         />
 
         <USelect
@@ -189,6 +203,7 @@ watch(page, () => {
           :items="dateRangeOptions"
           :placeholder="t('filters.allTime')"
           class="w-48"
+          :ui="{ base: 'focus:ring-2 focus:ring-primary-500 focus:ring-offset-2' }"
         />
 
         <UButton
