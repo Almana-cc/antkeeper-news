@@ -1,4 +1,12 @@
-import { pgTable, text, serial, timestamp, integer, boolean, real, varchar, primaryKey, jsonb, vector, index, uniqueIndex } from 'drizzle-orm/pg-core'
+import { pgTable, text, serial, timestamp, integer, boolean, real, varchar, primaryKey, jsonb, vector, index, uniqueIndex, customType } from 'drizzle-orm/pg-core'
+
+// Custom tsvector type for full-text search
+// Drizzle doesn't have native tsvector support, so we define a custom type
+export const tsvector = customType<{ data: string }>({
+  dataType() {
+    return 'tsvector'
+  },
+})
 
 export const articles = pgTable('articles', {
   id: serial('id').primaryKey(),
@@ -18,6 +26,7 @@ export const articles = pgTable('articles', {
   viewCount: integer('view_count').default(0),
   featured: boolean('featured').default(false),
   embedding: vector('embedding', { dimensions: 1536 }), // pgvector for semantic similarity search
+  searchVector: tsvector('search_vector'), // PostgreSQL tsvector for full-text search
 })
 
 export const sources = pgTable('sources', {
