@@ -163,3 +163,22 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema) and ESLint errors (unused getLanguageFlag) continue but don't affect new code
 ### Next Priority: US-010
 
+## Iteration 10 - 2026-01-11T08:00:00Z
+### Completed: US-010 - Add keyboard navigation for filters
+### Implementation:
+- Modified `app/pages/index.vue`:
+  - Added `handleKeydown(event)` function that listens for Escape key
+  - Added `onMounted` hook to register global keydown listener
+  - Added `onUnmounted` hook to clean up the listener
+  - Created `hasActiveFilters()` helper function to DRY up the filter check logic
+  - Replaced duplicate filter conditions in template with `hasActiveFilters()` calls
+### Learnings:
+- Nuxt UI components (USelect, USelectMenu, UButton) have built-in accessibility features:
+  - Tab navigation works out of the box (they're focusable HTML elements)
+  - Enter key activates selections (standard select behavior)
+  - Focus ring states are included via Tailwind's ring utilities
+- Global keyboard shortcuts need `onMounted`/`onUnmounted` for proper cleanup
+- Using a helper function for repeated boolean logic improves maintainability
+- Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema) and ESLint errors (any type in query object) continue but don't affect new code
+### Next Priority: US-011
+
