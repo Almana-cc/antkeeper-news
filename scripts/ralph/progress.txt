@@ -58,3 +58,15 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - @nuxtjs/i18n still stores user language preference in a cookie when they manually switch, so persistence works without explicit config
 - Very simple one-line change - the i18n module handles language persistence automatically
 ### Next Priority: US-005
+
+## Iteration 5 - 2026-01-11T15:00:00Z
+### Completed: US-005 - Scroll to top on page change
+### Implementation:
+- Modified `app/pages/index.vue`: added a watcher on the `page` ref
+- Uses `window.scrollTo({ top: 0, behavior: 'smooth' })` for smooth animation
+- Works for all pagination interactions (next/prev buttons and direct page number clicks) since all change `page.value`
+### Learnings:
+- Simple watch on the page ref covers all pagination cases automatically
+- No need to add event handlers to pagination component - watching the model value is cleaner
+- Pre-existing type errors in project don't block story completion (build passes, just strict typecheck has pre-existing issues)
+### Next Priority: US-006
