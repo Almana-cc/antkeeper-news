@@ -74,11 +74,13 @@ If you discovered reusable patterns or conventions:
 ### 10. Completion Signal
 After processing one story:
 - If ALL stories have `passes: true`, output: `<promise>COMPLETE</promise>`
-- If stories remain, the loop will start a new iteration
+- If stories remain, output: `<promise>STORY_DONE</promise>` and STOP
+
+**CRITICAL**: You MUST stop after completing exactly ONE story. The external loop will re-invoke you for the next story with fresh context.
 
 ## Important Rules
 
-1. **One Story Per Iteration**: Never try to complete multiple stories
+1. **STOP After One Story**: Complete exactly ONE story, then STOP. Do NOT continue to the next story. The loop will call you again.
 2. **Quality Over Speed**: Don't mark stories complete if checks fail
 3. **Append-Only Progress**: Never delete or replace progress.txt content
 4. **Small Commits**: Each commit should be a single logical change

@@ -108,13 +108,18 @@ $(cat "$PROGRESS_FILE" 2>/dev/null || echo "No previous progress")
 \`\`\`
 "
 
-    # Run Gemini
+    # Write prompt to temp file (handles large prompts better)
+    TEMP_PROMPT=$(mktemp)
+    echo "$FULL_PROMPT" > "$TEMP_PROMPT"
+
+    # Run Gemini with --yolo for auto-approving tools
     echo -e "${BLUE}Running Gemini...${NC}"
-    OUTPUT=$(gemini -p "$FULL_PROMPT" 2>&1) || true
+    OUTPUT=$(gemini --yolo < "$TEMP_PROMPT" 2>&1) || true
+    rm -f "$TEMP_PROMPT"
 
     echo "$OUTPUT"
 
-    # Check for completion signal
+    # Check for all-complete signal
     if echo "$OUTPUT" | grep -q "<promise>COMPLETE</promise>"; then
         echo -e "\n${GREEN}========================================${NC}"
         echo -e "${GREEN}  All stories complete!${NC}"
@@ -125,6 +130,11 @@ $(cat "$PROGRESS_FILE" 2>/dev/null || echo "No previous progress")
         jq -r '.userStories[] | "  \(.id): \(.title) - \(if .passes then "DONE" else "TODO" end)"' "$PRD_FILE"
 
         exit 0
+    fi
+
+    # Check for single-story-done signal (continue loop)
+    if echo "$OUTPUT" | grep -q "<promise>STORY_DONE</promise>"; then
+        echo -e "\n${GREEN}Story completed, continuing to next...${NC}"
     fi
 
     # Check remaining stories
