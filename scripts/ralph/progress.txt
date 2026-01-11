@@ -98,3 +98,18 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Setting avatar.icon property in Nuxt UI components provides fallback when src fails to load
 - Extracting domain from URL is safer with try/catch in case of malformed URLs
 ### Next Priority: US-008
+
+## Iteration 8 - 2026-01-11T18:00:00Z
+### Completed: US-008 - Add empty state illustrations
+### Implementation:
+- Created `app/components/EmptyState.vue` with inline SVG illustration
+- SVG features an ant with magnifying glass and question marks (search/no results theme)
+- Uses brand colors: purple (#7c3aed, #a855f7) and pink/coral (#f472b6)
+- Added `emptyStateHint` translation to all 4 locale files (en, fr, es, de)
+- Updated `app/pages/index.vue` to use the new EmptyState component
+- Component accepts `showClearButton` prop and emits `clear` event
+### Learnings:
+- Inline SVG in Vue components works well for simple illustrations - no need for separate asset files
+- Build timeout is normal - it's a long process but the build succeeds
+- Pre-existing ESLint `any` type error in index.vue doesn't block the story
+### Next Priority: US-009
