@@ -180,8 +180,8 @@
         "Typecheck passes"
       ],
       "priority": 12,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created GET /api/articles/search with websearch_to_tsquery for natural language queries. Returns ts_rank for relevance ranking, ts_headline for highlighted snippets (title and summary). Supports language filter and pagination. Excludes off-topic articles by default."
     },
     {
       "id": "US-013",
