@@ -5,3 +5,29 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 
 ---
 
+## Iteration 1 - 2026-01-11T00:00:00Z
+### Completed: US-001 - Fix related articles showing duplicates
+### Implementation:
+- Modified `server/api/articles/[slug]/related.get.ts`
+- Added query to `articleDuplicates` table to find all canonical/duplicate relationships
+- Used `notInArray` filter to exclude all duplicate article IDs from results
+- Removed unused `ne` import to fix lint error
+### Learnings:
+- The `articleDuplicates` table has bidirectional relationships: an article can be either `canonicalArticleId` or `duplicateArticleId`
+- Need to check both fields with `or()` condition when finding duplicates
+- This project doesn't have `pnpm typecheck` or `pnpm lint` scripts - use `npx vue-tsc --noEmit` and `npx eslint .` instead
+- File paths with brackets need single quotes in bash: `'server/api/articles/[slug]/related.get.ts'`
+- `pnpm install` may be needed if node_modules is missing (run `pnpm postinstall` after for Nuxt prepare)
+### Next Priority: US-002
+
+## Iteration 2 - 2026-01-11T00:15:00Z
+### Completed: US-002 - Increase related articles count to 6
+### Implementation:
+- Modified `server/api/articles/[slug]/related.get.ts`: Changed limit from 5 to 6
+- Grid layout in `app/pages/articles/[slug].vue` already used responsive Tailwind classes (`sm:grid-cols-2 lg:grid-cols-3`) which naturally displays 6 items as 2x3 or 3x2
+### Learnings:
+- The existing grid layout was already designed to be flexible - always check existing implementation before adding changes
+- TypeScript check can be run with `pnpm exec tsc --noEmit` (vue-tsc may not be installed)
+- Minimal changes are best - the API limit was the only code change needed
+### Next Priority: US-003
+

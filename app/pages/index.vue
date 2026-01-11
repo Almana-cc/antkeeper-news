@@ -4,18 +4,38 @@ const router = useRouter()
 const { t, locale } = useI18n()
 const { getTagLabel } = useTagTranslations()
 
-// Filters from URL query params
+// Persistent filter storage
+const storedLanguage = useLocalStorage<string>('antkeeper-filter-language', 'all')
+const storedCategory = useLocalStorage<string>('antkeeper-filter-category', 'all')
+const storedTags = useLocalStorage<string[]>('antkeeper-filter-tags', [])
+const storedDateRange = useLocalStorage<string>('antkeeper-filter-dateRange', 'all')
+
+// Get initial value: URL params take priority over localStorage
+function getInitialValue<T>(queryValue: string | string[] | undefined, storedValue: T, defaultValue: T): T {
+  if (queryValue !== undefined) {
+    return queryValue as unknown as T
+  }
+  return storedValue ?? defaultValue
+}
+
+// Filters from URL query params (with localStorage fallback)
 const page = ref(Number(route.query.page) || 1)
-// Default to 'all' if not specified in query
-const language = ref<string>((route.query.language as string) || 'all')
-const category = ref<string>((route.query.category as string) || 'all')
+// Default to 'all' if not specified in query or localStorage
+const language = ref<string>(getInitialValue(route.query.language as string | undefined, storedLanguage.value, 'all'))
+const category = ref<string>(getInitialValue(route.query.category as string | undefined, storedCategory.value, 'all'))
 const featured = ref<boolean | undefined>(route.query.featured === 'true' ? true : undefined)
 const tags = ref<string[]>(
-  route.query.tags ?
-    (Array.isArray(route.query.tags) ? route.query.tags : [route.query.tags])
-    : []
+  route.query.tags
+    ? (Array.isArray(route.query.tags) ? route.query.tags.filter((t): t is string => t !== null) : [route.query.tags as string])
+    : (storedTags.value.length > 0 ? storedTags.value : [])
 )
-const dateRange = ref<string>((route.query.dateRange as string) || 'all')
+const dateRange = ref<string>(getInitialValue(route.query.dateRange as string | undefined, storedDateRange.value, 'all'))
+
+// Sync filter changes to localStorage
+watch(language, (val) => { storedLanguage.value = val })
+watch(category, (val) => { storedCategory.value = val })
+watch(tags, (val) => { storedTags.value = val }, { deep: true })
+watch(dateRange, (val) => { storedDateRange.value = val })
 
 // Fetch available tags for filter
 const { data: tagsData } = await useFetch('/api/tags', {
@@ -107,6 +127,20 @@ const dateRangeOptions = computed(() => [
 watch([language, category, featured, tags, dateRange], () => {
   page.value = 1
 })
+
+// Clear all filters and localStorage
+function clearFilters() {
+  language.value = 'all'
+  category.value = 'all'
+  featured.value = undefined
+  tags.value = []
+  dateRange.value = 'all'
+  // Clear localStorage - watchers will sync these values
+  storedLanguage.value = 'all'
+  storedCategory.value = 'all'
+  storedTags.value = []
+  storedDateRange.value = 'all'
+}
 </script>
 
 <template>
@@ -150,7 +184,7 @@ watch([language, category, featured, tags, dateRange], () => {
           v-if="language !== 'all' || category !== 'all' || featured || tags.length > 0 || dateRange !== 'all'"
           color="neutral"
           variant="link"
-          @click="() => { language = 'all'; category = 'all'; featured = undefined; tags = []; dateRange = 'all' }"
+          @click="clearFilters"
         >
           {{ t('filters.clearFilters') }}
         </UButton>
@@ -188,7 +222,7 @@ watch([language, category, featured, tags, dateRange], () => {
           color="secondary"
           variant="ghost"
           class="mt-4"
-          @click="() => { language = 'all'; category = 'all'; featured = undefined; tags = []; dateRange = 'all' }"
+          @click="clearFilters"
         >
           {{ t('filters.clearFilters') }}
         </UButton>

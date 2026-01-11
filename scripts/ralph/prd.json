@@ -14,8 +14,8 @@
         "Typecheck passes"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added query to articleDuplicates table to find all canonical/duplicate relationships for the current article, then excludes all related IDs from the related articles query using notInArray"
     },
     {
       "id": "US-002",
@@ -28,8 +28,8 @@
         "Typecheck passes"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Changed API limit from 5 to 6. Grid layout already used responsive classes (sm:grid-cols-2 lg:grid-cols-3) which naturally accommodates 6 articles in a 2x3 or 3x2 layout."
     },
     {
       "id": "US-003",
