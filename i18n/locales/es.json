@@ -31,7 +31,8 @@
   },
   "articles": {
     "loading": "Cargando artículos...",
-    "noArticlesFound": "No se encontraron artículos.",
+    "noArticlesFound": "No se encontraron artículos",
+    "emptyStateHint": "Intenta ajustar los filtros o vuelve más tarde para ver nuevos artículos.",
     "notFound": "Artículo no encontrado",
     "articleCount": "{count} artículo",
     "articleCount_plural": "{count} artículos",

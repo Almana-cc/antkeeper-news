@@ -226,18 +226,11 @@ watch(page, () => {
       </div>
 
       <!-- Empty state -->
-      <div v-else class="text-center py-12">
-        <p class="text-muted">{{ t('articles.noArticlesFound') }}</p>
-        <UButton
-          v-if="language !== 'all' || category !== 'all' || featured || tags.length > 0 || dateRange !== 'all'"
-          color="secondary"
-          variant="ghost"
-          class="mt-4"
-          @click="clearFilters"
-        >
-          {{ t('filters.clearFilters') }}
-        </UButton>
-      </div>
+      <EmptyState
+        v-else
+        :show-clear-button="language !== 'all' || category !== 'all' || featured || tags.length > 0 || dateRange !== 'all'"
+        @clear="clearFilters"
+      />
     </UContainer>
   </UMain>
 </template>
