@@ -29,3 +29,20 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - The existing grid layout was already responsive and flexible enough to accommodate more items
 - Simple changes sometimes require no UI updates if the layout is already well-designed
 ### Next Priority: US-003
+
+## Iteration 3 - 2026-01-11T13:00:00Z
+### Completed: US-003 - Persist filter state on language change
+### Implementation:
+- Added `@vueuse/core` and `@vueuse/nuxt` dependencies
+- Added `@vueuse/nuxt` to nuxt.config.ts modules
+- Modified `app/pages/index.vue`:
+  - Added useLocalStorage for language, category, tags, and dateRange
+  - URL query params take precedence, then localStorage values, then defaults
+  - Added watchers to sync filter changes to localStorage
+  - Created `clearFilters()` function that clears both reactive state and localStorage
+  - Updated both clear filter buttons to use the new function
+### Learnings:
+- VueUse is not included by default in this Nuxt project - need to install both @vueuse/core and @vueuse/nuxt
+- Generic arrow functions `<T>() =>` cause Vue template parsing errors, use `function` declarations instead
+- Pre-existing ESLint errors (like `any` type) don't need to be fixed as part of unrelated stories
+### Next Priority: US-004
