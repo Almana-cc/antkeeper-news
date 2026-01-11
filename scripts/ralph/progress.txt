@@ -361,3 +361,21 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - No new errors were introduced by these changes (verified with grep for "readingtime" in typecheck output)
 ### Next Priority: US-014
 
+## Iteration 19 - 2026-01-11T17:00:00Z
+### Completed: US-014 - Create search results page (shared language cookie)
+### Implementation:
+- Modified `app/pages/search.vue`:
+  - Added `useCookie` for language filter using same cookie name as index page (`antkeeper-filter-language`)
+  - Added watcher to sync language changes back to cookie
+  - Language selection now persists between index and search pages
+- Modified `app/pages/index.vue`:
+  - Changed from `useLocalStorage` to `useCookie` for all filter persistence
+  - Cookies work on SSR (no hydration flash) unlike localStorage
+  - Updated comments to reflect cookie-based storage
+### Learnings:
+- `useCookie` works on SSR while `useLocalStorage` only works client-side, causing hydration mismatches
+- Sharing state between Nuxt pages requires cookies or a composable/store - localStorage is page-specific
+- Cookie options: `{ default: () => 'value', maxAge: seconds }` - use function for default to avoid SSR issues
+- Pre-existing TypeScript errors (useFetch type inference in article detail page) continue but don't affect new code
+### Next Priority: None - All stories complete!
+

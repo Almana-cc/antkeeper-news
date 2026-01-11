@@ -215,8 +215,8 @@
         "Typecheck passes"
       ],
       "priority": 14,
-      "passes": false,
-      "notes": "Created app/pages/search.vue with: query from URL (?q=term), ArticleCard grid display, result count with localized singular/plural, language filter dropdown, empty state with illustration and helpful hint, SEO meta tags (title, description, og tags) with noindex to prevent search results from being indexed. Added i18n translations for search page (title, resultsFor, noResultsFor, noResultsHint, resultCount) in all 4 locales. TODO: Use same language cookie filter as index page for consistency."
+      "passes": true,
+      "notes": "Created app/pages/search.vue with: query from URL (?q=term), ArticleCard grid display, result count with localized singular/plural, language filter dropdown using shared cookie, empty state with illustration and helpful hint, SEO meta tags (title, description, og tags) with noindex to prevent search results from being indexed. Added i18n translations for search page (title, resultsFor, noResultsFor, noResultsHint, resultCount) in all 4 locales. Updated both index and search pages to use useCookie instead of useLocalStorage for SSR support and consistent language filter sharing."
     },
     {
       "id": "US-015",
