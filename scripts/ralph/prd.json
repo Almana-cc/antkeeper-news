@@ -102,8 +102,8 @@
         "Typecheck passes"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Fixed favicon fetching to extract domain from sourceUrl instead of using sourceName. Uses Google's favicon service (https://www.google.com/s2/favicons?domain=...) which is reliable and handles caching. Added i-lucide-globe as fallback icon. Applied same fix to duplicate article favicons."
     },
     {
       "id": "US-008",

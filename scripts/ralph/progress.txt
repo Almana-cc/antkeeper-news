@@ -98,3 +98,20 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Pre-existing TypeScript and ESLint errors (ArticleWithDuplicates types, unused getLanguageFlag) don't affect new code
 ### Next Priority: US-007
 
+## Iteration 7 - 2026-01-11T05:00:00Z
+### Completed: US-007 - Display source favicon on article cards
+### Implementation:
+- Modified `app/components/ArticleCard.vue`:
+  - Added `getDomainFromUrl(url)` helper to extract hostname from sourceUrl
+  - Added `getFaviconUrl(url)` helper to generate Google favicon service URL
+  - Changed favicon URL from `https://favicon.is/${sourceName}` to Google's service `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
+  - Added `icon: 'i-lucide-globe'` as fallback when favicon is unavailable
+  - Applied same fix to duplicate article favicons in UUser component
+### Learnings:
+- Previous implementation used `sourceName` (human-readable name like "New York Times") instead of a domain - favicon services need actual domains
+- Google's favicon service (`google.com/s2/favicons?domain=...`) is more reliable than favicon.is
+- The `sz=32` parameter requests 32x32 icon which scales well
+- Browser handles caching automatically; Google's CDN also caches favicons
+- Pre-existing TypeScript errors (ArticleWithDuplicates types, hub:db:schema module) and ESLint errors (unused getLanguageFlag) continue but don't affect new code
+### Next Priority: US-008
+
