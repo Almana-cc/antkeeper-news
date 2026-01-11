@@ -180,44 +180,47 @@ de.antkeeper.com     → German
 
 ---
 
-#### 2.1.1 Tag Internationalization ⭐⭐ [TODO - FUTURE]
+#### 2.1.1 Tag Internationalization ✅ [COMPLETED]
 **Why:** Tags are currently English-only, limiting UX for non-English users
 **Effort:** Medium-High
-**Challenges:**
-- AI generates tags in English (e.g., "ant care", "north america")
-- Users viewing French site see English tags
-- Tag filtering works but labels aren't localized
 
-**Potential Solutions:**
+**Completed Implementation:**
 
-**Option A: AI Multi-Language Tag Generation**
-- Modify prompts to generate tags in article's language
-- FR article → tags in French ("soins des fourmis", "amérique du nord")
-- EN article → tags in English
-- **Pros:** Native language tags per article
-- **Cons:** Inconsistent tag keys across languages, filtering complexity
+✅ **Tag Translation Database Schema**
+- ✅ Created `tagTranslations` table with fields: id, tagKey, language, label
+- ✅ Added indexes on tagKey and language for performance
+- ✅ Created unique composite index to prevent duplicate translations
+- ✅ Created migration 0004_tag_translations.sql
+- ✅ Seeded 20 common tags in FR/EN/ES/DE (topics, content types, regions, species)
 
-**Option B: Tag Translation Layer**
-- Generate canonical English tags (as now)
-- Create translation mapping table: `tag_translations (tag_key, language, label)`
-- Display translated labels in UI based on site language
-- Example: `"ant-care"` → FR: "Soins des fourmis", EN: "Ant care"
-- **Pros:** Consistent filtering, translatable UI
-- **Cons:** Need to maintain translations, initial effort
+✅ **Tag Translation Service**
+- ✅ Created `server/services/tag-translation.service.ts`
+- ✅ Implemented `getTranslatedTags()` and `getAllTranslationsForLocale()` functions
+- ✅ In-memory cache with 5-minute TTL for performance
+- ✅ Falls back to canonical English tag key if translation missing
+- ✅ Created API endpoint `/api/tags/translations` supporting locale and optional tag filtering
 
-**Option C: Hybrid - Canonical + Auto-Translate**
-- Keep English canonical tags for filtering
-- Use AI to translate tag labels on-demand
-- Cache translations in database
-- **Pros:** Best UX, scalable
-- **Cons:** API cost for translations
+✅ **Frontend Integration**
+- ✅ Created `app/composables/useTagTranslations.ts` composable
+- ✅ Updated ArticleCard.vue, index.vue, and [slug].vue to use `getTagLabel()`
+- ✅ Tag filter dropdown shows translated labels while filtering by canonical English key
+- ✅ Uses current i18n locale automatically
+- ✅ Graceful fallback if translation unavailable
 
-**Recommendation:** **Option B** - Most maintainable and scalable
-- Build tag translation system similar to category translations
-- Start with common tags, auto-add new ones
-- Allows manual curation of tag labels
+**Implementation Approach:** Option B (Tag Translation Layer)
+- Canonical English tags for backend consistency
+- Translation mapping table for multi-language UI
+- Best balance of maintainability and UX
 
-**Impact:** Better UX for non-English users, professional multi-language experience
+**Files Created:**
+- `server/db/schema.ts` - tagTranslations table definition
+- `server/migrations/0004_tag_translations.sql` - Schema migration
+- `server/migrations/0005_seed_tag_translations.sql` - Seed data for 20 tags
+- `server/services/tag-translation.service.ts` - Translation service with caching
+- `server/api/tags/translations.get.ts` - API endpoint
+- `app/composables/useTagTranslations.ts` - Frontend composable
+
+**Impact:** ✅ Better UX for non-English users, professional multi-language experience, consistent filtering across languages
 
 ---
 
@@ -357,63 +360,43 @@ article_duplicates {
 
 ---
 
-#### 2.5 Newsletter Automation & Continuity ⭐⭐⭐ [HIGH PRIORITY - TODO]
+#### 2.5 Newsletter Automation & Continuity ✅ [COMPLETED]
 **Why:** Enable fully automated weekly newsletter generation with human review via PR
 **Effort:** Medium
-**Current Problem:**
-- Agent requires interactive Write approval (blocks CI/CD)
-- No awareness of previous newsletters (repeats stories)
-- Manual invocation every week
 
-**Proposed Solution:**
+**Completed Implementation:**
 
-**Part A: GitHub Actions Workflow**
-```yaml
-name: Generate Weekly Newsletter
-on:
-  schedule:
-    - cron: '0 9 * * 5'  # Friday 9 AM UTC
-  workflow_dispatch:      # Manual trigger option
+✅ **GitHub Actions Workflow**
+- ✅ Created `.github/workflows/newsletter.yml` workflow
+- ✅ Scheduled runs Friday 9 AM UTC (cron: '0 9 * * 5')
+- ✅ Added workflow_dispatch for manual triggering
+- ✅ Workflow checks out repo, sets up Node.js, installs dependencies
+- ✅ Runs newsletter generation script
+- ✅ Creates PR with generated newsletter
+- ✅ PR title format: "Newsletter for week of [date range]"
 
-jobs:
-  generate-newsletter:
-    runs-on: ubuntu-latest
-    steps:
-      - Checkout repo
-      - Setup Node.js
-      - Install dependencies
-      - Run newsletter generation script
-      - Create PR with generated newsletter
-```
+✅ **Newsletter Generation Script**
+- ✅ Created standalone `scripts/generate-newsletter.js` (Node.js)
+- ✅ Fetches articles from API: `GET /api/articles?dateRange=week&limit=50`
+- ✅ Uses AI to select top 3 most interesting articles
+- ✅ Generates French content: intro, summaries, key points
+- ✅ Writes newsletter to `newsletters/YYYY-MM-DD.md`
+- ✅ Handles errors gracefully with fallback strategies
+- ✅ CI/CD compatible (no user interaction required)
 
-**Part B: Newsletter Generation Script**
-- Standalone Node.js script (not interactive agent)
-- Uses same logic as newsletter-generator agent
-- Calls API: `GET /api/articles?dateRange=week&limit=50`
-- Reads `./newsletters/*.md` to check previous editions
-- AI selection with continuity awareness:
-  - Excludes stories already covered
-  - Suggests follow-ups if relevant
-  - References previous newsletters when appropriate
-- Writes newsletter file directly (no approval needed)
-- Commits and pushes to branch
-- Creates PR via GitHub API (`gh pr create`)
+✅ **Newsletter History & Continuity**
+- ✅ Script reads previous newsletters from `./newsletters/*.md`
+- ✅ Extracts covered article titles/topics from previous weeks
+- ✅ AI prompt includes "Avoid these already covered stories: [list]"
+- ✅ Suggests follow-up angles when stories evolve
+- ✅ References previous editions when relevant
 
-**Part C: Newsletter History Integration**
-- Before selecting articles, scan `./newsletters/` directory
-- Extract covered article titles/topics from previous weeks
-- Pass to AI prompt: "Avoid these already covered stories: [list]"
-- Optionally: "Consider follow-up angle if story evolved: [list]"
-- Maintains editorial coherence across weeks
+**Files Created:**
+- `.github/workflows/newsletter.yml` - Weekly scheduled workflow
+- `scripts/generate-newsletter.js` - Autonomous newsletter generation script
+- `scripts/ralph/` - Supporting scripts for story processing
 
-**Implementation Steps:**
-1. Create `.github/workflows/newsletter.yml` workflow
-2. Create `scripts/generate-newsletter.js` (autonomous version)
-3. Update newsletter prompt to accept "previous topics" list
-4. Add continuity checking logic
-5. Test manual trigger before enabling cron schedule
-
-**Benefits:**
+**Benefits Achieved:**
 - ✅ Fully automated weekly execution
 - ✅ Human review via PR (approval gate)
 - ✅ Editorial continuity across editions
@@ -421,14 +404,7 @@ jobs:
 - ✅ Git history of all newsletters
 - ✅ Can review diff before publishing
 
-**Technical Notes:**
-- Script needs GitHub token for PR creation (use `secrets.GITHUB_TOKEN`)
-- Newsletter file: `newsletters/$(date +%Y-%m-%d).md`
-- PR title: "Newsletter for week of [date range]"
-- Auto-assign reviewer(s) for approval
-- Could add preview comment with rendered markdown
-
-**Impact:** Reduces manual work, ensures consistency, maintains human oversight
+**Impact:** ✅ Reduced manual work, ensures consistency, maintains human oversight via PR review process
 
 ---
 
@@ -470,19 +446,56 @@ jobs:
 
 ### 🎨 **Phase 4: Website Polish (1-2 weeks)**
 
-#### 4.1 Individual Article Pages ⭐⭐ [SEO PRIORITY]
+#### 4.1 Individual Article Pages ✅ [COMPLETED]
 **Why:** Critical for SEO, low priority for UX (mobile is primary)
 **Effort:** Low-Medium
-**Features:**
-- `/articles/[slug]` page
-- Full article display
-- Related articles (by tags)
-- Share buttons
-- Structured data (Schema.org Article)
-- OpenGraph/Twitter cards
-- View count tracking
 
-**Impact:** Major SEO improvement, shareable links
+**Completed Features:**
+
+✅ **Dynamic Route & API**
+- ✅ Created `app/pages/articles/[slug].vue` page
+- ✅ Created `server/api/articles/[slug].get.ts` API endpoint
+- ✅ Page fetches article by slug from API
+- ✅ Server-side rendered for SEO
+- ✅ Handles 404 for non-existent articles
+
+✅ **Article Display**
+- ✅ Full article display: title, image, summary, content
+- ✅ Category badge with color coding
+- ✅ Meta info: source, date, language
+- ✅ Featured image display
+- ✅ Tags with translations
+- ✅ Source link with "Read Original" button
+- ✅ Back button to return to article list
+
+✅ **SEO & Structured Data**
+- ✅ Schema.org JSON-LD with Article type
+- ✅ Includes: headline, description, image, datePublished, dateModified, author, publisher
+- ✅ OpenGraph meta tags: og:type, og:title, og:description, og:image, og:url, og:site_name, article:published_time, article:author
+- ✅ Twitter card: summary_large_image with title, description, image
+- ✅ useSeoMeta() for complete SEO coverage
+
+✅ **Related Articles Section**
+- ✅ Created `server/api/articles/[slug]/related.get.ts` API endpoint
+- ✅ Displays up to 5 related articles by shared tags
+- ✅ Excludes current article from related list
+- ✅ Responsive grid with image, title, source, and date
+- ✅ Article cards are clickable and navigate to article pages
+
+**Files Created:**
+- `app/pages/articles/[slug].vue` - Article detail page
+- `server/api/articles/[slug].get.ts` - Single article API
+- `server/api/articles/[slug]/related.get.ts` - Related articles API
+
+**i18n Keys Added:**
+- backToList, readOriginal, notFound (FR/EN/ES/DE)
+- relatedArticles (FR/EN/ES/DE)
+
+**Impact:** ✅ Major SEO improvement, shareable links, better content discovery through related articles
+
+**Known Issues (see Bugs & Fixes section):**
+- ⚠️ Related articles showing duplicates
+- ⚠️ Should show 6 articles instead of 5
 
 ---
 
@@ -628,6 +641,50 @@ ui: {
 
 ---
 
+## 🐛 Bugs & Fixes (Immediate Attention Required)
+
+### High Priority Fixes
+
+#### Fix 1: Related Articles Showing Duplicates ⭐⭐⭐
+**Issue:** `/articles/[slug]` page showing duplicate articles in related articles section
+**Expected:** Only unique articles should appear
+**Files Affected:**
+- `server/api/articles/[slug]/related.get.ts`
+- Possibly duplicate detection logic interfering
+
+#### Fix 2: Related Articles Count ⭐⭐
+**Issue:** Currently showing 5 related articles, should show 6
+**Expected:** Display up to 6 related articles with no duplicates
+**Files Affected:**
+- `server/api/articles/[slug]/related.get.ts` (change limit from 5 to 6)
+- `app/pages/articles/[slug].vue` (update grid layout if needed)
+
+#### Fix 3: Filter State Collapsing on Language Change ⭐⭐⭐
+**Issue:** On index page, filters (category, tags, date range) collapse/reset when user changes language
+**Expected:** Filters should persist when changing languages
+**Root Cause:** Language change triggers page reload/re-render
+**Solution Needed:**
+- Implement VueUse's `useLocalStorage` to persist filter state
+- Store selected filters in localStorage
+- Restore filters after language change
+
+#### Fix 4: Remove Auto Language Selection ⭐⭐
+**Issue:** Auto language detection causing complexity with filter state
+**Expected:** Simplify by removing auto language selection for now
+**Files Affected:**
+- i18n configuration
+- Language switcher component
+**Impact:** Simplifies state management, improves predictability
+
+#### Fix 5: Scroll to Top on Page Change ⭐⭐
+**Issue:** When changing pages (pagination), page doesn't scroll to top
+**Expected:** Scroll to top of page when navigating to different page number
+**Files Affected:**
+- `app/pages/index.vue` (pagination controls)
+**Solution:** Add `window.scrollTo(0, 0)` or use Nuxt's `scrollToTop` on page change
+
+---
+
 ## Technical Debt & Maintenance
 
 ### Database Optimization
@@ -662,9 +719,9 @@ ui: {
 1. ✅ ~~**AI Tag Generation**~~ - COMPLETED
 2. ✅ ~~**Smart Duplicate Detection**~~ - COMPLETED (backend + UI)
 3. ✅ ~~**Newsletter Generator**~~ - COMPLETED
-4. **Newsletter Automation & Continuity** - Automate weekly generation via GitHub Actions with PR review
-5. **Article Pages** - SEO critical for discoverability
-6. **Tag Internationalization** - Better UX for non-English users
+4. ✅ ~~**Newsletter Automation & Continuity**~~ - COMPLETED (GitHub Actions workflow with PR review)
+5. ✅ ~~**Article Pages**~~ - COMPLETED (SEO optimized with structured data)
+6. ✅ ~~**Tag Internationalization**~~ - COMPLETED (translation system with 20 seeded tags)
 
 ### 📱 **Following Sprint (Mobile Focus)**
 4. **Mobile API Enhancements** - Primary use case
