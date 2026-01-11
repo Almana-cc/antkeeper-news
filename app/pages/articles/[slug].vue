@@ -3,6 +3,15 @@ const route = useRoute()
 const { t } = useI18n()
 const config = useRuntimeConfig()
 const { getTagLabel } = useTagTranslations()
+const localePath = useLocalePath()
+
+// Navigate to index with tag filter applied
+function filterByTag(tag: string) {
+  navigateTo({
+    path: localePath('/'),
+    query: { tags: [tag] }
+  })
+}
 
 const slug = route.params.slug as string
 
@@ -176,6 +185,8 @@ useHead({
             size="sm"
             :color="categoryColor"
             variant="soft"
+            class="cursor-pointer hover:opacity-80 transition-opacity"
+            @click="filterByTag(tag)"
           />
         </div>
 
