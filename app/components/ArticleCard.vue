@@ -6,6 +6,11 @@ interface Props {
 const props = defineProps<Props>()
 const { t } = useI18n()
 const { getTagLabel } = useTagTranslations()
+const router = useRouter()
+
+const handleTagClick = (tag: string) => {
+  router.push({ path: '/', query: { tags: tag } })
+}
 
 // State for expand/collapse
 const isExpanded = ref(false)
@@ -135,6 +140,8 @@ const author =  {
             size="sm"
             :color="categoryColor"
             variant="soft"
+            class="cursor-pointer hover:opacity-80 transition-opacity"
+            @click.stop.prevent="handleTagClick(tag)"
           />
         </div>
       </div>
