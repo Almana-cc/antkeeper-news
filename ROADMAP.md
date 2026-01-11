@@ -19,8 +19,12 @@
 - ✅ OpenRouter integration with free tier models (rate-limited, exponential backoff)
 - ✅ Smart duplicate detection with AI embeddings (backend + UI with expandable duplicate sections)
 - ✅ Weekly newsletter generator (autonomous Claude Code agent, French content)
-- ⚠️ Tags are in English only (need internationalization)
-- ⚠️ No individual article pages yet
+- ✅ Tag internationalization with translation system
+- ✅ Individual article pages with SEO optimization
+- ✅ Full-text search with autocomplete suggestions
+- ✅ Click-to-filter on article tags
+- ✅ Source favicon display on article cards
+- ✅ Empty state illustrations
 
 ---
 
@@ -491,11 +495,13 @@ article_duplicates {
 - backToList, readOriginal, notFound (FR/EN/ES/DE)
 - relatedArticles (FR/EN/ES/DE)
 
-**Impact:** ✅ Major SEO improvement, shareable links, better content discovery through related articles
+**Additional Enhancements (from ralph/fixes-and-search branch):**
+- ✅ Related articles now excludes duplicates and off-topic articles
+- ✅ Related articles count increased from 5 to 6
+- ✅ Empty state illustration for no articles
+- ✅ Keyboard navigation (Escape to clear filters)
 
-**Known Issues (see Bugs & Fixes section):**
-- ⚠️ Related articles showing duplicates
-- ⚠️ Should show 6 articles instead of 5
+**Impact:** ✅ Major SEO improvement, shareable links, better content discovery through related articles
 
 ---
 
@@ -509,32 +515,98 @@ article_duplicates {
 - ✅ Tags update based on language/category filters
 - ✅ URL persistence (tags stored as array in query params)
 - ✅ Responsive design with proper wrapping
+- ✅ Click tag on article card → filter by that tag
 
 **Future Enhancements:**
 - ⏳ Tag cloud visualization
-- ⏳ Click tag on article card → filter by that tag
 - ⏳ `/tag/[tag]` SEO pages
 - ⏳ Show article counts per tag
-- ⏳ Tag internationalization (see 2.1.1)
 
 **Impact:** ✅ Significantly improved content discovery and navigation
 
 ---
 
-#### 4.3 Source Attribution & Filtering ⭐ [NICE TO HAVE]
-**Why:** Transparency, user preference
-**Effort:** Low
-**Features:**
-- Display source favicon/logo on cards
-- Filter by source
-- `/source/[source]` pages
-- Source reliability indicators
+#### 4.3 Full-Text Search ✅ [COMPLETED]
+**Why:** Allow users to search across all articles
+**Effort:** Medium-High
 
-**Impact:** User trust, flexibility
+**Completed Implementation:**
+
+✅ **Database Indexes (US-011)**
+- ✅ Created search_vector tsvector column on articles table
+- ✅ Created GIN index for efficient full-text queries
+- ✅ Added trigger function with weighted search (A=title, B=summary, C=content)
+- ✅ Backfill query for existing articles
+- ✅ Created migration 0006_fulltext_search.sql
+- ✅ Added custom tsvector type to Drizzle schema
+
+✅ **Search API Endpoint (US-012)**
+- ✅ Created GET /api/articles/search endpoint
+- ✅ Accept query parameter 'q' for search term
+- ✅ Support language filter parameter
+- ✅ Return ranked results by relevance using ts_rank_cd
+- ✅ Include pagination (limit/offset)
+- ✅ Return highlighted snippets using ts_headline
+- ✅ Uses OR logic between search terms with plainto_tsquery
+
+✅ **Search Input Component (US-013)**
+- ✅ Added search input to header/navbar
+- ✅ Search icon button expands to input on click (desktop)
+- ✅ Full-width mobile layout with submit/close buttons
+- ✅ Input has clear button when text is entered
+- ✅ Submit on Enter key press, Escape to close
+- ✅ Smooth CSS transitions
+- ✅ Added search i18n keys to all 4 locale files
+
+✅ **Search Results Page (US-014)**
+- ✅ Created /search page with query in URL (?q=term)
+- ✅ Display search results using ArticleCard component
+- ✅ Show number of results found with localized singular/plural
+- ✅ Language filter dropdown using shared cookie (SSR compatible)
+- ✅ Handle no results with empty state illustration and helpful hint
+- ✅ SEO meta tags (title, description, og tags) with noindex
+- ✅ Added i18n translations for search page in all 4 locales
+
+✅ **Search Autocomplete Suggestions (US-015)**
+- ✅ Created /api/articles/suggestions endpoint
+- ✅ Returns popular tags (with article counts) and matching article titles
+- ✅ Show dropdown with suggestions as user types
+- ✅ 300ms debounce to avoid excessive API calls
+- ✅ Keyboard navigation (ArrowUp/Down/Enter/Escape)
+- ✅ Tag suggestions show usage count
+- ✅ Article suggestions link directly to articles
+- ✅ Added i18n 'search.article' key in all locales
+
+**Files Created:**
+- `server/migrations/0006_fulltext_search.sql` - Schema migration with tsvector, index, and trigger
+- `server/api/articles/search.get.ts` - Search API endpoint
+- `server/api/articles/suggestions.get.ts` - Autocomplete suggestions endpoint
+- `app/components/SearchInput.vue` - Search input with autocomplete
+- `app/pages/search.vue` - Search results page
+
+**Impact:** ✅ Major UX improvement - users can now search across all articles with autocomplete suggestions
 
 ---
 
-#### 4.4 Date Range Filtering ✅ [COMPLETED]
+#### 4.4 Source Attribution & Filtering ⭐ [PARTIALLY COMPLETED]
+**Why:** Transparency, user preference
+**Effort:** Low
+
+**Completed Features:**
+- ✅ Display source favicon on cards (uses Google's favicon service)
+- ✅ Fallback to generic icon if favicon unavailable
+- ✅ Duplicate article links open in new tab
+
+**Future Enhancements:**
+- ⏳ Filter by source
+- ⏳ `/source/[source]` pages
+- ⏳ Source reliability indicators
+
+**Impact:** ✅ User trust improved with visual source identification
+
+---
+
+#### 4.5 Date Range Filtering ✅ [COMPLETED]
 **Why:** Find historical content
 **Effort:** Low
 **Completed Features:**
@@ -557,7 +629,7 @@ article_duplicates {
 
 ---
 
-#### 4.5 Design System - Match Antkeeper Website ✅ [COMPLETED]
+#### 4.6 Design System - Match Antkeeper Website ✅ [COMPLETED]
 **Why:** News section should feel like part of the Antkeeper ecosystem
 **Effort:** Medium
 **Reference:** https://www.antkeeper.app/fr
@@ -641,47 +713,29 @@ ui: {
 
 ---
 
-## 🐛 Bugs & Fixes (Immediate Attention Required)
+## 🐛 Bugs & Fixes ✅ [ALL COMPLETED]
 
-### High Priority Fixes
+### Completed Fixes
 
-#### Fix 1: Related Articles Showing Duplicates ⭐⭐⭐
+#### Fix 1: Related Articles Showing Duplicates ✅
 **Issue:** `/articles/[slug]` page showing duplicate articles in related articles section
-**Expected:** Only unique articles should appear
-**Files Affected:**
-- `server/api/articles/[slug]/related.get.ts`
-- Possibly duplicate detection logic interfering
+**Solution:** Added query to articleDuplicates table to find all canonical/duplicate relationships for the current article, then excludes all related IDs from the related articles query using notInArray. Added ne() filter to exclude off-topic category articles.
 
-#### Fix 2: Related Articles Count ⭐⭐
+#### Fix 2: Related Articles Count ✅
 **Issue:** Currently showing 5 related articles, should show 6
-**Expected:** Display up to 6 related articles with no duplicates
-**Files Affected:**
-- `server/api/articles/[slug]/related.get.ts` (change limit from 5 to 6)
-- `app/pages/articles/[slug].vue` (update grid layout if needed)
+**Solution:** Changed API limit from 5 to 6. Grid layout already used responsive classes (sm:grid-cols-2 lg:grid-cols-3) which naturally accommodates 6 articles.
 
-#### Fix 3: Filter State Collapsing on Language Change ⭐⭐⭐
-**Issue:** On index page, filters (category, tags, date range) collapse/reset when user changes language
-**Expected:** Filters should persist when changing languages
-**Root Cause:** Language change triggers page reload/re-render
-**Solution Needed:**
-- Implement VueUse's `useLocalStorage` to persist filter state
-- Store selected filters in localStorage
-- Restore filters after language change
+#### Fix 3: Filter State Collapsing on Language Change ✅
+**Issue:** On index page, filters collapse/reset when user changes language
+**Solution:** Installed @vueuse/nuxt and @vueuse/core. Added useLocalStorage for language, category, tags, and dateRange filters. URL params take priority over localStorage when present. clearFilters() function resets both reactive state and localStorage values. Updated to useCookie for SSR support and consistent sharing between index and search pages.
 
-#### Fix 4: Remove Auto Language Selection ⭐⭐
+#### Fix 4: Remove Auto Language Selection ✅
 **Issue:** Auto language detection causing complexity with filter state
-**Expected:** Simplify by removing auto language selection for now
-**Files Affected:**
-- i18n configuration
-- Language switcher component
-**Impact:** Simplifies state management, improves predictability
+**Solution:** Set detectBrowserLanguage: false in nuxt.config.ts i18n section. French remains default locale. Language persists via URL prefix strategy.
 
-#### Fix 5: Scroll to Top on Page Change ⭐⭐
+#### Fix 5: Scroll to Top on Page Change ✅
 **Issue:** When changing pages (pagination), page doesn't scroll to top
-**Expected:** Scroll to top of page when navigating to different page number
-**Files Affected:**
-- `app/pages/index.vue` (pagination controls)
-**Solution:** Add `window.scrollTo(0, 0)` or use Nuxt's `scrollToTop` on page change
+**Solution:** Added watcher on page ref that calls window.scrollTo with behavior:'smooth'. Works for all pagination interactions.
 
 ---
 
@@ -715,23 +769,26 @@ ui: {
 5. ✅ **Multi-language Site (i18n)** - FR, EN, ES, DE support
 6. ✅ **Design System Customization** - Antkeeper brand design implemented
 
-### 🚀 **Next Sprint (High Impact)**
+### 🚀 **Next Sprint (High Impact)** ✅ ALL COMPLETED
 1. ✅ ~~**AI Tag Generation**~~ - COMPLETED
 2. ✅ ~~**Smart Duplicate Detection**~~ - COMPLETED (backend + UI)
 3. ✅ ~~**Newsletter Generator**~~ - COMPLETED
 4. ✅ ~~**Newsletter Automation & Continuity**~~ - COMPLETED (GitHub Actions workflow with PR review)
 5. ✅ ~~**Article Pages**~~ - COMPLETED (SEO optimized with structured data)
 6. ✅ ~~**Tag Internationalization**~~ - COMPLETED (translation system with 20 seeded tags)
+7. ✅ ~~**Full-Text Search**~~ - COMPLETED (search input, results page, autocomplete suggestions)
+8. ✅ ~~**Bug Fixes**~~ - COMPLETED (duplicates, filter persistence, scroll, favicons, empty states)
 
 ### 📱 **Following Sprint (Mobile Focus)**
-4. **Mobile API Enhancements** - Primary use case
-5. **AI Content Summarization** - Better mobile app experience
+1. **Mobile API Enhancements** - Primary use case
+2. **AI Content Summarization** - Better mobile app experience
 
 ### 🎨 **Polish Phase (Lower Priority)**
-6. ✅ Tag filtering UI - COMPLETED
-7. Source filtering
-8. ✅ Date range filtering - COMPLETED
-9. Content moderation tools
+1. ✅ Tag filtering UI - COMPLETED
+2. ✅ Source favicons - COMPLETED
+3. ⏳ Source filtering
+4. ✅ Date range filtering - COMPLETED
+5. ⏳ Content moderation tools
 
 ---
 
@@ -776,13 +833,14 @@ ui: {
 - Articles become educational resources
 **Effort:** High, requires species database
 
-### 6. **Search Functionality**
-**Idea:** Full-text search across articles
-- PostgreSQL full-text search
-- Search by species, topic, keyword
-- Autocomplete suggestions
-**Effort:** Medium
-**Impact:** User experience
+### 6. **Search Functionality** ✅ [IMPLEMENTED]
+**Implemented:** Full-text search across articles
+- ✅ PostgreSQL full-text search with GIN index
+- ✅ Search by any keyword (title, summary, content)
+- ✅ Autocomplete suggestions (tags + article titles)
+- ✅ Search results page with language filter
+- ✅ Highlighted snippets showing matched text
+**Impact:** ✅ Major UX improvement for content discovery
 
 ### 7. **Article Quality Scoring**
 **Idea:** Rank articles by quality/relevance
