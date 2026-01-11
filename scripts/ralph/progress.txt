@@ -248,3 +248,36 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema module) continue but don't affect new code
 ### Next Priority: US-014
 
+## Iteration 14 - 2026-01-11T12:00:00Z
+### Completed: US-014 - Create search results page
+### Implementation:
+- Created `app/pages/search.vue`:
+  - Query from URL via `?q=term` parameter
+  - ArticleCard grid display (responsive 1/2/3 columns)
+  - Result count with localized singular/plural (search.resultCount)
+  - Language filter dropdown
+  - Loading state while fetching results
+  - Error state for API failures
+  - Empty state when no query entered (with search icon)
+  - No results state with empty-state.svg illustration and helpful hint
+  - Pagination with smooth scroll to top on page change
+- Added SEO meta tags:
+  - Dynamic title with search query
+  - Description meta tag
+  - Open Graph tags (ogTitle, ogDescription)
+  - `noindex, follow` robots meta to prevent search result pages from being indexed
+- Added i18n translations to all 4 locale files:
+  - search.title: "Search Results"
+  - search.resultsFor: "Results for \"{query}\""
+  - search.noResultsFor: "No results for \"{query}\""
+  - search.noResultsHint: "Try a different search term..."
+  - search.resultCount / resultCount_plural
+### Learnings:
+- `useSeoMeta` can use functions for dynamic meta values that react to query changes
+- `useHead` is needed separately for robots meta tag
+- SearchInput component already navigates to `/search?q=term`, so page just reads the query param
+- Reused existing patterns from index.vue (language filter, pagination, ArticleCard grid)
+- Empty state illustrations work well for both "no results" and "no query" states
+- Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema module) continue but don't affect new code
+### Next Priority: US-015
+
