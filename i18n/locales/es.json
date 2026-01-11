@@ -2,6 +2,13 @@
   "site": {
     "title": "Antkeeper News"
   },
+  "search": {
+    "placeholder": "Buscar artículos...",
+    "open": "Abrir búsqueda",
+    "close": "Cerrar búsqueda",
+    "submit": "Buscar",
+    "clear": "Borrar"
+  },
   "filters": {
     "allLanguages": "Todos los idiomas",
     "allCategories": "Todas las categorías",

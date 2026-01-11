@@ -98,19 +98,22 @@ useHead({
       </template>
 
       <template #right>
-        <UFieldGroup class="hidden lg:block">
-          <UButton
-            v-if="!colorMode?.forced"
-            :icon="isDark ? 'i-lucide-moon' : 'i-lucide-sun'"
-            color="primary"
-            variant="soft"
-            :aria-label="`Switch to ${isDark ? 'light' : 'dark'} mode`"
-            @click="isDark = !isDark"
-          />
-          <UDropdownMenu :items>
-            <UButton icon="i-lucide-languages" color="primary" variant="soft" />
-          </UDropdownMenu>
-        </UFieldGroup>
+        <div class="flex items-center gap-2">
+          <SearchInput />
+          <UFieldGroup class="hidden lg:flex items-center">
+            <UButton
+              v-if="!colorMode?.forced"
+              :icon="isDark ? 'i-lucide-moon' : 'i-lucide-sun'"
+              color="primary"
+              variant="soft"
+              :aria-label="`Switch to ${isDark ? 'light' : 'dark'} mode`"
+              @click="isDark = !isDark"
+            />
+            <UDropdownMenu :items>
+              <UButton icon="i-lucide-languages" color="primary" variant="soft" />
+            </UDropdownMenu>
+          </UFieldGroup>
+        </div>
       </template>
 
       <template #body>
