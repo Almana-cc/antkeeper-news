@@ -31,3 +31,23 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Minimal changes are best - the API limit was the only code change needed
 ### Next Priority: US-003
 
+## Iteration 3 - 2026-01-11T01:00:00Z
+### Completed: US-003 - Persist filter state on language change
+### Implementation:
+- Installed `@vueuse/nuxt` and `@vueuse/core` packages
+- Added `@vueuse/nuxt` to Nuxt modules in `nuxt.config.ts`
+- Modified `app/pages/index.vue`:
+  - Added `useLocalStorage` for language, category, tags, and dateRange filters
+  - URL query params take priority over localStorage values on initial load
+  - Added watchers to sync filter changes to localStorage
+  - Created `clearFilters()` function that resets both reactive state and localStorage
+  - Replaced inline @click handlers with `clearFilters` function calls
+### Learnings:
+- VueUse requires both `@vueuse/nuxt` module and `@vueuse/core` package
+- `useLocalStorage` returns a ref that syncs to localStorage automatically
+- When URL params exist, they should override localStorage to support shareable links
+- The `filter((t): t is string => t !== null)` type guard is needed to handle nullable LocationQueryValue arrays
+- Pre-existing TypeScript errors in other files don't block story completion - focus on new code
+- `pnpm exec nuxi typecheck` runs Nuxt's typecheck command
+### Next Priority: US-004
+
