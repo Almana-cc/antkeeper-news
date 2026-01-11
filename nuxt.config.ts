@@ -10,7 +10,8 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxthub/core',
     '@nuxt/fonts',
-    '@nuxtjs/i18n'
+    '@nuxtjs/i18n',
+    '@vueuse/nuxt'
   ],
   googleFonts: {
     families: {

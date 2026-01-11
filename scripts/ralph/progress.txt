@@ -19,3 +19,13 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - No `lint` npm script - use `pnpm eslint <file>` directly
 - Branch `ralph/fixes-and-search` was checked out in another worktree, working on `ralph/amp` instead
 ### Next Priority: US-002
+
+## Iteration 2 - 2026-01-11T12:30:00Z
+### Completed: US-002 - Increase related articles count to 6
+### Implementation:
+- Modified `server/api/articles/[slug]/related.get.ts`: changed limit from 5 to 6
+- Grid layout was already `sm:grid-cols-2 lg:grid-cols-3` which is perfect for 6 articles (2x3 on desktop, 3x2 on small screens)
+### Learnings:
+- The existing grid layout was already responsive and flexible enough to accommodate more items
+- Simple changes sometimes require no UI updates if the layout is already well-designed
+### Next Priority: US-003
