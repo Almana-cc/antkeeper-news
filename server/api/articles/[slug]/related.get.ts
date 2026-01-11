@@ -1,4 +1,4 @@
-import { and, eq, desc, sql, notInArray, or } from 'drizzle-orm'
+import { and, eq, desc, sql, notInArray, or, ne } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
 
 export default eventHandler(async (event) => {
@@ -54,6 +54,7 @@ export default eventHandler(async (event) => {
   const relatedArticles = await db.query.articles.findMany({
     where: and(
       notInArray(schema.articles.id, excludeIdsArray),
+      ne(schema.articles.category, 'off-topic'),
       sql`${schema.articles.tags} && ARRAY[${sql.join(article.tags.map((tag: string) => sql`${tag}`), sql`, `)}]::text[]`
     ),
     orderBy: [desc(schema.articles.publishedAt)],
