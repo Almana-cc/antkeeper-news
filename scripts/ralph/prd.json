@@ -11,11 +11,12 @@
         "Related articles API excludes duplicate articles from results",
         "Only unique article slugs appear in related articles section",
         "Duplicate detection considers articleDuplicates table relationships",
+        "Related articles excludes off-topic category articles",
         "Typecheck passes"
       ],
       "priority": 1,
       "passes": true,
-      "notes": "Added query to articleDuplicates table to find all canonical/duplicate relationships for the current article, then excludes all related IDs from the related articles query using notInArray"
+      "notes": "Added query to articleDuplicates table to find all canonical/duplicate relationships for the current article, then excludes all related IDs from the related articles query using notInArray. Added ne() filter to exclude off-topic category articles."
     },
     {
       "id": "US-002",
@@ -99,11 +100,12 @@
         "Display 16x16 or 20x20 favicon next to source name",
         "Fallback to generic icon if favicon unavailable",
         "Favicon cached to avoid repeated requests",
+        "Duplicate article links open in new tab (target=_blank)",
         "Typecheck passes"
       ],
       "priority": 7,
       "passes": true,
-      "notes": "Fixed favicon fetching to extract domain from sourceUrl instead of using sourceName. Uses Google's favicon service (https://www.google.com/s2/favicons?domain=...) which is reliable and handles caching. Added i-lucide-globe as fallback icon. Applied same fix to duplicate article favicons."
+      "notes": "Fixed favicon fetching to extract domain from sourceUrl instead of using sourceName. Uses Google's favicon service (https://www.google.com/s2/favicons?domain=...) which is reliable and handles caching. Added i-lucide-globe as fallback icon. Applied same fix to duplicate article favicons. Added target=_blank to UUser component for duplicate article links."
     },
     {
       "id": "US-008",
@@ -122,18 +124,18 @@
     },
     {
       "id": "US-009",
-      "title": "Add article reading time estimate",
-      "description": "As a user, I want to see estimated reading time on articles so I know how long they'll take.",
+      "title": "Remove article reading time estimate",
+      "description": "As a user, I don't need reading time on article cards since they only show excerpts, not full content.",
       "acceptanceCriteria": [
-        "Calculate reading time based on content length (avg 200 words/min)",
-        "Display reading time on article cards and detail page",
-        "Format: '3 min read' or localized equivalent",
-        "Add i18n translations for all 4 languages",
+        "Remove reading time display from ArticleCard component",
+        "Remove reading time display from article detail page",
+        "Remove useReadingTime composable",
+        "Remove readingTime i18n keys from all 4 locales",
         "Typecheck passes"
       ],
       "priority": 9,
       "passes": true,
-      "notes": "Created useReadingTime composable with getArticleReadingTime function (200 words/min, minimum 1 min). Added reading time display with clock icon to ArticleCard footer and article detail page meta section. Added readingTime i18n key to all 4 locales (fr: 'X min de lecture', en: 'X min read', es: 'X min de lectura', de: 'X Min. Lesezeit')."
+      "notes": "Removed useReadingTime composable, reading time display from ArticleCard footer and article detail page meta section, and readingTime i18n keys from all 4 locale files. Pre-existing TypeScript errors (unrelated to these changes) remain in the codebase."
     },
     {
       "id": "US-010",
@@ -207,14 +209,14 @@
         "Create /search page with query in URL (?q=term)",
         "Display search results using ArticleCard component",
         "Show number of results found",
-        "Include language filter on search results",
+        "Include language filter on search results (shared with index page via cookie)",
         "Handle no results with helpful message",
         "SEO meta tags for search pages",
         "Typecheck passes"
       ],
       "priority": 14,
-      "passes": true,
-      "notes": "Created app/pages/search.vue with: query from URL (?q=term), ArticleCard grid display, result count with localized singular/plural, language filter dropdown, empty state with illustration and helpful hint, SEO meta tags (title, description, og tags) with noindex to prevent search results from being indexed. Added i18n translations for search page (title, resultsFor, noResultsFor, noResultsHint, resultCount) in all 4 locales."
+      "passes": false,
+      "notes": "Created app/pages/search.vue with: query from URL (?q=term), ArticleCard grid display, result count with localized singular/plural, language filter dropdown, empty state with illustration and helpful hint, SEO meta tags (title, description, og tags) with noindex to prevent search results from being indexed. Added i18n translations for search page (title, resultsFor, noResultsFor, noResultsHint, resultCount) in all 4 locales. TODO: Use same language cookie filter as index page for consistency."
     },
     {
       "id": "US-015",
@@ -245,8 +247,8 @@
         "Typecheck passes"
       ],
       "priority": 16,
-      "passes": false,
-      "notes": ""
+      "passes": "cancelled",
+      "notes": "CANCELLED: Feature deemed unnecessary for current scope."
     }
   ]
 }

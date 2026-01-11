@@ -310,3 +310,54 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema module) continue but don't affect new code
 ### Next Priority: US-016
 
+## Iteration 16 - 2026-01-11T14:00:00Z
+### Completed: US-001 - Fix related articles showing duplicates (off-topic exclusion)
+### Implementation:
+- Modified `server/api/articles/[slug]/related.get.ts`:
+  - Added `ne` import from drizzle-orm
+  - Added `ne(schema.articles.category, 'off-topic')` condition to the where clause
+  - This excludes articles categorized as 'off-topic' from related articles results
+### Learnings:
+- US-001 was marked incomplete because the "exclude off-topic category" acceptance criterion was not fulfilled in Iteration 1
+- The `ne()` function from drizzle-orm implements SQL NOT EQUAL comparison
+- The existing `and()` condition accepts multiple conditions - simply add another to the list
+- Pre-existing TypeScript errors in app/pages/articles/[slug].vue (type inference issues with useFetch return types) and node_modules (drizzle-orm dependency issues) continue but don't affect this simple API change
+- The 'off-topic' category value is used elsewhere in the codebase (scripts/generate-newsletter.ts) confirming this is the correct filter value
+### Next Priority: US-007
+
+## Iteration 17 - 2026-01-11T15:00:00Z
+### Completed: US-007 - Display source favicon on article cards (target=_blank)
+### Implementation:
+- Modified `app/components/ArticleCard.vue`:
+  - Added `target="_blank"` to UUser component for duplicate article links (line 148)
+  - This completes the final acceptance criterion that was marked as TODO
+### Learnings:
+- Nuxt UI `UUser` component accepts NuxtLink props like `to` and `target` directly
+- The main article card already had `target="_blank"` via UBlogPost's `:target` prop (line 105)
+- Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema module, useFetch type inference) continue but don't affect new code
+- Pre-existing ESLint error (unused getLanguageFlag function) also continues but doesn't affect new code
+### Next Priority: US-009
+
+## Iteration 18 - 2026-01-11T16:00:00Z
+### Completed: US-009 - Remove article reading time estimate
+### Implementation:
+- Deleted `app/composables/useReadingTime.ts` composable file
+- Modified `app/components/ArticleCard.vue`:
+  - Removed `useReadingTime` import and `readingTime` computed property
+  - Removed reading time display block from footer slot (clock icon + localized text)
+  - Simplified footer template structure (no longer needs wrapper div for reading time + tags)
+- Modified `app/pages/articles/[slug].vue`:
+  - Removed `useReadingTime` import and `readingTime` computed property
+  - Removed reading time span from meta info section (clock icon + localized text)
+- Removed `readingTime` i18n key from all 4 locale files:
+  - fr.json: "{minutes} min de lecture"
+  - en.json: "{minutes} min read"
+  - es.json: "{minutes} min de lectura"
+  - de.json: "{minutes} Min. Lesezeit"
+### Learnings:
+- When removing a feature, trace all its usages: composable file, component imports, template displays, and i18n keys
+- The footer slot structure was simplified since the flex container for reading time + tags was no longer needed
+- Pre-existing TypeScript errors (ArticleWithDuplicates type inference, hub:db:schema module, useFetch return types) and ESLint error (unused getLanguageFlag) continue but don't affect this removal
+- No new errors were introduced by these changes (verified with grep for "readingtime" in typecheck output)
+### Next Priority: US-014
+
