@@ -52,7 +52,7 @@ export default eventHandler(async (event) => {
       sql`${schema.articles.tags} && ARRAY[${sql.join(article.tags.map((tag: string) => sql`${tag}`), sql`, `)}]::text[]`
     ),
     orderBy: [desc(schema.articles.publishedAt)],
-    limit: 5,
+    limit: 6,
     columns: {
       id: true,
       title: true,
