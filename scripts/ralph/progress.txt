@@ -5,3 +5,17 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 
 ---
 
+
+## Iteration 1 - 2026-01-11T12:00:00Z
+### Completed: US-001 - Fix related articles showing duplicates
+### Implementation:
+- Modified `server/api/articles/[slug]/related.get.ts`
+- Added query to `articleDuplicates` table to find all duplicate relationships for the current article
+- Excluded all duplicate article IDs (both canonical and duplicate) from related articles query
+- Added slug-based deduplication as a safety net filter
+### Learnings:
+- The project uses `hub:db` for database imports, which auto-resolves to local utils
+- No `typecheck` npm script - use `pnpm build` which includes type checking
+- No `lint` npm script - use `pnpm eslint <file>` directly
+- Branch `ralph/fixes-and-search` was checked out in another worktree, working on `ralph/amp` instead
+### Next Priority: US-002
