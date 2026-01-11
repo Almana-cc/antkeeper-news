@@ -66,3 +66,16 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Pre-existing TypeScript errors remain (ArticleWithDuplicates types, hub:db:schema module) but don't affect this story
 ### Next Priority: US-005
 
+## Iteration 5 - 2026-01-11T03:00:00Z
+### Completed: US-005 - Scroll to top on page change
+### Implementation:
+- Modified `app/pages/index.vue`
+- Added a watcher on the `page` ref that triggers `window.scrollTo({ top: 0, behavior: 'smooth' })`
+- The implementation works for all pagination interactions (next, prev, direct page clicks) since they all update the same `page` ref
+### Learnings:
+- `window.scrollTo` with `behavior: 'smooth'` is the simplest way to achieve smooth scrolling
+- A watcher on the page ref captures all pagination changes from UPagination component
+- The change is minimal (5 lines) and focused - no need to modify the pagination component itself
+- Pre-existing TypeScript errors continue (ArticleWithDuplicates types, hub:db:schema module) but don't affect new code
+### Next Priority: US-006
+

@@ -72,8 +72,8 @@
         "Typecheck passes"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added watcher on page ref that calls window.scrollTo with behavior:'smooth'. Works for all pagination interactions since they all update the page ref."
     },
     {
       "id": "US-006",
