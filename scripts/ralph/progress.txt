@@ -223,3 +223,28 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema module) continue but don't affect new code
 ### Next Priority: US-013
 
+## Iteration 13 - 2026-01-11T11:00:00Z
+### Completed: US-013 - Create search input component
+### Implementation:
+- Created `app/components/SearchInput.vue`:
+  - Desktop: Search icon button with smooth CSS transition to expand input (w-0 to w-64)
+  - Mobile: Full-width layout with submit and close buttons
+  - Clear button appears when text is entered
+  - Enter key submits search, Escape key closes
+  - Uses `useLocalePath` for i18n-aware navigation to /search page
+  - Blur handler with delay to prevent accidental collapse when clicking buttons
+- Modified `app/app.vue`:
+  - Integrated SearchInput component in header's right slot
+  - Wrapped existing controls in flex container with gap
+- Added i18n translations for search keys in all 4 locales:
+  - placeholder: "Search articles..." (localized)
+  - open/close/submit/clear labels for accessibility
+### Learnings:
+- Vue Transition component with tailwind classes enables smooth expand/collapse animations
+- Using `nextTick` ensures input is focused after expansion animation starts
+- `useLocalePath('/search')` generates locale-aware paths (e.g., `/en/search` for English)
+- The blur handler needs a small delay (150ms) to allow click events on buttons to register before collapsing
+- Nuxt UI components are auto-imported - no need to import UButton, UInput, etc.
+- Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema module) continue but don't affect new code
+### Next Priority: US-014
+
