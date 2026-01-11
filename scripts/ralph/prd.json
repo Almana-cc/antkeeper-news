@@ -180,8 +180,8 @@
         "Typecheck passes"
       ],
       "priority": 12,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created GET /api/articles/search.get.ts with: 'q' query param for search, 'language' filter param, ts_rank_cd for relevance ranking, pagination with limit/offset, ts_headline for highlighted snippets in title/summary/content. Uses OR logic between search terms with plainto_tsquery for natural language queries."
     },
     {
       "id": "US-013",

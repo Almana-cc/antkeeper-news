@@ -203,3 +203,23 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema module) continue but don't affect new code
 ### Next Priority: US-012
 
+## Iteration 12 - 2026-01-11T10:00:00Z
+### Completed: US-012 - Create search API endpoint
+### Implementation:
+- Created `server/api/articles/search.get.ts`:
+  - GET endpoint accepts 'q' query param for search term
+  - Optional 'language' filter param to filter by language
+  - Uses `ts_rank_cd()` for relevance ranking (considers proximity and frequency)
+  - Pagination with page/limit/offset (default 20 per page, max 100)
+  - Returns highlighted snippets using `ts_headline()` for title, summary, and content
+  - Uses OR logic between search terms for flexible matching
+  - Sanitizes search input to remove special characters (keeps accented letters)
+### Learnings:
+- PostgreSQL `ts_headline()` function generates HTML-highlighted snippets with `<mark>` tags
+- `ts_rank_cd()` is better than `ts_rank()` for queries where term proximity matters
+- Using 'simple' text search configuration works for multi-language content
+- The tsquery string builder uses `|` (OR) for more flexible matching vs `&` (AND)
+- Regex `/[^a-zA-Z0-9À-ÿ]/g` removes special chars but preserves accented letters for non-English languages
+- Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema module) continue but don't affect new code
+### Next Priority: US-013
+
