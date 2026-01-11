@@ -10,15 +10,15 @@ CREATE INDEX IF NOT EXISTS "articles_search_vector_idx" ON "articles" USING GIN 
 -- Create function to generate search vector from article fields
 -- Uses 'simple' configuration for language-agnostic search
 -- Weights: A (highest) for title, B for summary, C for content
-CREATE OR REPLACE FUNCTION articles_search_vector_update() RETURNS trigger AS $$
+CREATE OR REPLACE FUNCTION articles_search_vector_update() RETURNS trigger AS '
 BEGIN
   NEW.search_vector :=
-    setweight(to_tsvector('simple', COALESCE(NEW.title, '')), 'A') ||
-    setweight(to_tsvector('simple', COALESCE(NEW.summary, '')), 'B') ||
-    setweight(to_tsvector('simple', COALESCE(NEW.content, '')), 'C');
+    setweight(to_tsvector(''simple'', COALESCE(NEW.title, '''')), ''A'') ||
+    setweight(to_tsvector(''simple'', COALESCE(NEW.summary, '''')), ''B'') ||
+    setweight(to_tsvector(''simple'', COALESCE(NEW.content, '''')), ''C'');
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+' LANGUAGE plpgsql;
 
 -- Create trigger to auto-update search_vector on INSERT or UPDATE
 DROP TRIGGER IF EXISTS articles_search_vector_trigger ON "articles";
