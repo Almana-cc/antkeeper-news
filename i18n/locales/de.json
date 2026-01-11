@@ -7,7 +7,13 @@
     "open": "Suche öffnen",
     "close": "Suche schließen",
     "submit": "Suchen",
-    "clear": "Löschen"
+    "clear": "Löschen",
+    "title": "Suchergebnisse",
+    "resultsFor": "Ergebnisse für „{query}"",
+    "noResultsFor": "Keine Ergebnisse für „{query}"",
+    "noResultsHint": "Versuche einen anderen Suchbegriff oder erweitere deine Kriterien.",
+    "resultCount": "{count} Ergebnis",
+    "resultCount_plural": "{count} Ergebnisse"
   },
   "filters": {
     "allLanguages": "Alle Sprachen",
