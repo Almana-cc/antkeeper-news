@@ -102,8 +102,8 @@
         "Typecheck passes"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Used Google favicon service (s2/favicons?domain=..&sz=32) which is cached by browser. Added getDomainFromUrl helper to extract domain from sourceUrl. Fallback icon is i-lucide-globe. Also fixed duplicates section to use same pattern."
     },
     {
       "id": "US-008",

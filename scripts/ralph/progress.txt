@@ -83,3 +83,18 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Using `.stop.prevent` modifiers is essential since the card itself is a link (UBlogPost with :to prop)
 - Pre-existing ESLint errors (like unused getLanguageFlag) don't block story completion
 ### Next Priority: US-007
+
+## Iteration 7 - 2026-01-11T17:00:00Z
+### Completed: US-007 - Display source favicon on article cards
+### Implementation:
+- Modified `app/components/ArticleCard.vue`
+- Added `getDomainFromUrl()` function to extract hostname from sourceUrl using URL constructor
+- Added `getFaviconUrl()` function that uses Google's favicon service: `https://www.google.com/s2/favicons?domain=...&sz=32`
+- Updated author avatar to use the new favicon URL with `i-lucide-globe` as fallback icon
+- Also updated duplicates section UUser avatars to use the same pattern
+### Learnings:
+- Previous implementation used favicon.is with sourceName (site name), but Google's service requires actual domain
+- Google's favicon service (s2/favicons) is reliable and cached by browser automatically
+- Setting avatar.icon property in Nuxt UI components provides fallback when src fails to load
+- Extracting domain from URL is safer with try/catch in case of malformed URLs
+### Next Priority: US-008
