@@ -128,6 +128,11 @@ watch([language, category, featured, tags, dateRange], () => {
   page.value = 1
 })
 
+// Scroll to top when page changes (for pagination navigation)
+watch(page, () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+})
+
 // Clear all filters and localStorage
 function clearFilters() {
   language.value = 'all'
