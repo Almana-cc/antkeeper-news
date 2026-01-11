@@ -6,6 +6,15 @@ interface Props {
 const props = defineProps<Props>()
 const { t } = useI18n()
 const { getTagLabel } = useTagTranslations()
+const localePath = useLocalePath()
+
+// Navigate to index with tag filter applied
+function filterByTag(tag: string) {
+  navigateTo({
+    path: localePath('/'),
+    query: { tags: [tag] }
+  })
+}
 
 // State for expand/collapse
 const isExpanded = ref(false)
@@ -50,13 +59,33 @@ const hasDuplicates = computed(() => {
   return (props.article.duplicates?.count || 0) > 0
 })
 
-const author =  {
-    name: props.article.author || undefined,
-    description: props.article.sourceName || undefined,
-    avatar: {
-      src: 'https://favicon.is/' + props.article.sourceName
-    }
+// Extract domain from URL for favicon fetching
+function getDomainFromUrl(url: string | null): string | null {
+  if (!url) return null
+  try {
+    const parsed = new URL(url)
+    return parsed.hostname
+  } catch {
+    return null
   }
+}
+
+// Get favicon URL using Google's favicon service (reliable and cached)
+function getFaviconUrl(url: string | null): string | undefined {
+  const domain = getDomainFromUrl(url)
+  if (!domain) return undefined
+  // Google's favicon service - reliable, fast, and handles caching
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
+}
+
+const author = {
+  name: props.article.author || undefined,
+  description: props.article.sourceName || undefined,
+  avatar: {
+    src: getFaviconUrl(props.article.sourceUrl),
+    icon: 'i-lucide-globe' // Fallback icon if favicon unavailable
+  }
+}
 </script>
 
 <template>
@@ -110,11 +139,12 @@ const author =  {
                 v-for="duplicate in article.duplicates.articles"
                 :key="duplicate.id"
                 :to="duplicate.sourceUrl || undefined"
+                target="_blank"
                 :name="duplicate.author || undefined"
                 :description="duplicate.sourceName || undefined"
                 :avatar="{
-                  src: `https://favicon.is/${duplicate.sourceName}`,
-                  icon: 'i-lucide-image'
+                  src: getFaviconUrl(duplicate.sourceUrl),
+                  icon: 'i-lucide-globe'
                 }"
                 size="sm"
               />
@@ -126,17 +156,17 @@ const author =  {
 
     <!-- Tags in footer slot -->
     <template #footer>
-      <div class="flex flex-col gap-3">
-        <div v-if="article.tags && article.tags.length > 0" class="flex flex-wrap justify-end gap-2">
-          <UBadge
-            v-for="tag in article.tags"
-            :key="tag"
-            :label="getTagLabel(tag)"
-            size="sm"
-            :color="categoryColor"
-            variant="soft"
-          />
-        </div>
+      <div v-if="article.tags && article.tags.length > 0" class="flex flex-wrap justify-end gap-2">
+        <UBadge
+          v-for="tag in article.tags"
+          :key="tag"
+          :label="getTagLabel(tag)"
+          size="sm"
+          :color="categoryColor"
+          variant="soft"
+          class="cursor-pointer hover:opacity-80 transition-opacity"
+          @click.stop.prevent="filterByTag(tag)"
+        />
       </div>
     </template>
   </UBlogPost>

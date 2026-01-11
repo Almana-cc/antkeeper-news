@@ -1,156 +1,254 @@
 {
   "project": "Antkeeper News",
-  "branchName": "ralph/newsletter-articles-tags",
-  "description": "Implement newsletter automation, individual article pages, and tag internationalization",
+  "branchName": "ralph/fixes-and-search",
+  "description": "Bug fixes, small improvements, and full-text search functionality",
   "userStories": [
     {
       "id": "US-001",
-      "title": "Create GitHub Actions workflow for weekly newsletter",
-      "description": "As a maintainer, I want automated weekly newsletter generation so that newsletters are created without manual intervention.",
+      "title": "Fix related articles showing duplicates",
+      "description": "As a user, I want related articles to show unique articles so I don't see the same article multiple times.",
       "acceptanceCriteria": [
-        "Create .github/workflows/newsletter.yml",
-        "Schedule runs Friday 9 AM UTC (cron: '0 9 * * 5')",
-        "Add workflow_dispatch for manual triggering",
-        "Workflow checks out repo and sets up Node.js",
-        "Workflow runs the newsletter generation script",
-        "Workflow creates a PR with the generated newsletter",
-        "PR title format: 'Newsletter for week of [date range]'"
+        "Related articles API excludes duplicate articles from results",
+        "Only unique article slugs appear in related articles section",
+        "Duplicate detection considers articleDuplicates table relationships",
+        "Related articles excludes off-topic category articles",
+        "Typecheck passes"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added query to articleDuplicates table to find all canonical/duplicate relationships for the current article, then excludes all related IDs from the related articles query using notInArray. Added ne() filter to exclude off-topic category articles."
     },
     {
       "id": "US-002",
-      "title": "Create standalone newsletter generation script",
-      "description": "As a developer, I need a Node.js script that generates newsletters autonomously without interactive approval.",
+      "title": "Increase related articles count to 6",
+      "description": "As a user, I want to see 6 related articles instead of 5 for better content discovery.",
       "acceptanceCriteria": [
-        "Create scripts/generate-newsletter.js (or .ts)",
-        "Script fetches articles from API: GET /api/articles?dateRange=week&limit=50",
-        "Script uses AI to select top 3 most interesting articles",
-        "Script generates French content: intro, summaries, key points",
-        "Script writes newsletter to newsletters/YYYY-MM-DD.md",
-        "Script handles errors gracefully with fallback strategies",
-        "Script can run without user interaction (CI/CD compatible)"
+        "API endpoint returns up to 6 related articles",
+        "Grid layout updated to accommodate 6 articles (2x3 or 3x2)",
+        "Responsive design maintained on mobile",
+        "Typecheck passes"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Changed API limit from 5 to 6. Grid layout already used responsive classes (sm:grid-cols-2 lg:grid-cols-3) which naturally accommodates 6 articles in a 2x3 or 3x2 layout."
     },
     {
       "id": "US-003",
-      "title": "Add newsletter history and continuity checking",
-      "description": "As a reader, I want newsletters to avoid repeating stories from previous weeks.",
+      "title": "Persist filter state on language change",
+      "description": "As a user, I want my filters to persist when I change the site language so I don't lose my selections.",
       "acceptanceCriteria": [
-        "Script reads previous newsletters from ./newsletters/*.md",
-        "Script extracts covered article titles/topics",
-        "AI prompt includes 'Avoid these already covered stories: [list]'",
-        "Script suggests follow-up angles if story evolved",
-        "Newsletter references previous editions when relevant"
+        "Use VueUse useLocalStorage to persist filter state",
+        "Category, tags, and date range filters persist across language changes",
+        "Filters restore correctly after page reload",
+        "Clear filters button also clears localStorage",
+        "Typecheck passes"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Installed @vueuse/nuxt and @vueuse/core. Added useLocalStorage for language, category, tags, and dateRange filters. URL params take priority over localStorage when present. clearFilters() function resets both reactive state and localStorage values."
     },
     {
       "id": "US-004",
-      "title": "Create /articles/[slug] dynamic route",
-      "description": "As a user, I want to view individual articles on dedicated pages for better reading experience and shareability.",
+      "title": "Remove auto language detection",
+      "description": "As a developer, I want to simplify the language selection by removing auto-detection to reduce complexity.",
       "acceptanceCriteria": [
-        "Create app/pages/articles/[slug].vue",
-        "Page fetches article by slug from API",
-        "Display full article: title, image, summary, source, date",
-        "Add back button to return to article list",
-        "Handle 404 for non-existent articles",
-        "Page is server-side rendered for SEO",
+        "Remove detectBrowserLanguage from i18n configuration",
+        "Default language is French (fr)",
+        "Users must manually select their language",
+        "Language preference persists in localStorage/cookie",
         "Typecheck passes"
       ],
       "priority": 4,
       "passes": true,
-      "notes": "Created API endpoint server/api/articles/[slug].get.ts and Vue page app/pages/articles/[slug].vue. Includes category badge, meta info, featured image, summary, content, tags, and source link. Added i18n keys for backToList, readOriginal, notFound in all 4 languages. Uses useSeoMeta for SEO. Pre-existing typecheck errors unrelated to this change."
+      "notes": "Set detectBrowserLanguage: false in nuxt.config.ts i18n section. French remains default locale. Language persists via URL prefix strategy (prefix_except_default) - e.g., /en/, /es/, /de/ for non-French languages."
     },
     {
       "id": "US-005",
-      "title": "Add Schema.org structured data to article pages",
-      "description": "As an SEO, I want articles to have structured data so search engines can better index them.",
+      "title": "Scroll to top on page change",
+      "description": "As a user, I want the page to scroll to top when I navigate to a different page number.",
       "acceptanceCriteria": [
-        "Add JSON-LD script with Schema.org Article type",
-        "Include: headline, image, datePublished, author, publisher",
-        "Add OpenGraph meta tags (og:title, og:image, og:description)",
-        "Add Twitter card meta tags",
-        "Validate with Google Rich Results Test (manual verification)",
+        "Clicking pagination controls scrolls to top of page",
+        "Smooth scroll animation (not jarring jump)",
+        "Works on both next/prev and direct page number clicks",
         "Typecheck passes"
       ],
       "priority": 5,
       "passes": true,
-      "notes": "Added JSON-LD structured data via useHead() with @type Article, headline, description, image, datePublished, dateModified, author (Person/Organization), publisher. Added OpenGraph tags: og:type, og:title, og:description, og:image, og:url, og:site_name, article:published_time, article:author. Added Twitter card: summary_large_image with title, description, image."
+      "notes": "Added watcher on page ref that calls window.scrollTo with behavior:'smooth'. Works for all pagination interactions since they all update the page ref."
     },
     {
       "id": "US-006",
-      "title": "Add related articles section by tags",
-      "description": "As a user, I want to see related articles so I can discover more content on topics I'm interested in.",
+      "title": "Add click-to-filter on article tags",
+      "description": "As a user, I want to click on a tag on an article card to filter articles by that tag.",
       "acceptanceCriteria": [
-        "Create API endpoint or extend existing to fetch related articles",
-        "Related articles share at least one tag with current article",
-        "Display 3-5 related articles at bottom of article page",
-        "Exclude the current article from related list",
-        "Show article card with title, image, and date",
+        "Tags on ArticleCard are clickable",
+        "Clicking a tag navigates to index with that tag selected",
+        "Tag filter is added to URL query params",
+        "Works on both index page and article detail page",
         "Typecheck passes"
       ],
       "priority": 6,
       "passes": true,
-      "notes": "Created server/api/articles/[slug]/related.get.ts API endpoint. Updated [slug].vue to fetch and display up to 5 related articles in a responsive grid with image, title, source, and date. Added i18n key 'relatedArticles' in FR/EN/ES/DE."
+      "notes": "Added filterByTag function using navigateTo with useLocalePath for i18n support. Tags now have cursor-pointer and hover:opacity-80 styles. Uses @click.stop.prevent on ArticleCard to prevent navigating to article when clicking tag."
     },
     {
       "id": "US-007",
-      "title": "Create tag translations database table",
-      "description": "As a developer, I need a database table to store tag translations for internationalization.",
+      "title": "Display source favicon on article cards",
+      "description": "As a user, I want to see the source website's favicon on article cards for quick visual identification.",
       "acceptanceCriteria": [
-        "Create tagTranslations table in Drizzle schema",
-        "Fields: id, tagKey (unique English key), language, label",
-        "Create migration and run it",
-        "Add indexes on tagKey and language",
-        "Seed initial translations for common tags (10-20 tags)",
-        "Support FR, EN, ES, DE languages",
+        "Fetch favicon from source domain (use favicon service like Google's)",
+        "Display 16x16 or 20x20 favicon next to source name",
+        "Fallback to generic icon if favicon unavailable",
+        "Favicon cached to avoid repeated requests",
+        "Duplicate article links open in new tab (target=_blank)",
         "Typecheck passes"
       ],
       "priority": 7,
       "passes": true,
-      "notes": "Added tagTranslations table to server/db/schema.ts with id, tagKey, language, label fields. Created indexes on tagKey and language, plus unique composite index. Created migration 0004_tag_translations.sql and seed 0005_seed_tag_translations.sql with 20 common tags (topics, content types, regions, species) in FR/EN/ES/DE."
+      "notes": "Fixed favicon fetching to extract domain from sourceUrl instead of using sourceName. Uses Google's favicon service (https://www.google.com/s2/favicons?domain=...) which is reliable and handles caching. Added i-lucide-globe as fallback icon. Applied same fix to duplicate article favicons. Added target=_blank to UUser component for duplicate article links."
     },
     {
       "id": "US-008",
-      "title": "Build tag translation service",
-      "description": "As a developer, I need a service to fetch translated tag labels based on current locale.",
+      "title": "Add empty state illustrations",
+      "description": "As a user, I want to see friendly illustrations when no articles match my filters.",
       "acceptanceCriteria": [
-        "Create server/services/tag-translation.service.ts",
-        "Function: getTranslatedTags(tags: string[], locale: string)",
-        "Returns object mapping tag keys to translated labels",
-        "Falls back to English tag key if translation missing",
-        "Cache translations for performance",
-        "Add API endpoint or extend /api/articles to include translations",
+        "Create or use SVG illustration for empty states",
+        "Display when no articles match current filters",
+        "Include helpful message suggesting to adjust filters",
+        "Matches Antkeeper brand style (purple/coral colors)",
         "Typecheck passes"
       ],
       "priority": 8,
       "passes": true,
-      "notes": "Created server/services/tag-translation.service.ts with getTranslatedTags() and getAllTranslationsForLocale() functions. Implements in-memory cache with 5-minute TTL. Falls back to tag key if translation missing. Created API endpoint server/api/tags/translations.get.ts supporting ?locale=xx and optional ?tags[]=tag1 query params."
+      "notes": "Created SVG illustration (app/assets/empty-state.svg) featuring magnifying glass with question marks and stylized ant. Uses brand colors: purple (#7c3aed), coral (#f87171), teal (#45bcb4). Added emptyStateHint i18n translations for all 4 languages. Enhanced empty state section with dark mode support."
     },
     {
       "id": "US-009",
-      "title": "Update UI to show translated tag labels",
-      "description": "As a user, I want to see tags in my language for better understanding.",
+      "title": "Remove article reading time estimate",
+      "description": "As a user, I don't need reading time on article cards since they only show excerpts, not full content.",
       "acceptanceCriteria": [
-        "Update ArticleCard component to display translated tags",
-        "Update tag filter dropdown to show translated labels",
-        "Use current locale from i18n",
-        "Tags still filter by canonical English key (backend unchanged)",
-        "Graceful fallback if translation unavailable",
-        "Verify in browser that tags display correctly",
+        "Remove reading time display from ArticleCard component",
+        "Remove reading time display from article detail page",
+        "Remove useReadingTime composable",
+        "Remove readingTime i18n keys from all 4 locales",
         "Typecheck passes"
       ],
       "priority": 9,
       "passes": true,
-      "notes": "Created app/composables/useTagTranslations.ts composable that fetches translations from /api/tags/translations using current locale. Updated ArticleCard.vue, index.vue, and [slug].vue to use getTagLabel() for displaying translated tags. Tag filter dropdown now uses objects with value (canonical key) and label (translated). Falls back to tag key if translation unavailable. Pre-existing typecheck errors unrelated to this change."
+      "notes": "Removed useReadingTime composable, reading time display from ArticleCard footer and article detail page meta section, and readingTime i18n keys from all 4 locale files. Pre-existing TypeScript errors (unrelated to these changes) remain in the codebase."
+    },
+    {
+      "id": "US-010",
+      "title": "Add keyboard navigation for filters",
+      "description": "As a user, I want to use keyboard shortcuts to navigate and clear filters for better accessibility.",
+      "acceptanceCriteria": [
+        "Escape key clears all filters",
+        "Tab navigation works through all filter controls",
+        "Enter key applies filter selection",
+        "Focus states are clearly visible",
+        "Typecheck passes"
+      ],
+      "priority": 10,
+      "passes": true,
+      "notes": "Added global Escape key handler using onMounted/onUnmounted lifecycle hooks. Created hasActiveFilters() helper function for DRY code. Tab navigation, Enter key selection, and focus states are handled natively by Nuxt UI components (USelect, USelectMenu, UButton)."
+    },
+    {
+      "id": "US-011",
+      "title": "Create full-text search database indexes",
+      "description": "As a developer, I need PostgreSQL full-text search indexes for efficient article searching.",
+      "acceptanceCriteria": [
+        "Add tsvector column to articles table for search",
+        "Create GIN index on tsvector column",
+        "Index includes title, summary, and content fields",
+        "Create migration file for schema changes",
+        "Add trigger to auto-update tsvector on article insert/update",
+        "Typecheck passes"
+      ],
+      "priority": 11,
+      "passes": true,
+      "notes": "Created 0006_fulltext_search.sql migration with: search_vector tsvector column, GIN index for efficient queries, trigger function with weighted search (A=title, B=summary, C=content), and backfill query for existing articles. Added custom tsvector type to Drizzle schema since it lacks native support."
+    },
+    {
+      "id": "US-012",
+      "title": "Create search API endpoint",
+      "description": "As a developer, I need an API endpoint that searches articles using full-text search.",
+      "acceptanceCriteria": [
+        "Create GET /api/articles/search endpoint",
+        "Accept query parameter 'q' for search term",
+        "Support language filter parameter",
+        "Return ranked results by relevance",
+        "Include pagination (limit/offset)",
+        "Return highlighted snippets showing matched text",
+        "Typecheck passes"
+      ],
+      "priority": 12,
+      "passes": true,
+      "notes": "Created GET /api/articles/search.get.ts with: 'q' query param for search, 'language' filter param, ts_rank_cd for relevance ranking, pagination with limit/offset, ts_headline for highlighted snippets in title/summary/content. Uses OR logic between search terms with plainto_tsquery for natural language queries."
+    },
+    {
+      "id": "US-013",
+      "title": "Create search input component",
+      "description": "As a user, I want a search input in the header to quickly search for articles.",
+      "acceptanceCriteria": [
+        "Add search input to header/navbar",
+        "Search icon button expands to input on click",
+        "Input has clear button when text is entered",
+        "Submit on Enter key press",
+        "Mobile-friendly design (full-width on mobile)",
+        "Typecheck passes"
+      ],
+      "priority": 13,
+      "passes": true,
+      "notes": "Created SearchInput.vue component with: expandable search on desktop (smooth CSS transition), full-width mobile layout with submit/close buttons, clear button, Enter to submit, Escape to close. Added search i18n keys to all 4 locale files. Integrated into app.vue header."
+    },
+    {
+      "id": "US-014",
+      "title": "Create search results page",
+      "description": "As a user, I want to see search results on a dedicated page with filtering options.",
+      "acceptanceCriteria": [
+        "Create /search page with query in URL (?q=term)",
+        "Display search results using ArticleCard component",
+        "Show number of results found",
+        "Include language filter on search results (shared with index page via cookie)",
+        "Handle no results with helpful message",
+        "SEO meta tags for search pages",
+        "Typecheck passes"
+      ],
+      "priority": 14,
+      "passes": true,
+      "notes": "Created app/pages/search.vue with: query from URL (?q=term), ArticleCard grid display, result count with localized singular/plural, language filter dropdown using shared cookie, empty state with illustration and helpful hint, SEO meta tags (title, description, og tags) with noindex to prevent search results from being indexed. Added i18n translations for search page (title, resultsFor, noResultsFor, noResultsHint, resultCount) in all 4 locales. Updated both index and search pages to use useCookie instead of useLocalStorage for SSR support and consistent language filter sharing."
+    },
+    {
+      "id": "US-015",
+      "title": "Add search autocomplete suggestions",
+      "description": "As a user, I want to see search suggestions as I type for faster searching.",
+      "acceptanceCriteria": [
+        "Show dropdown with suggestions as user types",
+        "Suggestions based on popular tags and recent searches",
+        "Limit to 5-8 suggestions",
+        "Keyboard navigation through suggestions (arrow keys)",
+        "Debounce input to avoid excessive API calls",
+        "Typecheck passes"
+      ],
+      "priority": 15,
+      "passes": true,
+      "notes": "Created /api/articles/suggestions endpoint returning popular tags (with article counts) and matching article titles. Enhanced SearchInput.vue with autocomplete dropdown, 300ms debounce, keyboard navigation (ArrowUp/Down/Enter/Escape). Tag suggestions show usage count, article suggestions link directly to articles. Added i18n 'search.article' key in all locales."
+    },
+    {
+      "id": "US-016",
+      "title": "Add search analytics tracking",
+      "description": "As a maintainer, I want to track search queries to understand what users are looking for.",
+      "acceptanceCriteria": [
+        "Create searchQueries table to store search terms",
+        "Track query, timestamp, results count, and locale",
+        "API endpoint to record searches (fire-and-forget)",
+        "Do not store personal identifiable information",
+        "Add index on query field for analytics queries",
+        "Typecheck passes"
+      ],
+      "priority": 16,
+      "passes": "cancelled",
+      "notes": "CANCELLED: Feature deemed unnecessary for current scope."
     }
   ]
 }

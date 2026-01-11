@@ -19,8 +19,12 @@
 - ✅ OpenRouter integration with free tier models (rate-limited, exponential backoff)
 - ✅ Smart duplicate detection with AI embeddings (backend + UI with expandable duplicate sections)
 - ✅ Weekly newsletter generator (autonomous Claude Code agent, French content)
-- ⚠️ Tags are in English only (need internationalization)
-- ⚠️ No individual article pages yet
+- ✅ Tag internationalization with translation system
+- ✅ Individual article pages with SEO optimization
+- ✅ Full-text search with autocomplete suggestions
+- ✅ Click-to-filter on article tags
+- ✅ Source favicon display on article cards
+- ✅ Empty state illustrations
 
 ---
 
@@ -180,44 +184,47 @@ de.antkeeper.com     → German
 
 ---
 
-#### 2.1.1 Tag Internationalization ⭐⭐ [TODO - FUTURE]
+#### 2.1.1 Tag Internationalization ✅ [COMPLETED]
 **Why:** Tags are currently English-only, limiting UX for non-English users
 **Effort:** Medium-High
-**Challenges:**
-- AI generates tags in English (e.g., "ant care", "north america")
-- Users viewing French site see English tags
-- Tag filtering works but labels aren't localized
 
-**Potential Solutions:**
+**Completed Implementation:**
 
-**Option A: AI Multi-Language Tag Generation**
-- Modify prompts to generate tags in article's language
-- FR article → tags in French ("soins des fourmis", "amérique du nord")
-- EN article → tags in English
-- **Pros:** Native language tags per article
-- **Cons:** Inconsistent tag keys across languages, filtering complexity
+✅ **Tag Translation Database Schema**
+- ✅ Created `tagTranslations` table with fields: id, tagKey, language, label
+- ✅ Added indexes on tagKey and language for performance
+- ✅ Created unique composite index to prevent duplicate translations
+- ✅ Created migration 0004_tag_translations.sql
+- ✅ Seeded 20 common tags in FR/EN/ES/DE (topics, content types, regions, species)
 
-**Option B: Tag Translation Layer**
-- Generate canonical English tags (as now)
-- Create translation mapping table: `tag_translations (tag_key, language, label)`
-- Display translated labels in UI based on site language
-- Example: `"ant-care"` → FR: "Soins des fourmis", EN: "Ant care"
-- **Pros:** Consistent filtering, translatable UI
-- **Cons:** Need to maintain translations, initial effort
+✅ **Tag Translation Service**
+- ✅ Created `server/services/tag-translation.service.ts`
+- ✅ Implemented `getTranslatedTags()` and `getAllTranslationsForLocale()` functions
+- ✅ In-memory cache with 5-minute TTL for performance
+- ✅ Falls back to canonical English tag key if translation missing
+- ✅ Created API endpoint `/api/tags/translations` supporting locale and optional tag filtering
 
-**Option C: Hybrid - Canonical + Auto-Translate**
-- Keep English canonical tags for filtering
-- Use AI to translate tag labels on-demand
-- Cache translations in database
-- **Pros:** Best UX, scalable
-- **Cons:** API cost for translations
+✅ **Frontend Integration**
+- ✅ Created `app/composables/useTagTranslations.ts` composable
+- ✅ Updated ArticleCard.vue, index.vue, and [slug].vue to use `getTagLabel()`
+- ✅ Tag filter dropdown shows translated labels while filtering by canonical English key
+- ✅ Uses current i18n locale automatically
+- ✅ Graceful fallback if translation unavailable
 
-**Recommendation:** **Option B** - Most maintainable and scalable
-- Build tag translation system similar to category translations
-- Start with common tags, auto-add new ones
-- Allows manual curation of tag labels
+**Implementation Approach:** Option B (Tag Translation Layer)
+- Canonical English tags for backend consistency
+- Translation mapping table for multi-language UI
+- Best balance of maintainability and UX
 
-**Impact:** Better UX for non-English users, professional multi-language experience
+**Files Created:**
+- `server/db/schema.ts` - tagTranslations table definition
+- `server/migrations/0004_tag_translations.sql` - Schema migration
+- `server/migrations/0005_seed_tag_translations.sql` - Seed data for 20 tags
+- `server/services/tag-translation.service.ts` - Translation service with caching
+- `server/api/tags/translations.get.ts` - API endpoint
+- `app/composables/useTagTranslations.ts` - Frontend composable
+
+**Impact:** ✅ Better UX for non-English users, professional multi-language experience, consistent filtering across languages
 
 ---
 
@@ -357,63 +364,43 @@ article_duplicates {
 
 ---
 
-#### 2.5 Newsletter Automation & Continuity ⭐⭐⭐ [HIGH PRIORITY - TODO]
+#### 2.5 Newsletter Automation & Continuity ✅ [COMPLETED]
 **Why:** Enable fully automated weekly newsletter generation with human review via PR
 **Effort:** Medium
-**Current Problem:**
-- Agent requires interactive Write approval (blocks CI/CD)
-- No awareness of previous newsletters (repeats stories)
-- Manual invocation every week
 
-**Proposed Solution:**
+**Completed Implementation:**
 
-**Part A: GitHub Actions Workflow**
-```yaml
-name: Generate Weekly Newsletter
-on:
-  schedule:
-    - cron: '0 9 * * 5'  # Friday 9 AM UTC
-  workflow_dispatch:      # Manual trigger option
+✅ **GitHub Actions Workflow**
+- ✅ Created `.github/workflows/newsletter.yml` workflow
+- ✅ Scheduled runs Friday 9 AM UTC (cron: '0 9 * * 5')
+- ✅ Added workflow_dispatch for manual triggering
+- ✅ Workflow checks out repo, sets up Node.js, installs dependencies
+- ✅ Runs newsletter generation script
+- ✅ Creates PR with generated newsletter
+- ✅ PR title format: "Newsletter for week of [date range]"
 
-jobs:
-  generate-newsletter:
-    runs-on: ubuntu-latest
-    steps:
-      - Checkout repo
-      - Setup Node.js
-      - Install dependencies
-      - Run newsletter generation script
-      - Create PR with generated newsletter
-```
+✅ **Newsletter Generation Script**
+- ✅ Created standalone `scripts/generate-newsletter.js` (Node.js)
+- ✅ Fetches articles from API: `GET /api/articles?dateRange=week&limit=50`
+- ✅ Uses AI to select top 3 most interesting articles
+- ✅ Generates French content: intro, summaries, key points
+- ✅ Writes newsletter to `newsletters/YYYY-MM-DD.md`
+- ✅ Handles errors gracefully with fallback strategies
+- ✅ CI/CD compatible (no user interaction required)
 
-**Part B: Newsletter Generation Script**
-- Standalone Node.js script (not interactive agent)
-- Uses same logic as newsletter-generator agent
-- Calls API: `GET /api/articles?dateRange=week&limit=50`
-- Reads `./newsletters/*.md` to check previous editions
-- AI selection with continuity awareness:
-  - Excludes stories already covered
-  - Suggests follow-ups if relevant
-  - References previous newsletters when appropriate
-- Writes newsletter file directly (no approval needed)
-- Commits and pushes to branch
-- Creates PR via GitHub API (`gh pr create`)
+✅ **Newsletter History & Continuity**
+- ✅ Script reads previous newsletters from `./newsletters/*.md`
+- ✅ Extracts covered article titles/topics from previous weeks
+- ✅ AI prompt includes "Avoid these already covered stories: [list]"
+- ✅ Suggests follow-up angles when stories evolve
+- ✅ References previous editions when relevant
 
-**Part C: Newsletter History Integration**
-- Before selecting articles, scan `./newsletters/` directory
-- Extract covered article titles/topics from previous weeks
-- Pass to AI prompt: "Avoid these already covered stories: [list]"
-- Optionally: "Consider follow-up angle if story evolved: [list]"
-- Maintains editorial coherence across weeks
+**Files Created:**
+- `.github/workflows/newsletter.yml` - Weekly scheduled workflow
+- `scripts/generate-newsletter.js` - Autonomous newsletter generation script
+- `scripts/ralph/` - Supporting scripts for story processing
 
-**Implementation Steps:**
-1. Create `.github/workflows/newsletter.yml` workflow
-2. Create `scripts/generate-newsletter.js` (autonomous version)
-3. Update newsletter prompt to accept "previous topics" list
-4. Add continuity checking logic
-5. Test manual trigger before enabling cron schedule
-
-**Benefits:**
+**Benefits Achieved:**
 - ✅ Fully automated weekly execution
 - ✅ Human review via PR (approval gate)
 - ✅ Editorial continuity across editions
@@ -421,14 +408,7 @@ jobs:
 - ✅ Git history of all newsletters
 - ✅ Can review diff before publishing
 
-**Technical Notes:**
-- Script needs GitHub token for PR creation (use `secrets.GITHUB_TOKEN`)
-- Newsletter file: `newsletters/$(date +%Y-%m-%d).md`
-- PR title: "Newsletter for week of [date range]"
-- Auto-assign reviewer(s) for approval
-- Could add preview comment with rendered markdown
-
-**Impact:** Reduces manual work, ensures consistency, maintains human oversight
+**Impact:** ✅ Reduced manual work, ensures consistency, maintains human oversight via PR review process
 
 ---
 
@@ -470,19 +450,58 @@ jobs:
 
 ### 🎨 **Phase 4: Website Polish (1-2 weeks)**
 
-#### 4.1 Individual Article Pages ⭐⭐ [SEO PRIORITY]
+#### 4.1 Individual Article Pages ✅ [COMPLETED]
 **Why:** Critical for SEO, low priority for UX (mobile is primary)
 **Effort:** Low-Medium
-**Features:**
-- `/articles/[slug]` page
-- Full article display
-- Related articles (by tags)
-- Share buttons
-- Structured data (Schema.org Article)
-- OpenGraph/Twitter cards
-- View count tracking
 
-**Impact:** Major SEO improvement, shareable links
+**Completed Features:**
+
+✅ **Dynamic Route & API**
+- ✅ Created `app/pages/articles/[slug].vue` page
+- ✅ Created `server/api/articles/[slug].get.ts` API endpoint
+- ✅ Page fetches article by slug from API
+- ✅ Server-side rendered for SEO
+- ✅ Handles 404 for non-existent articles
+
+✅ **Article Display**
+- ✅ Full article display: title, image, summary, content
+- ✅ Category badge with color coding
+- ✅ Meta info: source, date, language
+- ✅ Featured image display
+- ✅ Tags with translations
+- ✅ Source link with "Read Original" button
+- ✅ Back button to return to article list
+
+✅ **SEO & Structured Data**
+- ✅ Schema.org JSON-LD with Article type
+- ✅ Includes: headline, description, image, datePublished, dateModified, author, publisher
+- ✅ OpenGraph meta tags: og:type, og:title, og:description, og:image, og:url, og:site_name, article:published_time, article:author
+- ✅ Twitter card: summary_large_image with title, description, image
+- ✅ useSeoMeta() for complete SEO coverage
+
+✅ **Related Articles Section**
+- ✅ Created `server/api/articles/[slug]/related.get.ts` API endpoint
+- ✅ Displays up to 5 related articles by shared tags
+- ✅ Excludes current article from related list
+- ✅ Responsive grid with image, title, source, and date
+- ✅ Article cards are clickable and navigate to article pages
+
+**Files Created:**
+- `app/pages/articles/[slug].vue` - Article detail page
+- `server/api/articles/[slug].get.ts` - Single article API
+- `server/api/articles/[slug]/related.get.ts` - Related articles API
+
+**i18n Keys Added:**
+- backToList, readOriginal, notFound (FR/EN/ES/DE)
+- relatedArticles (FR/EN/ES/DE)
+
+**Additional Enhancements (from ralph/fixes-and-search branch):**
+- ✅ Related articles now excludes duplicates and off-topic articles
+- ✅ Related articles count increased from 5 to 6
+- ✅ Empty state illustration for no articles
+- ✅ Keyboard navigation (Escape to clear filters)
+
+**Impact:** ✅ Major SEO improvement, shareable links, better content discovery through related articles
 
 ---
 
@@ -496,32 +515,98 @@ jobs:
 - ✅ Tags update based on language/category filters
 - ✅ URL persistence (tags stored as array in query params)
 - ✅ Responsive design with proper wrapping
+- ✅ Click tag on article card → filter by that tag
 
 **Future Enhancements:**
 - ⏳ Tag cloud visualization
-- ⏳ Click tag on article card → filter by that tag
 - ⏳ `/tag/[tag]` SEO pages
 - ⏳ Show article counts per tag
-- ⏳ Tag internationalization (see 2.1.1)
 
 **Impact:** ✅ Significantly improved content discovery and navigation
 
 ---
 
-#### 4.3 Source Attribution & Filtering ⭐ [NICE TO HAVE]
-**Why:** Transparency, user preference
-**Effort:** Low
-**Features:**
-- Display source favicon/logo on cards
-- Filter by source
-- `/source/[source]` pages
-- Source reliability indicators
+#### 4.3 Full-Text Search ✅ [COMPLETED]
+**Why:** Allow users to search across all articles
+**Effort:** Medium-High
 
-**Impact:** User trust, flexibility
+**Completed Implementation:**
+
+✅ **Database Indexes (US-011)**
+- ✅ Created search_vector tsvector column on articles table
+- ✅ Created GIN index for efficient full-text queries
+- ✅ Added trigger function with weighted search (A=title, B=summary, C=content)
+- ✅ Backfill query for existing articles
+- ✅ Created migration 0006_fulltext_search.sql
+- ✅ Added custom tsvector type to Drizzle schema
+
+✅ **Search API Endpoint (US-012)**
+- ✅ Created GET /api/articles/search endpoint
+- ✅ Accept query parameter 'q' for search term
+- ✅ Support language filter parameter
+- ✅ Return ranked results by relevance using ts_rank_cd
+- ✅ Include pagination (limit/offset)
+- ✅ Return highlighted snippets using ts_headline
+- ✅ Uses OR logic between search terms with plainto_tsquery
+
+✅ **Search Input Component (US-013)**
+- ✅ Added search input to header/navbar
+- ✅ Search icon button expands to input on click (desktop)
+- ✅ Full-width mobile layout with submit/close buttons
+- ✅ Input has clear button when text is entered
+- ✅ Submit on Enter key press, Escape to close
+- ✅ Smooth CSS transitions
+- ✅ Added search i18n keys to all 4 locale files
+
+✅ **Search Results Page (US-014)**
+- ✅ Created /search page with query in URL (?q=term)
+- ✅ Display search results using ArticleCard component
+- ✅ Show number of results found with localized singular/plural
+- ✅ Language filter dropdown using shared cookie (SSR compatible)
+- ✅ Handle no results with empty state illustration and helpful hint
+- ✅ SEO meta tags (title, description, og tags) with noindex
+- ✅ Added i18n translations for search page in all 4 locales
+
+✅ **Search Autocomplete Suggestions (US-015)**
+- ✅ Created /api/articles/suggestions endpoint
+- ✅ Returns popular tags (with article counts) and matching article titles
+- ✅ Show dropdown with suggestions as user types
+- ✅ 300ms debounce to avoid excessive API calls
+- ✅ Keyboard navigation (ArrowUp/Down/Enter/Escape)
+- ✅ Tag suggestions show usage count
+- ✅ Article suggestions link directly to articles
+- ✅ Added i18n 'search.article' key in all locales
+
+**Files Created:**
+- `server/migrations/0006_fulltext_search.sql` - Schema migration with tsvector, index, and trigger
+- `server/api/articles/search.get.ts` - Search API endpoint
+- `server/api/articles/suggestions.get.ts` - Autocomplete suggestions endpoint
+- `app/components/SearchInput.vue` - Search input with autocomplete
+- `app/pages/search.vue` - Search results page
+
+**Impact:** ✅ Major UX improvement - users can now search across all articles with autocomplete suggestions
 
 ---
 
-#### 4.4 Date Range Filtering ✅ [COMPLETED]
+#### 4.4 Source Attribution & Filtering ⭐ [PARTIALLY COMPLETED]
+**Why:** Transparency, user preference
+**Effort:** Low
+
+**Completed Features:**
+- ✅ Display source favicon on cards (uses Google's favicon service)
+- ✅ Fallback to generic icon if favicon unavailable
+- ✅ Duplicate article links open in new tab
+
+**Future Enhancements:**
+- ⏳ Filter by source
+- ⏳ `/source/[source]` pages
+- ⏳ Source reliability indicators
+
+**Impact:** ✅ User trust improved with visual source identification
+
+---
+
+#### 4.5 Date Range Filtering ✅ [COMPLETED]
 **Why:** Find historical content
 **Effort:** Low
 **Completed Features:**
@@ -544,7 +629,7 @@ jobs:
 
 ---
 
-#### 4.5 Design System - Match Antkeeper Website ✅ [COMPLETED]
+#### 4.6 Design System - Match Antkeeper Website ✅ [COMPLETED]
 **Why:** News section should feel like part of the Antkeeper ecosystem
 **Effort:** Medium
 **Reference:** https://www.antkeeper.app/fr
@@ -628,6 +713,32 @@ ui: {
 
 ---
 
+## 🐛 Bugs & Fixes ✅ [ALL COMPLETED]
+
+### Completed Fixes
+
+#### Fix 1: Related Articles Showing Duplicates ✅
+**Issue:** `/articles/[slug]` page showing duplicate articles in related articles section
+**Solution:** Added query to articleDuplicates table to find all canonical/duplicate relationships for the current article, then excludes all related IDs from the related articles query using notInArray. Added ne() filter to exclude off-topic category articles.
+
+#### Fix 2: Related Articles Count ✅
+**Issue:** Currently showing 5 related articles, should show 6
+**Solution:** Changed API limit from 5 to 6. Grid layout already used responsive classes (sm:grid-cols-2 lg:grid-cols-3) which naturally accommodates 6 articles.
+
+#### Fix 3: Filter State Collapsing on Language Change ✅
+**Issue:** On index page, filters collapse/reset when user changes language
+**Solution:** Installed @vueuse/nuxt and @vueuse/core. Added useLocalStorage for language, category, tags, and dateRange filters. URL params take priority over localStorage when present. clearFilters() function resets both reactive state and localStorage values. Updated to useCookie for SSR support and consistent sharing between index and search pages.
+
+#### Fix 4: Remove Auto Language Selection ✅
+**Issue:** Auto language detection causing complexity with filter state
+**Solution:** Set detectBrowserLanguage: false in nuxt.config.ts i18n section. French remains default locale. Language persists via URL prefix strategy.
+
+#### Fix 5: Scroll to Top on Page Change ✅
+**Issue:** When changing pages (pagination), page doesn't scroll to top
+**Solution:** Added watcher on page ref that calls window.scrollTo with behavior:'smooth'. Works for all pagination interactions.
+
+---
+
 ## Technical Debt & Maintenance
 
 ### Database Optimization
@@ -658,23 +769,26 @@ ui: {
 5. ✅ **Multi-language Site (i18n)** - FR, EN, ES, DE support
 6. ✅ **Design System Customization** - Antkeeper brand design implemented
 
-### 🚀 **Next Sprint (High Impact)**
+### 🚀 **Next Sprint (High Impact)** ✅ ALL COMPLETED
 1. ✅ ~~**AI Tag Generation**~~ - COMPLETED
 2. ✅ ~~**Smart Duplicate Detection**~~ - COMPLETED (backend + UI)
 3. ✅ ~~**Newsletter Generator**~~ - COMPLETED
-4. **Newsletter Automation & Continuity** - Automate weekly generation via GitHub Actions with PR review
-5. **Article Pages** - SEO critical for discoverability
-6. **Tag Internationalization** - Better UX for non-English users
+4. ✅ ~~**Newsletter Automation & Continuity**~~ - COMPLETED (GitHub Actions workflow with PR review)
+5. ✅ ~~**Article Pages**~~ - COMPLETED (SEO optimized with structured data)
+6. ✅ ~~**Tag Internationalization**~~ - COMPLETED (translation system with 20 seeded tags)
+7. ✅ ~~**Full-Text Search**~~ - COMPLETED (search input, results page, autocomplete suggestions)
+8. ✅ ~~**Bug Fixes**~~ - COMPLETED (duplicates, filter persistence, scroll, favicons, empty states)
 
 ### 📱 **Following Sprint (Mobile Focus)**
-4. **Mobile API Enhancements** - Primary use case
-5. **AI Content Summarization** - Better mobile app experience
+1. **Mobile API Enhancements** - Primary use case
+2. **AI Content Summarization** - Better mobile app experience
 
 ### 🎨 **Polish Phase (Lower Priority)**
-6. ✅ Tag filtering UI - COMPLETED
-7. Source filtering
-8. ✅ Date range filtering - COMPLETED
-9. Content moderation tools
+1. ✅ Tag filtering UI - COMPLETED
+2. ✅ Source favicons - COMPLETED
+3. ⏳ Source filtering
+4. ✅ Date range filtering - COMPLETED
+5. ⏳ Content moderation tools
 
 ---
 
@@ -719,13 +833,14 @@ ui: {
 - Articles become educational resources
 **Effort:** High, requires species database
 
-### 6. **Search Functionality**
-**Idea:** Full-text search across articles
-- PostgreSQL full-text search
-- Search by species, topic, keyword
-- Autocomplete suggestions
-**Effort:** Medium
-**Impact:** User experience
+### 6. **Search Functionality** ✅ [IMPLEMENTED]
+**Implemented:** Full-text search across articles
+- ✅ PostgreSQL full-text search with GIN index
+- ✅ Search by any keyword (title, summary, content)
+- ✅ Autocomplete suggestions (tags + article titles)
+- ✅ Search results page with language filter
+- ✅ Highlighted snippets showing matched text
+**Impact:** ✅ Major UX improvement for content discovery
 
 ### 7. **Article Quality Scoring**
 **Idea:** Rank articles by quality/relevance

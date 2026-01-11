@@ -4,18 +4,38 @@ const router = useRouter()
 const { t, locale } = useI18n()
 const { getTagLabel } = useTagTranslations()
 
-// Filters from URL query params
+// Persistent filter storage (cookies work on SSR, no hydration flash)
+const storedLanguage = useCookie<string>('antkeeper-filter-language', { default: () => 'all', maxAge: 60 * 60 * 24 * 365 })
+const storedCategory = useCookie<string>('antkeeper-filter-category', { default: () => 'all', maxAge: 60 * 60 * 24 * 365 })
+const storedTags = useCookie<string[]>('antkeeper-filter-tags', { default: () => [], maxAge: 60 * 60 * 24 * 365 })
+const storedDateRange = useCookie<string>('antkeeper-filter-dateRange', { default: () => 'all', maxAge: 60 * 60 * 24 * 365 })
+
+// Get initial value: URL params take priority over cookies
+function getInitialValue<T>(queryValue: string | string[] | undefined, storedValue: T, defaultValue: T): T {
+  if (queryValue !== undefined) {
+    return queryValue as unknown as T
+  }
+  return storedValue ?? defaultValue
+}
+
+// Filters from URL query params (with cookie fallback)
 const page = ref(Number(route.query.page) || 1)
-// Default to 'all' if not specified in query
-const language = ref<string>((route.query.language as string) || 'all')
-const category = ref<string>((route.query.category as string) || 'all')
+// Default to 'all' if not specified in query or cookie
+const language = ref<string>(getInitialValue(route.query.language as string | undefined, storedLanguage.value, 'all'))
+const category = ref<string>(getInitialValue(route.query.category as string | undefined, storedCategory.value, 'all'))
 const featured = ref<boolean | undefined>(route.query.featured === 'true' ? true : undefined)
 const tags = ref<string[]>(
-  route.query.tags ?
-    (Array.isArray(route.query.tags) ? route.query.tags : [route.query.tags])
-    : []
+  route.query.tags
+    ? (Array.isArray(route.query.tags) ? route.query.tags.filter((t): t is string => t !== null) : [route.query.tags as string])
+    : (storedTags.value.length > 0 ? storedTags.value : [])
 )
-const dateRange = ref<string>((route.query.dateRange as string) || 'all')
+const dateRange = ref<string>(getInitialValue(route.query.dateRange as string | undefined, storedDateRange.value, 'all'))
+
+// Sync filter changes to localStorage
+watch(language, (val) => { storedLanguage.value = val })
+watch(category, (val) => { storedCategory.value = val })
+watch(tags, (val) => { storedTags.value = val }, { deep: true })
+watch(dateRange, (val) => { storedDateRange.value = val })
 
 // Fetch available tags for filter
 const { data: tagsData } = await useFetch('/api/tags', {
@@ -107,6 +127,45 @@ const dateRangeOptions = computed(() => [
 watch([language, category, featured, tags, dateRange], () => {
   page.value = 1
 })
+
+// Scroll to top when page changes (for pagination navigation)
+watch(page, () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+})
+
+// Clear all filters and cookies
+function clearFilters() {
+  language.value = 'all'
+  category.value = 'all'
+  featured.value = undefined
+  tags.value = []
+  dateRange.value = 'all'
+  // Clear cookies - watchers will sync these values
+  storedLanguage.value = 'all'
+  storedCategory.value = 'all'
+  storedTags.value = []
+  storedDateRange.value = 'all'
+}
+
+// Helper to check if any filters are active
+function hasActiveFilters() {
+  return language.value !== 'all' || category.value !== 'all' || featured.value || tags.value.length > 0 || dateRange.value !== 'all'
+}
+
+// Keyboard navigation: Escape key clears all filters
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape' && hasActiveFilters()) {
+    clearFilters()
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>
@@ -147,10 +206,10 @@ watch([language, category, featured, tags, dateRange], () => {
         />
 
         <UButton
-          v-if="language !== 'all' || category !== 'all' || featured || tags.length > 0 || dateRange !== 'all'"
+          v-if="hasActiveFilters()"
           color="neutral"
           variant="link"
-          @click="() => { language = 'all'; category = 'all'; featured = undefined; tags = []; dateRange = 'all' }"
+          @click="clearFilters"
         >
           {{ t('filters.clearFilters') }}
         </UButton>
@@ -181,14 +240,23 @@ watch([language, category, featured, tags, dateRange], () => {
       </div>
 
       <!-- Empty state -->
-      <div v-else class="text-center py-12">
-        <p class="text-muted">{{ t('articles.noArticlesFound') }}</p>
+      <div v-else class="text-center py-16">
+        <img
+          src="~/assets/empty-state.svg"
+          alt=""
+          class="w-48 h-auto mx-auto mb-6 opacity-80"
+        >
+        <h3 class="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">
+          {{ t('articles.noArticlesFound') }}
+        </h3>
+        <p class="text-gray-500 dark:text-gray-400 mb-6 max-w-md mx-auto">
+          {{ t('articles.emptyStateHint') }}
+        </p>
         <UButton
-          v-if="language !== 'all' || category !== 'all' || featured || tags.length > 0 || dateRange !== 'all'"
-          color="secondary"
-          variant="ghost"
-          class="mt-4"
-          @click="() => { language = 'all'; category = 'all'; featured = undefined; tags = []; dateRange = 'all' }"
+          v-if="hasActiveFilters()"
+          color="primary"
+          variant="soft"
+          @click="clearFilters"
         >
           {{ t('filters.clearFilters') }}
         </UButton>
