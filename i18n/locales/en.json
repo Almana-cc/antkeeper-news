@@ -38,6 +38,7 @@
     "articleCount_plural": "{count} articles",
     "showLess": "Show less",
     "showMore": "More...",
+    "readingTime": "{minutes} min read",
     "backToList": "Back to articles",
     "readOriginal": "Read original article",
     "relatedArticles": "Related articles",

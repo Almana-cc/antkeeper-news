@@ -6,6 +6,7 @@ interface Props {
 const props = defineProps<Props>()
 const { t } = useI18n()
 const { getTagLabel } = useTagTranslations()
+const { formatReadingTime } = useReadingTime()
 const router = useRouter()
 
 const handleTagClick = (tag: string) => {
@@ -80,6 +81,11 @@ const author = {
     icon: 'i-lucide-globe'
   }
 }
+
+const readingTime = computed(() => {
+  const text = props.article.content || props.article.summary || ''
+  return formatReadingTime(text)
+})
 </script>
 
 <template>
@@ -150,6 +156,12 @@ const author = {
     <!-- Tags in footer slot -->
     <template #footer>
       <div class="flex flex-col gap-3">
+        <div class="flex items-center justify-between text-sm text-muted">
+          <span class="flex items-center gap-1">
+            <UIcon name="i-lucide-clock" class="w-4 h-4" />
+            {{ readingTime }}
+          </span>
+        </div>
         <div v-if="article.tags && article.tags.length > 0" class="flex flex-wrap justify-end gap-2">
           <UBadge
             v-for="tag in article.tags"
