@@ -55,7 +55,6 @@
     "backToList": "Back to articles",
     "readOriginal": "Read original article",
     "relatedArticles": "Related articles",
-    "readingTime": "{minutes} min read",
     "duplicates": {
       "alsoCoveredBy": "Also covered by {count} other source | Also covered by {count} other sources",
       "unknownSource": "Unknown Source"
