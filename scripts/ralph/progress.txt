@@ -127,3 +127,20 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - UIcon component works well for inline icons with text
 - Content field is preferred for reading time, falling back to summary
 ### Next Priority: US-010
+
+## Iteration 10 - 2026-01-11T20:00:00Z
+### Completed: US-010 - Add keyboard navigation for filters
+### Implementation:
+- Modified `app/pages/index.vue`:
+  - Added import for `onKeyStroke` from `@vueuse/core`
+  - Added Escape key handler that clears all filters when active
+  - Added ARIA `role="search"` and `aria-label` to filters container
+  - Added `:ui="{ base: 'focus:ring-2 focus:ring-primary-500 focus:ring-offset-2' }"` to all filter components
+- Tab navigation works natively with Nuxt UI components
+- Enter key applies selection natively in USelect/USelectMenu
+### Learnings:
+- VueUse's `onKeyStroke` is auto-imported when `@vueuse/nuxt` is in modules
+- Nuxt UI components already have focus state styling built-in, but `:ui` prop can enhance it
+- Tab, Enter, and arrow key navigation are handled by Nuxt UI components out of the box
+- Adding ARIA attributes improves accessibility for screen readers
+### Next Priority: US-011
