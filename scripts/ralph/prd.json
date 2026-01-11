@@ -163,8 +163,8 @@
         "Typecheck passes"
       ],
       "priority": 11,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created 0006_fulltext_search.sql migration with: search_vector tsvector column, GIN index for efficient queries, trigger function with weighted search (A=title, B=summary, C=content), and backfill query for existing articles. Added custom tsvector type to Drizzle schema since it lacks native support."
     },
     {
       "id": "US-012",

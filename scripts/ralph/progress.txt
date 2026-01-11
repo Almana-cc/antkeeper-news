@@ -182,3 +182,24 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema) and ESLint errors (any type in query object) continue but don't affect new code
 ### Next Priority: US-011
 
+## Iteration 11 - 2026-01-11T09:00:00Z
+### Completed: US-011 - Create full-text search database indexes
+### Implementation:
+- Created `server/db/migrations/postgresql/0006_fulltext_search.sql`:
+  - Added `search_vector` tsvector column to articles table
+  - Created GIN index (`articles_search_vector_idx`) for efficient full-text search
+  - Created `articles_search_vector_update()` function with weighted search vectors
+  - Created trigger to auto-update search_vector on INSERT or UPDATE of title/summary/content
+  - Included backfill query to populate search vectors for existing articles
+- Modified `server/db/schema.ts`:
+  - Added custom `tsvector` type using Drizzle's `customType` (since Drizzle lacks native support)
+  - Added `searchVector` column to articles table definition
+### Learnings:
+- Drizzle ORM doesn't have native tsvector support - must use `customType` from `drizzle-orm/pg-core`
+- PostgreSQL's `setweight()` function allows ranking: A (highest) for title, B for summary, C (lowest) for content
+- Using 'simple' text search configuration for language-agnostic search (articles are in multiple languages)
+- The trigger only fires on `UPDATE OF title, summary, content` to avoid unnecessary updates
+- Manual SQL migrations work alongside Drizzle-generated migrations (0004, 0005 were also manual)
+- Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema module) continue but don't affect new code
+### Next Priority: US-012
+
