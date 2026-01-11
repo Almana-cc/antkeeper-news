@@ -59,13 +59,33 @@ const hasDuplicates = computed(() => {
   return (props.article.duplicates?.count || 0) > 0
 })
 
-const author =  {
-    name: props.article.author || undefined,
-    description: props.article.sourceName || undefined,
-    avatar: {
-      src: 'https://favicon.is/' + props.article.sourceName
-    }
+// Extract domain from URL for favicon fetching
+function getDomainFromUrl(url: string | null): string | null {
+  if (!url) return null
+  try {
+    const parsed = new URL(url)
+    return parsed.hostname
+  } catch {
+    return null
   }
+}
+
+// Get favicon URL using Google's favicon service (reliable and cached)
+function getFaviconUrl(url: string | null): string | undefined {
+  const domain = getDomainFromUrl(url)
+  if (!domain) return undefined
+  // Google's favicon service - reliable, fast, and handles caching
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
+}
+
+const author = {
+  name: props.article.author || undefined,
+  description: props.article.sourceName || undefined,
+  avatar: {
+    src: getFaviconUrl(props.article.sourceUrl),
+    icon: 'i-lucide-globe' // Fallback icon if favicon unavailable
+  }
+}
 </script>
 
 <template>
@@ -122,8 +142,8 @@ const author =  {
                 :name="duplicate.author || undefined"
                 :description="duplicate.sourceName || undefined"
                 :avatar="{
-                  src: `https://favicon.is/${duplicate.sourceName}`,
-                  icon: 'i-lucide-image'
+                  src: getFaviconUrl(duplicate.sourceUrl),
+                  icon: 'i-lucide-globe'
                 }"
                 size="sm"
               />
