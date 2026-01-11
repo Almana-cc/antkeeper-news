@@ -146,6 +146,26 @@ function clearFilters() {
   storedTags.value = []
   storedDateRange.value = 'all'
 }
+
+// Helper to check if any filters are active
+function hasActiveFilters() {
+  return language.value !== 'all' || category.value !== 'all' || featured.value || tags.value.length > 0 || dateRange.value !== 'all'
+}
+
+// Keyboard navigation: Escape key clears all filters
+function handleKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape' && hasActiveFilters()) {
+    clearFilters()
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
+})
 </script>
 
 <template>
@@ -186,7 +206,7 @@ function clearFilters() {
         />
 
         <UButton
-          v-if="language !== 'all' || category !== 'all' || featured || tags.length > 0 || dateRange !== 'all'"
+          v-if="hasActiveFilters()"
           color="neutral"
           variant="link"
           @click="clearFilters"
@@ -233,7 +253,7 @@ function clearFilters() {
           {{ t('articles.emptyStateHint') }}
         </p>
         <UButton
-          v-if="language !== 'all' || category !== 'all' || featured || tags.length > 0 || dateRange !== 'all'"
+          v-if="hasActiveFilters()"
           color="primary"
           variant="soft"
           @click="clearFilters"
