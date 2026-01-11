@@ -2,6 +2,20 @@
   "site": {
     "title": "Antkeeper News"
   },
+  "search": {
+    "placeholder": "Rechercher des articles...",
+    "open": "Ouvrir la recherche",
+    "close": "Fermer la recherche",
+    "submit": "Rechercher",
+    "clear": "Effacer",
+    "title": "Résultats de recherche",
+    "resultsFor": "Résultats pour « {query} »",
+    "noResultsFor": "Aucun résultat pour « {query} »",
+    "noResultsHint": "Essayez un autre terme de recherche ou élargissez vos critères.",
+    "resultCount": "{count} résultat",
+    "resultCount_plural": "{count} résultats",
+    "article": "Article"
+  },
   "filters": {
     "allLanguages": "Toutes les langues",
     "allCategories": "Toutes les catégories",
@@ -31,7 +45,8 @@
   },
   "articles": {
     "loading": "Chargement des articles...",
-    "noArticlesFound": "Aucun article trouvé.",
+    "noArticlesFound": "Aucun article trouvé",
+    "emptyStateHint": "Essayez d'ajuster vos filtres ou de les effacer pour voir plus d'articles.",
     "notFound": "Article non trouvé",
     "articleCount": "{count} article",
     "articleCount_plural": "{count} articles",

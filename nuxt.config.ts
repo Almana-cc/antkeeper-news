@@ -10,7 +10,8 @@ export default defineNuxtConfig({
     '@nuxt/ui',
     '@nuxthub/core',
     '@nuxt/fonts',
-    '@nuxtjs/i18n'
+    '@nuxtjs/i18n',
+    '@vueuse/nuxt'
   ],
   googleFonts: {
     families: {
@@ -42,11 +43,9 @@ export default defineNuxtConfig({
     defaultLocale: 'fr',
     strategy: 'prefix_except_default',
     langDir: 'locales',
-    detectBrowserLanguage: {
-      useCookie: true,
-      cookieKey: 'i18n_redirected',
-      redirectOn: 'root'
-    }
+    // Auto browser detection disabled - users must manually select language
+    // Language preference persists via URL prefix (e.g., /en/..., /es/..., /de/...)
+    detectBrowserLanguage: false
   },
   hub: {
     db: {
