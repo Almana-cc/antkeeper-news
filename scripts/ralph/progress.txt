@@ -281,3 +281,32 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema module) continue but don't affect new code
 ### Next Priority: US-015
 
+## Iteration 15 - 2026-01-11T13:00:00Z
+### Completed: US-015 - Add search autocomplete suggestions
+### Implementation:
+- Created `server/api/articles/suggestions.get.ts`:
+  - GET endpoint accepts 'q' query param (min 2 chars)
+  - Returns popular tags matching query prefix with article counts
+  - Also returns matching article titles for direct navigation
+  - Limits to 5-8 suggestions total
+  - Tags sorted by popularity (article count), articles by recency
+- Modified `app/components/SearchInput.vue`:
+  - Added autocomplete dropdown below search input
+  - Implemented 300ms debounce using setTimeout/clearTimeout
+  - Keyboard navigation: ArrowUp/Down to select, Enter to confirm, Escape to close
+  - Different icons for tags (i-lucide-tag) vs articles (i-lucide-file-text)
+  - Tag suggestions show article count, article suggestions show "Article" label
+  - Clicking tag searches for that tag, clicking article navigates directly
+  - Works on both desktop and mobile layouts
+- Added i18n translations:
+  - `search.article` key in all 4 locales for article suggestion labels
+### Learnings:
+- Manual debounce with setTimeout/clearTimeout is simpler than installing additional deps
+- `useFetch` with `immediate: false` and `watch` option fetches only when query changes
+- Type casting with `as unknown as T[]` needed for raw SQL results from Drizzle
+- Dropdown positioning with `absolute top-full` places it directly below input
+- `role="listbox"` and `role="option"` improve accessibility for screen readers
+- `@mouseenter` on options updates selectedIndex for mouse hover highlighting
+- Pre-existing TypeScript errors (ArticleWithDuplicates, hub:db:schema module) continue but don't affect new code
+### Next Priority: US-016
+

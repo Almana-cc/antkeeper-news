@@ -229,8 +229,8 @@
         "Typecheck passes"
       ],
       "priority": 15,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Created /api/articles/suggestions endpoint returning popular tags (with article counts) and matching article titles. Enhanced SearchInput.vue with autocomplete dropdown, 300ms debounce, keyboard navigation (ArrowUp/Down/Enter/Escape). Tag suggestions show usage count, article suggestions link directly to articles. Added i18n 'search.article' key in all locales."
     },
     {
       "id": "US-016",
