@@ -112,12 +112,22 @@ export const myTask = task({
 - Commit format: `ralph: [US-XXX] Story title`
 - Always run `pnpm typecheck` before committing
 
+## Full-Text Search
+
+- Uses PostgreSQL tsvector with GIN index
+- Schema: `searchVector` column in articles table using `customType`
+- Trigger auto-updates on insert/update via Nitro plugin (`server/plugins/search-trigger.ts`)
+- Weights: A=title, B=summary, C=content for relevance ranking
+- Use 'simple' text search config for multi-language support
+
 ## Common Gotchas
 
 1. **Drizzle migrations**: Run `pnpm db:generate` then `pnpm db:push`
 2. **Nuxt UI**: Components are auto-imported, no need to import
 3. **API routes**: Use `defineEventHandler` from `h3`
 4. **OpenRouter**: Rate limited to 20 req/min on free tier
+5. **NuxtHub migrations**: Cannot use dollar-quoted strings ($$) - use Nitro plugins for PL/pgSQL
+6. **Typecheck**: Use `pnpm build` (no separate typecheck script)
 
 ## Testing
 

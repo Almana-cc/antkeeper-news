@@ -163,8 +163,8 @@
         "Typecheck passes"
       ],
       "priority": 11,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Added tsvector column to schema.ts with customType. Created 0006_full_text_search.sql migration with GIN index and backfill. Created server/plugins/search-trigger.ts Nitro plugin to set up auto-update trigger on startup (NuxtHub migrations don't support dollar-quoted PL/pgSQL)."
     },
     {
       "id": "US-012",

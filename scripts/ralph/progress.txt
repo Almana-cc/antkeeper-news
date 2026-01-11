@@ -144,3 +144,26 @@ Each iteration appends new entries - NEVER delete or replace existing content.
 - Tab, Enter, and arrow key navigation are handled by Nuxt UI components out of the box
 - Adding ARIA attributes improves accessibility for screen readers
 ### Next Priority: US-011
+
+## Iteration 11 - 2026-01-11T21:00:00Z
+### Completed: US-011 - Create full-text search database indexes
+### Implementation:
+- Modified `server/db/schema.ts`:
+  - Added `customType` import from `drizzle-orm/pg-core`
+  - Created `tsvector` custom type
+  - Added `searchVector` column to articles table
+- Created `server/db/migrations/postgresql/0006_full_text_search.sql`:
+  - Adds `search_vector` tsvector column
+  - Creates GIN index `articles_search_vector_idx`
+  - Backfills existing articles with weighted vectors (A=title, B=summary, C=content)
+- Created `server/plugins/search-trigger.ts`:
+  - Nitro plugin that creates trigger on server startup
+  - Creates `articles_update_search_vector()` function
+  - Creates `articles_search_vector_trigger` for auto-update on insert/update
+### Learnings:
+- NuxtHub migration runner splits SQL on semicolons and cannot handle dollar-quoted strings ($$)
+- PL/pgSQL functions/triggers must be created via Nitro plugin or direct psql
+- Drizzle ORM doesn't have native tsvector support, use `customType` to define it
+- Using 'simple' text search configuration works for multi-language content
+- Weighted vectors (A, B, C) allow ranking title matches higher than body matches
+### Next Priority: US-012
