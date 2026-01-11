@@ -6,7 +6,13 @@ interface Props {
 const props = defineProps<Props>()
 const { t } = useI18n()
 const { getTagLabel } = useTagTranslations()
+const { getArticleReadingTime } = useReadingTime()
 const localePath = useLocalePath()
+
+// Calculate reading time for the article
+const readingTime = computed(() => {
+  return getArticleReadingTime(props.article.summary, props.article.content)
+})
 
 // Navigate to index with tag filter applied
 function filterByTag(tag: string) {
@@ -156,6 +162,11 @@ const author = {
     <!-- Tags in footer slot -->
     <template #footer>
       <div class="flex flex-col gap-3">
+        <!-- Reading time -->
+        <div class="flex items-center gap-1 text-sm text-muted">
+          <UIcon name="i-lucide-clock" class="size-4" />
+          <span>{{ t('articles.readingTime', { minutes: readingTime }) }}</span>
+        </div>
         <div v-if="article.tags && article.tags.length > 0" class="flex flex-wrap justify-end gap-2">
           <UBadge
             v-for="tag in article.tags"

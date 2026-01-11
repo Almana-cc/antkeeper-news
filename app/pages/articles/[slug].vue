@@ -3,6 +3,7 @@ const route = useRoute()
 const { t } = useI18n()
 const config = useRuntimeConfig()
 const { getTagLabel } = useTagTranslations()
+const { getArticleReadingTime } = useReadingTime()
 const localePath = useLocalePath()
 
 // Navigate to index with tag filter applied
@@ -45,6 +46,10 @@ const categoryColor = computed(() => {
 const formattedDate = computed(() => {
   if (!article.value?.publishedAt) return ''
   return new Date(article.value.publishedAt).toLocaleDateString()
+})
+
+const readingTime = computed(() => {
+  return getArticleReadingTime(article.value?.summary, article.value?.content)
 })
 
 const siteUrl = computed(() => config.public.siteUrl || 'https://antkeeper.news')
@@ -152,6 +157,10 @@ useHead({
             <time v-if="article.publishedAt" :datetime="article.publishedAt">
               {{ formattedDate }}
             </time>
+            <span class="flex items-center gap-1">
+              <UIcon name="i-lucide-clock" class="size-4" />
+              {{ t('articles.readingTime', { minutes: readingTime }) }}
+            </span>
           </div>
         </header>
 

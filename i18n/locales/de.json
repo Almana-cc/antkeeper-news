@@ -41,6 +41,7 @@
     "backToList": "Zurück zur Liste",
     "readOriginal": "Originalartikel lesen",
     "relatedArticles": "Ähnliche Artikel",
+    "readingTime": "{minutes} Min. Lesezeit",
     "duplicates": {
       "alsoCoveredBy": "Auch von {count} anderer Quelle abgedeckt | Auch von {count} anderen Quellen abgedeckt",
       "unknownSource": "Unbekannte Quelle"
