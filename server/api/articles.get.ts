@@ -1,7 +1,7 @@
 import { and, eq, desc, sql, ne, gte, or, inArray } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
 
-export default eventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event)
 
   // Pagination
@@ -221,4 +221,4 @@ export default eventHandler(async (event) => {
       hasPrev: page > 1
     }
   }
-})
+}, { maxAge: 60 * 60 * 5 /* 5 hours */ })

@@ -1,7 +1,7 @@
 import { sql, eq, and, ne } from 'drizzle-orm'
 import { db, schema } from '../utils/db'
 
-export default eventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event)
   const language = query.language as string | undefined
   const category = query.category as string | undefined
@@ -34,4 +34,4 @@ export default eventHandler(async (event) => {
   return {
     tags: result.map((row: any) => row.tag).filter(Boolean)
   }
-})
+}, { maxAge: 60 * 60 * 5 /* 5 hours */ })
