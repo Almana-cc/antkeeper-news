@@ -121,30 +121,34 @@ export const detectDuplicates = task({
         // Find similar articles using pgvector similarity search
         // <=> operator: cosine distance (lower = more similar)
         // Filters: recent articles (if lookbackDays > 0), exclude self, must have embeddings
+        // Use sql.raw() for vector to avoid Drizzle parameterization issues
+        // Note: embedding is controlled input (from our own DB), so SQL injection risk is minimal
+        const embeddingJson = JSON.stringify(embedding)
+
         const similarArticlesQuery = lookbackDate
-          ? sql`
+          ? sql.raw(`
             SELECT
               id,
               title,
-              (embedding <=> ${JSON.stringify(embedding)}::vector) AS distance
+              (embedding <=> '${embeddingJson}'::vector) AS distance
             FROM articles
-            WHERE published_at >= ${lookbackDate}
+            WHERE published_at >= '${lookbackDate.toISOString()}'
               AND id != ${article.id}
               AND embedding IS NOT NULL
-            ORDER BY embedding <=> ${JSON.stringify(embedding)}::vector
+            ORDER BY embedding <=> '${embeddingJson}'::vector
             LIMIT 10
-          `
-          : sql`
+          `)
+          : sql.raw(`
             SELECT
               id,
               title,
-              (embedding <=> ${JSON.stringify(embedding)}::vector) AS distance
+              (embedding <=> '${embeddingJson}'::vector) AS distance
             FROM articles
             WHERE id != ${article.id}
               AND embedding IS NOT NULL
-            ORDER BY embedding <=> ${JSON.stringify(embedding)}::vector
+            ORDER BY embedding <=> '${embeddingJson}'::vector
             LIMIT 10
-          `
+          `)
 
         const similarArticles = await db.execute(similarArticlesQuery)
         const rows = similarArticles as unknown as Array<{ id: number; title: string; distance: number }>
