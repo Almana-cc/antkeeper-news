@@ -1,7 +1,11 @@
 import { defineConfig } from "@trigger.dev/sdk/v3";
 
+if (!process.env.TRIGGER_PROJECT_ID) {
+  throw new Error("TRIGGER_PROJECT_ID environment variable is required");
+}
+
 export default defineConfig({
-  project: "proj_igoreihfjybazgdcttkc",
+  project: process.env.TRIGGER_PROJECT_ID,
   runtime: "node",
   logLevel: "info",
   retries: {
