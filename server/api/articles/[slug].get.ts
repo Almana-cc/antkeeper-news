@@ -1,7 +1,7 @@
 import { eq } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
 
-export default eventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
 
   if (!slug) {
@@ -38,4 +38,4 @@ export default eventHandler(async (event) => {
   }
 
   return article
-})
+}, { maxAge: 60 * 60 * 5 /* 5 hours */ })

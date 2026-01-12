@@ -1,6 +1,6 @@
 import { getTranslatedTags, getAllTranslationsForLocale } from '../../services/tag-translation.service'
 
-export default eventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event)
   const locale = (query.locale as string) || 'en'
   const tags = query.tags as string | string[] | undefined
@@ -13,4 +13,4 @@ export default eventHandler(async (event) => {
 
   const translations = await getAllTranslationsForLocale(locale)
   return { translations }
-})
+}, { maxAge: 60 * 60 * 5 /* 5 hours */ })

@@ -414,24 +414,22 @@ article_duplicates {
 
 ### 📱 **Phase 3: Mobile App Integration**
 
-#### 3.1 API Enhancements for Mobile ⭐⭐⭐ [HIGH PRIORITY]
+#### 3.1 API Enhancements for Mobile ⭐⭐⭐ [PARTIALLY COMPLETED]
 **Why:** Primary use case is mobile app
 **Effort:** Low-Medium
-**Features:**
-- Add `/api/articles/latest` endpoint (optimized for mobile)
-- Include pagination cursor instead of page numbers (infinite scroll)
-- Add `?since=<timestamp>` for "fetch new articles"
-- Return image URLs optimized for mobile (maybe CDN/resize)
-- Add `?limit` control (default 20, max 100)
-- Consider GraphQL for flexible queries
 
-**Mobile-Specific Considerations:**
-- Smaller payload sizes (exclude full `content` field)
-- Efficient pagination (cursor-based)
-- Image optimization
-- Caching headers
+**Completed Features:**
+- ✅ Created `/api/mobile/feed` endpoint (optimized for mobile)
+- ✅ Smaller payload (id, title, summary, imageUrl, sourceName, sourceUrl, publishedAt, category only)
+- ✅ Pagination with `page` and `limit` params (default 20, max 50)
+- ✅ Language and category filtering via query params
+- ✅ Excludes off-topic articles by default
+- ✅ Returns `hasMore` flag for infinite scroll support
 
-**Impact:** Better mobile app performance
+**Files Created:**
+- `server/api/mobile/feed.get.ts` - Mobile-optimized feed endpoint
+
+**Impact:** ✅ Mobile app can now fetch articles efficiently
 
 ---
 
@@ -780,7 +778,7 @@ ui: {
 8. ✅ ~~**Bug Fixes**~~ - COMPLETED (duplicates, filter persistence, scroll, favicons, empty states)
 
 ### 📱 **Following Sprint (Mobile Focus)**
-1. **Mobile API Enhancements** - Primary use case
+1. ✅ ~~**Mobile API Enhancements**~~ - PARTIALLY COMPLETED (basic feed endpoint)
 2. **AI Content Summarization** - Better mobile app experience
 
 ### 🎨 **Polish Phase (Lower Priority)**

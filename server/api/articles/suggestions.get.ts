@@ -9,7 +9,7 @@ import { db, schema } from 'hub:db'
  * - q: Search query prefix (required, min 2 chars)
  * - limit: Max suggestions to return (default 5, max 8)
  */
-export default eventHandler(async (event) => {
+export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event)
   const searchQuery = (query.q as string || '').trim().toLowerCase()
   const limit = Math.min(8, Math.max(1, Number(query.limit) || 5))
@@ -69,4 +69,4 @@ export default eventHandler(async (event) => {
   ].slice(0, limit)
 
   return { suggestions }
-})
+}, { maxAge: 60 * 60 * 5 /* 5 hours */ })
