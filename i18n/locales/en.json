@@ -44,6 +44,7 @@
     "off-topic": "Off-Topic"
   },
   "articles": {
+    "title": "Articles",
     "loading": "Loading articles...",
     "noArticlesFound": "No articles found",
     "emptyStateHint": "Try adjusting your filters or clear them to see more articles.",

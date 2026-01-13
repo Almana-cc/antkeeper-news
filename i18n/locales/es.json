@@ -44,6 +44,7 @@
     "off-topic": "Fuera de tema"
   },
   "articles": {
+    "title": "Artículos",
     "loading": "Cargando artículos...",
     "noArticlesFound": "No se encontraron artículos",
     "emptyStateHint": "Intenta ajustar tus filtros o elimínalos para ver más artículos.",

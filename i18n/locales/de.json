@@ -44,6 +44,7 @@
     "off-topic": "Off-Topic"
   },
   "articles": {
+    "title": "Artikel",
     "loading": "Artikel werden geladen...",
     "noArticlesFound": "Keine Artikel gefunden",
     "emptyStateHint": "Versuche deine Filter anzupassen oder lösche sie, um mehr Artikel zu sehen.",
