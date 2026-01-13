@@ -47,7 +47,7 @@ const formattedDate = computed(() => {
   return new Date(article.value.publishedAt).toLocaleDateString()
 })
 
-const siteUrl = computed(() => config.public.siteUrl || 'https://antkeeper.news')
+const siteUrl = computed(() => config.public.siteUrl || 'https://news.antkeeper.app')
 const articleUrl = computed(() => `${siteUrl.value}/articles/${slug}`)
 const isoDate = computed(() => article.value?.publishedAt ? new Date(article.value.publishedAt).toISOString() : '')
 

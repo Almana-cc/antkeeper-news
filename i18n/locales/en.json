@@ -1,6 +1,7 @@
 {
   "site": {
-    "title": "Antkeeper News"
+    "title": "Antkeeper News",
+    "description": "Curated news about ants: research, care guides, conservation, and community updates from around the world."
   },
   "search": {
     "placeholder": "Search articles...",
@@ -44,6 +45,7 @@
     "off-topic": "Off-Topic"
   },
   "articles": {
+    "title": "Articles",
     "loading": "Loading articles...",
     "noArticlesFound": "No articles found",
     "emptyStateHint": "Try adjusting your filters or clear them to see more articles.",

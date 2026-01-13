@@ -1,6 +1,7 @@
 {
   "site": {
-    "title": "Antkeeper News"
+    "title": "Antkeeper News",
+    "description": "Actualités sur les fourmis : recherche, guides d'élevage, conservation et communauté du monde entier."
   },
   "search": {
     "placeholder": "Rechercher des articles...",
@@ -44,6 +45,7 @@
     "off-topic": "Hors-sujet"
   },
   "articles": {
+    "title": "Articles",
     "loading": "Chargement des articles...",
     "noArticlesFound": "Aucun article trouvé",
     "emptyStateHint": "Essayez d'ajuster vos filtres ou de les effacer pour voir plus d'articles.",

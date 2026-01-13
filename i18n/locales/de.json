@@ -1,6 +1,7 @@
 {
   "site": {
-    "title": "Antkeeper News"
+    "title": "Antkeeper News",
+    "description": "Kuratierte Nachrichten über Ameisen: Forschung, Pflegeanleitungen, Naturschutz und Community-Updates aus aller Welt."
   },
   "search": {
     "placeholder": "Artikel suchen...",
@@ -44,6 +45,7 @@
     "off-topic": "Off-Topic"
   },
   "articles": {
+    "title": "Artikel",
     "loading": "Artikel werden geladen...",
     "noArticlesFound": "Keine Artikel gefunden",
     "emptyStateHint": "Versuche deine Filter anzupassen oder lösche sie, um mehr Artikel zu sehen.",
