@@ -152,19 +152,15 @@ function hasActiveFilters() {
   return language.value !== 'all' || category.value !== 'all' || featured.value || tags.value.length > 0 || dateRange.value !== 'all'
 }
 
-// Keyboard navigation: Escape key clears all filters
-function handleKeydown(event: KeyboardEvent) {
-  if (event.key === 'Escape' && hasActiveFilters()) {
-    clearFilters()
+// Keyboard shortcuts using Nuxt UI composable
+defineShortcuts({
+  escape: {
+    handler: () => {
+      if (hasActiveFilters()) {
+        clearFilters()
+      }
+    }
   }
-}
-
-onMounted(() => {
-  window.addEventListener('keydown', handleKeydown)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
@@ -212,6 +208,7 @@ onUnmounted(() => {
           @click="clearFilters"
         >
           {{ t('filters.clearFilters') }}
+          <UKbd value="escape" class="ml-1" size="sm" />
         </UButton>
 
         <!-- Results count -->
