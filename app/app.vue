@@ -52,6 +52,13 @@ useHead({
     lang: locale
   },
   title: () => t('site.title'),
+  link: [
+    {
+      rel: 'icon',
+      type: 'image/png',
+      href: '/favicon.ico'
+    }
+  ],
   meta: [
     {
       name: 'description',

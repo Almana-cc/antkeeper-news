@@ -1,6 +1,7 @@
 {
   "site": {
-    "title": "Antkeeper News"
+    "title": "Antkeeper News",
+    "description": "Noticias sobre hormigas: investigación, guías de cuidado, conservación y actualizaciones de la comunidad de todo el mundo."
   },
   "search": {
     "placeholder": "Buscar artículos...",

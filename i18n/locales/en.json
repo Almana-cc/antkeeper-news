@@ -1,6 +1,7 @@
 {
   "site": {
-    "title": "Antkeeper News"
+    "title": "Antkeeper News",
+    "description": "Curated news about ants: research, care guides, conservation, and community updates from around the world."
   },
   "search": {
     "placeholder": "Search articles...",

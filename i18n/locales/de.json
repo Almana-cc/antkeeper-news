@@ -1,6 +1,7 @@
 {
   "site": {
-    "title": "Antkeeper News"
+    "title": "Antkeeper News",
+    "description": "Kuratierte Nachrichten über Ameisen: Forschung, Pflegeanleitungen, Naturschutz und Community-Updates aus aller Welt."
   },
   "search": {
     "placeholder": "Artikel suchen...",

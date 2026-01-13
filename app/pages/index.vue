@@ -3,6 +3,24 @@ const route = useRoute()
 const router = useRouter()
 const { t, locale } = useI18n()
 const { getTagLabel } = useTagTranslations()
+const config = useRuntimeConfig()
+
+const siteUrl = computed(() => config.public.siteUrl || 'https://news.antkeeper.app')
+
+useSeoMeta({
+  title: () => t('site.title'),
+  description: () => t('site.description'),
+  ogType: 'website',
+  ogTitle: () => t('site.title'),
+  ogDescription: () => t('site.description'),
+  ogUrl: () => siteUrl.value,
+  ogSiteName: 'Antkeeper News',
+  ogImage: () => `${siteUrl.value}/og-image.png`,
+  twitterCard: 'summary_large_image',
+  twitterTitle: () => t('site.title'),
+  twitterDescription: () => t('site.description'),
+  twitterImage: () => `${siteUrl.value}/og-image.png`
+})
 
 // Persistent filter storage (cookies work on SSR, no hydration flash)
 const storedLanguage = useCookie<string>('antkeeper-filter-language', { default: () => 'all', maxAge: 60 * 60 * 24 * 365 })

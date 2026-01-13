@@ -1,6 +1,7 @@
 {
   "site": {
-    "title": "Antkeeper News"
+    "title": "Antkeeper News",
+    "description": "Actualités sur les fourmis : recherche, guides d'élevage, conservation et communauté du monde entier."
   },
   "search": {
     "placeholder": "Rechercher des articles...",
