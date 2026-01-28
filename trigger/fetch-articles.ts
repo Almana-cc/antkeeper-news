@@ -59,6 +59,7 @@ export const fetchArticles = task({
             sourceId: source.id,
             sourceName: source.name,
             articlesAdded: 0,
+            allArticleIds: [],
             articlesNeedingScraping: [],
             errors: [`Source ${source.name} has no feedUrl`]
           }
@@ -77,6 +78,7 @@ export const fetchArticles = task({
               sourceId: source.id,
               sourceName: source.name,
               articlesAdded: 0,
+              allArticleIds: [],
               articlesNeedingScraping: [],
               errors: [`Failed to decode feed for ${source.name}`]
             }

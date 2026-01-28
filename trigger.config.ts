@@ -1,4 +1,5 @@
 import { defineConfig } from "@trigger.dev/sdk/v3";
+import "dotenv/config";
 
 if (!process.env.TRIGGER_PROJECT_ID) {
   throw new Error("TRIGGER_PROJECT_ID environment variable is required");

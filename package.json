@@ -22,11 +22,12 @@
     "@nuxt/ui": "4.2.1",
     "@nuxthub/core": "0.10.1",
     "@nuxtjs/i18n": "^10.2.1",
-    "@trigger.dev/sdk": "4.3.2",
+    "@trigger.dev/sdk": "4.3.3",
     "@unhead/vue": "^2.0.19",
     "@vueuse/core": "^14.1.0",
     "@vueuse/nuxt": "^14.1.0",
     "cheerio": "^1.1.2",
+    "dotenv": "^17.2.3",
     "drizzle-kit": "^0.31.8",
     "drizzle-orm": "^0.45.1",
     "eslint": "^9.39.2",
@@ -43,7 +44,7 @@
   "packageManager": "pnpm@10.12.2+sha512.a32540185b964ee30bb4e979e405adc6af59226b438ee4cc19f9e8773667a66d302f5bfee60a39d3cac69e35e4b96e708a71dd002b7e9359c4112a1722ac323f",
   "devDependencies": {
     "@nuxtjs/google-fonts": "^3.2.0",
-    "@trigger.dev/build": "4.3.2",
+    "@trigger.dev/build": "4.3.3",
     "rollup": "^4.53.5"
   }
 }
