@@ -9,7 +9,7 @@ const __dirname = dirname(__filename)
 const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:3000'
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
-const MODEL = 'mistralai/mistral-7b-instruct:free'
+const MODEL = 'mistralai/mistral-small-3.1-24b-instruct:free'
 
 interface Article {
   id: number
