@@ -16,7 +16,7 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 
 // Using free model - no paid fallback
-const MODEL = 'mistralai/mistral-small-3.1-24b-instruct:free'
+const MODEL = 'arcee-ai/trinity-large-preview:free'
 
 export async function categorizeArticle(input: ArticleInput, retryCount = 0): Promise<CategorizationResult> {
   if (!OPENROUTER_API_KEY) {

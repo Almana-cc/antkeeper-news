@@ -3,6 +3,7 @@ import { fetchArticles } from "./fetch-articles";
 import { scrapeMetadata } from "./scrape-metadata";
 import { categorizeArticles } from "./categorize-articles";
 import { detectDuplicates } from "./detect-duplicates";
+import { wakeDecoderService } from "../server/services/google-news-decoder.service";
 
 interface OrchestratorResult {
   success: boolean
@@ -36,6 +37,10 @@ export const orchestrateArticleFetch = schedules.task({
     console.log('Next 5 runs:', payload.upcoming)
 
     const errors: string[] = []
+
+    // Step 0: Wake up decoder service (Railway sleep mode)
+    console.log('Step 0: Waking up decoder service on Railway...')
+    await wakeDecoderService()
 
     // Step 1: Fetch articles from RSS sources
     console.log('Step 1: Fetching articles from RSS sources...')
