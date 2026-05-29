@@ -16,7 +16,7 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 
 // Using free model - no paid fallback
-const MODEL = 'arcee-ai/trinity-large-preview:free'
+const MODEL = 'liquid/lfm-2.5-1.2b-instruct:free'
 
 export async function categorizeArticle(input: ArticleInput, retryCount = 0): Promise<CategorizationResult> {
   if (!OPENROUTER_API_KEY) {
@@ -55,7 +55,6 @@ export async function categorizeArticle(input: ArticleInput, retryCount = 0): Pr
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        response_format: { type: 'json_object' },
         temperature: 0.3,
         max_tokens: 200
       })
@@ -109,8 +108,13 @@ export async function categorizeArticle(input: ArticleInput, retryCount = 0): Pr
       }
     }
 
-    // Parse JSON response
-    const parsed = JSON.parse(content)
+    // Parse JSON response (model may wrap it in markdown fences or prose)
+    const jsonMatch = content.match(/\{[\s\S]*\}/)
+    if (!jsonMatch) {
+      console.warn('No JSON object found in AI response:', content.slice(0, 200))
+      return { success: false, tags: [], category: 'news', error: 'No JSON in response' }
+    }
+    const parsed = JSON.parse(jsonMatch[0])
 
     // Validate and normalize
     const tags = normalizeTags(parsed.tags || [])
