@@ -42,7 +42,8 @@
     "ecology": "Ökologie",
     "community": "Gemeinschaft",
     "news": "Nachrichten",
-    "off-topic": "Off-Topic"
+    "off-topic": "Off-Topic",
+    "pest-control": "Schädlingsbekämpfung"
   },
   "articles": {
     "title": "Artikel",
@@ -65,5 +66,33 @@
   "pagination": {
     "previous": "Zurück",
     "next": "Weiter"
+  },
+  "admin": {
+    "login": {
+      "title": "Anmelden",
+      "description": "Nur für Site-Administratoren. Melde dich mit deinem GitHub-Konto an.",
+      "withGithub": "Mit GitHub anmelden",
+      "error": "Anmeldung fehlgeschlagen. Bitte versuche es erneut.",
+      "adminAccess": "Administratorzugriff",
+      "adminAccessHint": "Du kannst Artikel direkt auf ihrer Seite bearbeiten.",
+      "noAdminAccess": "Dieses Konto hat keine Administratorrechte.",
+      "logout": "Abmelden",
+      "backHome": "Zurück zur Startseite"
+    },
+    "edit": {
+      "button": "Bearbeiten",
+      "title": "Artikel bearbeiten",
+      "titleField": "Titel",
+      "summaryField": "Zusammenfassung",
+      "contentField": "Inhalt",
+      "categoryField": "Kategorie",
+      "tagsField": "Tags",
+      "save": "Speichern",
+      "cancel": "Abbrechen",
+      "saved": "Artikel aktualisiert",
+      "error": "Aktualisierung fehlgeschlagen",
+      "markOffTopic": "Off-Topic",
+      "markPestControl": "Schädlingsbekämpfung"
+    }
   }
 }

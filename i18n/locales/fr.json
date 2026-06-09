@@ -42,7 +42,8 @@
     "ecology": "Écologie",
     "community": "Communauté",
     "news": "Actualités",
-    "off-topic": "Hors-sujet"
+    "off-topic": "Hors-sujet",
+    "pest-control": "Anti-fourmis"
   },
   "articles": {
     "title": "Articles",
@@ -65,5 +66,33 @@
   "pagination": {
     "previous": "Précédent",
     "next": "Suivant"
+  },
+  "admin": {
+    "login": {
+      "title": "Connexion",
+      "description": "Réservé aux administrateurs du site. Connectez-vous avec votre compte GitHub.",
+      "withGithub": "Se connecter avec GitHub",
+      "error": "La connexion a échoué. Veuillez réessayer.",
+      "adminAccess": "Accès administrateur",
+      "adminAccessHint": "Vous pouvez éditer les articles depuis leur page.",
+      "noAdminAccess": "Ce compte n'a pas les droits d'administration.",
+      "logout": "Se déconnecter",
+      "backHome": "Retour à l'accueil"
+    },
+    "edit": {
+      "button": "Éditer",
+      "title": "Éditer l'article",
+      "titleField": "Titre",
+      "summaryField": "Résumé",
+      "contentField": "Contenu",
+      "categoryField": "Catégorie",
+      "tagsField": "Étiquettes",
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "saved": "Article mis à jour",
+      "error": "Échec de la mise à jour",
+      "markOffTopic": "Hors-sujet",
+      "markPestControl": "Anti-fourmis"
+    }
   }
 }

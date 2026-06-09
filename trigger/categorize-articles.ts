@@ -2,6 +2,7 @@ import { task, wait } from "@trigger.dev/sdk/v3";
 import { db, schema } from '../server/utils/db'
 import { eq } from 'drizzle-orm'
 import { categorizeArticle } from '../server/services/openrouter-categorization.service'
+import { containsNegativeContent } from '../server/services/keyword-filter.service'
 
 interface CategorizeArticlesPayload {
   articleIds: number[]
@@ -41,6 +42,16 @@ export const categorizeArticles = task({
         }
 
         console.log(`  Categorizing: ${article.title.substring(0, 60)}...`)
+
+        // Cheap keyword pass first: obvious pest-control content doesn't need an LLM call
+        if (containsNegativeContent(article.title, article.summary || '', article.language || 'en')) {
+          await db.update(schema.articles)
+            .set({ category: 'pest-control' })
+            .where(eq(schema.articles.id, articleId))
+          articlesUpdated++
+          console.log(`    ✓ Pest-control keywords detected, marked as pest-control (no AI call)`)
+          continue
+        }
 
         // Call AI categorization service
         const categorization = await categorizeArticle({

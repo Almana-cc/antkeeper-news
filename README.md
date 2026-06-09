@@ -45,6 +45,12 @@ DATABASE_URL=postgresql://user:password@localhost:5432/antkeeper_news
 TRIGGER_PROJECT_ID=your-project-id
 CRON_SECRET=your-secret-key
 OPENROUTER_API_KEY=your-api-key
+
+# Admin mode (GitHub OAuth via nuxt-auth-utils)
+NUXT_SESSION_PASSWORD=random-string-of-at-least-32-chars
+NUXT_OAUTH_GITHUB_CLIENT_ID=your-github-oauth-client-id
+NUXT_OAUTH_GITHUB_CLIENT_SECRET=your-github-oauth-client-secret
+NUXT_ADMIN_GITHUB_LOGINS=your-github-username
 ```
 
 ### Database
@@ -63,6 +69,23 @@ pnpm dev
 
 # Start Trigger.dev worker (separate terminal)
 pnpm trigger:dev
+```
+
+### Admin Mode
+
+Create a [GitHub OAuth App](https://github.com/settings/applications/new) with callback URL `https://<your-domain>/auth/github` (or `http://localhost:3000/auth/github` in dev), then set the `NUXT_OAUTH_GITHUB_*` variables. GitHub logins listed in `NUXT_ADMIN_GITHUB_LOGINS` (comma-separated) can sign in at `/login` and edit articles directly from their page (title, summary, content, category, tags — including one-click "off-topic" / "pest-control" to hide an article).
+
+### Re-checking Old Articles
+
+Articles categorized as `off-topic` or `pest-control` (extermination/anti-ant content) are hidden from the site. To re-run the filters on already-ingested articles:
+
+```bash
+pnpm recheck-articles -- --dry-run        # preview without writing
+pnpm recheck-articles                     # keyword pass + AI re-categorization
+pnpm recheck-articles -- --keywords-only  # fast pass, no AI calls
+pnpm recheck-articles -- --limit 100      # cap the number of articles
+pnpm recheck-articles -- --ids 12,34      # specific articles
+pnpm recheck-articles -- --start-id 1234  # resume after a rate-limit stop
 ```
 
 ## Project Structure

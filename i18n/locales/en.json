@@ -42,7 +42,8 @@
     "ecology": "Ecology",
     "community": "Community",
     "news": "News",
-    "off-topic": "Off-Topic"
+    "off-topic": "Off-Topic",
+    "pest-control": "Pest Control"
   },
   "articles": {
     "title": "Articles",
@@ -65,5 +66,33 @@
   "pagination": {
     "previous": "Previous",
     "next": "Next"
+  },
+  "admin": {
+    "login": {
+      "title": "Sign in",
+      "description": "Reserved for site administrators. Sign in with your GitHub account.",
+      "withGithub": "Sign in with GitHub",
+      "error": "Sign-in failed. Please try again.",
+      "adminAccess": "Administrator access",
+      "adminAccessHint": "You can edit articles from their page.",
+      "noAdminAccess": "This account does not have admin rights.",
+      "logout": "Sign out",
+      "backHome": "Back to home"
+    },
+    "edit": {
+      "button": "Edit",
+      "title": "Edit article",
+      "titleField": "Title",
+      "summaryField": "Summary",
+      "contentField": "Content",
+      "categoryField": "Category",
+      "tagsField": "Tags",
+      "save": "Save",
+      "cancel": "Cancel",
+      "saved": "Article updated",
+      "error": "Update failed",
+      "markOffTopic": "Off-topic",
+      "markPestControl": "Pest control"
+    }
   }
 }
