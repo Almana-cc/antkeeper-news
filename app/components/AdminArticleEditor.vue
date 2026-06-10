@@ -6,6 +6,7 @@ interface EditableArticle {
   content?: string | null
   category?: string | null
   tags?: string[] | null
+  imageUrl?: string | null
 }
 
 const props = defineProps<{ article: EditableArticle; iconOnly?: boolean }>()
@@ -22,7 +23,8 @@ const form = reactive({
   summary: '',
   content: '',
   category: 'news',
-  tags: [] as string[]
+  tags: [] as string[],
+  imageUrl: ''
 })
 
 watch(open, (isOpen) => {
@@ -32,6 +34,7 @@ watch(open, (isOpen) => {
     form.content = props.article.content || ''
     form.category = props.article.category || 'news'
     form.tags = [...(props.article.tags || [])]
+    form.imageUrl = props.article.imageUrl || ''
   }
 })
 
@@ -51,7 +54,8 @@ async function save() {
           summary: form.summary || null,
           content: form.content || null,
           category: form.category,
-          tags: form.tags
+          tags: form.tags,
+          imageUrl: form.imageUrl.trim() || null
         }
       }
     )
@@ -104,6 +108,22 @@ function markAs(category: string) {
 
         <UFormField :label="t('admin.edit.tagsField')">
           <UInputTags v-model="form.tags" class="w-full" />
+        </UFormField>
+
+        <UFormField :label="t('admin.edit.imageField')" :hint="t('admin.edit.imageHint')">
+          <UInput
+            v-model="form.imageUrl"
+            type="url"
+            placeholder="https://..."
+            icon="i-lucide-image"
+            class="w-full"
+          />
+          <img
+            v-if="form.imageUrl.trim()"
+            :src="form.imageUrl.trim()"
+            :alt="form.title"
+            class="mt-2 w-full max-h-48 object-cover rounded-md"
+          >
         </UFormField>
       </div>
     </template>

@@ -87,6 +87,8 @@
       "contentField": "Contenido",
       "categoryField": "Categoría",
       "tagsField": "Etiquetas",
+      "imageField": "Imagen",
+      "imageHint": "URL de la imagen",
       "save": "Guardar",
       "cancel": "Cancelar",
       "saved": "Artículo actualizado",

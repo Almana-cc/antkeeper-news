@@ -87,6 +87,8 @@
       "contentField": "Inhalt",
       "categoryField": "Kategorie",
       "tagsField": "Tags",
+      "imageField": "Bild",
+      "imageHint": "Bild-URL",
       "save": "Speichern",
       "cancel": "Abbrechen",
       "saved": "Artikel aktualisiert",
