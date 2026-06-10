@@ -37,7 +37,8 @@ const categoryColors: Record<string, 'primary' | 'secondary' | 'success' | 'info
   ecology: 'secondary',
   community: 'tertiary',
   news: 'primary',
-  "off-topic": 'neutral'
+  "off-topic": 'neutral',
+  "pest-control": 'neutral'
 }
 
 const categoryColor = computed(() => {
