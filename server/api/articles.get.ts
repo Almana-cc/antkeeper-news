@@ -1,6 +1,7 @@
-import { and, eq, desc, sql, ne, gte, or, inArray } from 'drizzle-orm'
+import { and, eq, desc, sql, notInArray, gte, or, inArray } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
 import { containsNegativeContent } from '../services/keyword-filter.service'
+import { HIDDEN_CATEGORIES } from '../../shared/utils/categories'
 
 export default defineCachedEventHandler(
   async (event) => {
@@ -27,12 +28,11 @@ export default defineCachedEventHandler(
       conditions.push(eq(schema.articles.language, language))
     }
 
-    if (category) {
-      if (category === 'all') {
-        conditions.push(ne(schema.articles.category, 'off-topic'))
-      } else {
-        conditions.push(eq(schema.articles.category, category))
-      }
+    if (category && category !== 'all') {
+      conditions.push(eq(schema.articles.category, category))
+    } else {
+      // Default: never surface off-topic or pest-control articles
+      conditions.push(notInArray(schema.articles.category, HIDDEN_CATEGORIES))
     }
 
     if (featured !== undefined) {
@@ -223,5 +223,9 @@ export default defineCachedEventHandler(
       }
     }
   },
-  { maxAge: 60 * 60 * 5 /* 5 hours */ }
+  {
+    maxAge: 60 * 60 * 5, /* 5 hours */
+    // Logged-in users (admins) always see fresh data so edits are visible immediately
+    shouldBypassCache: (event) => Boolean(getCookie(event, 'nuxt-session'))
+  }
 )

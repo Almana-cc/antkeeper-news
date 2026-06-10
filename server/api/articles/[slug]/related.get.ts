@@ -1,5 +1,6 @@
-import { and, eq, desc, sql, notInArray, or, ne } from 'drizzle-orm'
+import { and, eq, desc, sql, notInArray, or } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
+import { HIDDEN_CATEGORIES } from '../../../../shared/utils/categories'
 
 export default defineCachedEventHandler(async (event) => {
   const slug = getRouterParam(event, 'slug')
@@ -54,7 +55,7 @@ export default defineCachedEventHandler(async (event) => {
   const relatedArticles = await db.query.articles.findMany({
     where: and(
       notInArray(schema.articles.id, excludeIdsArray),
-      ne(schema.articles.category, 'off-topic'),
+      notInArray(schema.articles.category, HIDDEN_CATEGORIES),
       sql`${schema.articles.tags} && ARRAY[${sql.join(article.tags.map((tag: string) => sql`${tag}`), sql`, `)}]::text[]`
     ),
     orderBy: [desc(schema.articles.publishedAt)],

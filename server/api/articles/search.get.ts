@@ -1,5 +1,6 @@
-import { and, eq, desc, sql } from 'drizzle-orm'
+import { and, eq, desc, sql, or, isNull, notInArray } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
+import { HIDDEN_CATEGORIES } from '../../../shared/utils/categories'
 
 export default defineCachedEventHandler(async (event) => {
   const query = getQuery(event)
@@ -57,7 +58,12 @@ export default defineCachedEventHandler(async (event) => {
 
   // Build where clause
   const conditions = [
-    sql`${schema.articles.searchVector} @@ to_tsquery('simple', ${tsQueryString})`
+    sql`${schema.articles.searchVector} @@ to_tsquery('simple', ${tsQueryString})`,
+    // Exclude off-topic and pest-control articles from search results
+    or(
+      isNull(schema.articles.category),
+      notInArray(schema.articles.category, HIDDEN_CATEGORIES)
+    )!
   ]
 
   if (language) {

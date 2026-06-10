@@ -15,7 +15,17 @@ function filterByTag(tag: string) {
 
 const slug = route.params.slug as string
 
+// Admin session (GitHub login via /login)
+const { loggedIn, session } = useUserSession()
+const isAdmin = computed(() => loggedIn.value && session.value?.isAdmin === true)
+
 const { data: article, error } = await useFetch(`/api/articles/${slug}`)
+
+function onArticleUpdated(updated: Record<string, unknown>) {
+  if (article.value) {
+    article.value = { ...article.value, ...updated }
+  }
+}
 const { data: relatedData } = await useFetch(`/api/articles/${slug}/related`)
 
 if (error.value?.statusCode === 404) {
@@ -34,7 +44,8 @@ const categoryColors: Record<string, 'primary' | 'secondary' | 'success' | 'info
   ecology: 'secondary',
   community: 'tertiary',
   news: 'primary',
-  'off-topic': 'neutral'
+  'off-topic': 'neutral',
+  'pest-control': 'neutral'
 }
 
 const categoryColor = computed(() => {
@@ -109,7 +120,7 @@ useHead({
   <UMain>
     <UContainer class="py-10">
       <!-- Back button -->
-      <div class="mb-6">
+      <div class="mb-6 flex items-center justify-between">
         <UButton
           to="/"
           color="neutral"
@@ -118,6 +129,13 @@ useHead({
         >
           {{ t('articles.backToList') }}
         </UButton>
+
+        <!-- Admin edit button -->
+        <AdminArticleEditor
+          v-if="isAdmin && article"
+          :article="article"
+          @updated="onArticleUpdated"
+        />
       </div>
 
       <article v-if="article" class="max-w-4xl mx-auto">

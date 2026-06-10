@@ -130,7 +130,8 @@ const categoryOptions = computed(() => [
   { value: 'community', label: t('categories.community') },
   { value: 'news', label: t('categories.news') },
   { value: 'separator', label: '──────────', disabled: true },
-  { value: 'off-topic', label: t('categories.off-topic') }
+  { value: 'off-topic', label: t('categories.off-topic') },
+  { value: 'pest-control', label: t('categories.pest-control') }
 ])
 
 // Date range options

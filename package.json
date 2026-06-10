@@ -10,7 +10,8 @@
     "postinstall": "nuxt prepare",
     "trigger:dev": "npx trigger.dev@latest dev",
     "trigger:deploy": "npx trigger.dev@latest deploy",
-    "generate-newsletter": "npx tsx scripts/generate-newsletter.ts"
+    "generate-newsletter": "npx tsx scripts/generate-newsletter.ts",
+    "recheck-articles": "npx tsx scripts/recheck-articles.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.3.14",
@@ -32,6 +33,7 @@
     "drizzle-orm": "^0.45.1",
     "eslint": "^9.39.2",
     "nuxt": "^4.2.2",
+    "nuxt-auth-utils": "^0.5.29",
     "postgres": "^3.4.7",
     "rss-parser": "^3.13.0",
     "tailwindcss": "^4.1.18",

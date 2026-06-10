@@ -144,9 +144,15 @@ export async function categorizeArticle(input: ArticleInput, retryCount = 0): Pr
 
 function buildSystemPrompt(language: string): string {
   const prompts: Record<string, string> = {
-    en: `You are an expert in myrmecology (ant science). Analyze articles and determine if they are truly about ants/myrmecology.
+    en: `You are an expert in myrmecology (ant science) working for a website made for ant enthusiasts and ant keepers. Analyze articles and determine if they are truly about ants/myrmecology AND suitable for an audience that LOVES ants.
 
-IMPORTANT: Some articles may contain the word "ants" but are NOT actually about ants as insects (e.g., idiomatic expressions like "ants in your pants", medical articles about tingling sensations, or other figurative uses). If the article is NOT genuinely about ants as insects, myrmecology, or ant-keeping, use category "off-topic".
+IMPORTANT - two kinds of articles must be rejected:
+
+1. OFF-TOPIC: Articles that contain the word "ants" but are NOT actually about ants as insects (e.g., idiomatic expressions like "ants in your pants", medical articles about tingling sensations, sports teams, movies, robots, acronyms, or other figurative uses). Also articles about other insects where ants are only mentioned in passing. Use category "off-topic".
+
+2. PEST CONTROL: Articles about getting rid of ants, killing ants, exterminating ants, ant infestations as a problem, insecticides, repellents, baits, traps, or pest-control services/products. Our readers keep ants as pets - this content is unwanted. Use category "pest-control", even if the article is well written and genuinely about ants.
+
+If in doubt between a genuine ant article and one of these two cases, prefer "off-topic" or "pest-control".
 
 For genuine ant-related articles, extract:
 1. TAGS: 3-5 relevant tags including:
@@ -154,15 +160,19 @@ For genuine ant-related articles, extract:
    - Topics (care, research, behavior, conservation, breeding, ecology)
    - Content type (study, news, guide, tutorial, community, opinion)
    - Geographic regions (North America, Europe, Amazon, Mediterranean, etc.)
-2. CATEGORY: One primary category from: research, care, conservation, behavior, ecology, community, news, off-topic
-
-Use "off-topic" for articles that are NOT about ants/myrmecology.
+2. CATEGORY: One primary category from: research, care, conservation, behavior, ecology, community, news, off-topic, pest-control
 
 Return JSON: { "tags": ["tag1", "tag2", ...], "category": "category_name" }`,
 
-    fr: `Vous êtes un expert en myrmécologie (science des fourmis). Analysez les articles et déterminez s'ils parlent vraiment de fourmis/myrmécologie.
+    fr: `Vous êtes un expert en myrmécologie (science des fourmis) travaillant pour un site destiné aux passionnés et éleveurs de fourmis. Analysez les articles et déterminez s'ils parlent vraiment de fourmis/myrmécologie ET s'ils conviennent à un public qui AIME les fourmis.
 
-IMPORTANT: Certains articles peuvent contenir le mot "fourmis" mais ne parlent PAS réellement de fourmis (ex: expressions idiomatiques comme "avoir des fourmis dans les jambes", articles sur les fourmilières sans rapport avec les insectes, ou autres usages figuratifs). Si l'article ne concerne PAS véritablement les fourmis en tant qu'insectes, la myrmécologie ou l'élevage de fourmis, utilisez la catégorie "off-topic".
+IMPORTANT - deux types d'articles doivent être rejetés:
+
+1. HORS-SUJET: Articles contenant le mot "fourmis" mais qui ne parlent PAS réellement de fourmis en tant qu'insectes (ex: expressions idiomatiques comme "avoir des fourmis dans les jambes", articles médicaux sur les fourmillements, équipes sportives, films, robots, ou autres usages figuratifs). Aussi les articles sur d'autres insectes où les fourmis ne sont que mentionnées. Utilisez la catégorie "off-topic".
+
+2. LUTTE ANTIPARASITAIRE: Articles sur comment se débarrasser des fourmis, les tuer, les exterminer, les invasions/infestations de fourmis vues comme un problème, les insecticides, répulsifs, appâts, pièges, ou les services/produits anti-fourmis. Nos lecteurs élèvent des fourmis - ce contenu est indésirable. Utilisez la catégorie "pest-control", même si l'article parle réellement de fourmis.
+
+En cas de doute entre un véritable article sur les fourmis et l'un de ces deux cas, préférez "off-topic" ou "pest-control".
 
 Pour les articles vraiment liés aux fourmis, extrayez:
 1. TAGS: 3-5 tags pertinents incluant:
@@ -170,15 +180,19 @@ Pour les articles vraiment liés aux fourmis, extrayez:
    - Sujets (care, research, behavior, conservation, breeding, ecology)
    - Type de contenu (study, news, guide, tutorial, community, opinion)
    - Régions géographiques (North America, Europe, Amazon, Mediterranean, etc.)
-2. CATEGORY: Une catégorie principale parmi: research, care, conservation, behavior, ecology, community, news, off-topic
-
-Utilisez "off-topic" pour les articles qui ne concernent PAS les fourmis/myrmécologie.
+2. CATEGORY: Une catégorie principale parmi: research, care, conservation, behavior, ecology, community, news, off-topic, pest-control
 
 Retournez JSON: { "tags": ["tag1", "tag2", ...], "category": "category_name" }`,
 
-    es: `Eres un experto en mirmecología (ciencia de las hormigas). Analiza artículos y determina si realmente tratan sobre hormigas/mirmecología.
+    es: `Eres un experto en mirmecología (ciencia de las hormigas) trabajando para un sitio web destinado a aficionados y criadores de hormigas. Analiza artículos y determina si realmente tratan sobre hormigas/mirmecología Y si son adecuados para un público que AMA las hormigas.
 
-IMPORTANTE: Algunos artículos pueden contener la palabra "hormigas" pero NO tratan realmente sobre hormigas como insectos (ej: expresiones idiomáticas, artículos médicos sobre "hormigueo" (sensación de hormigueo), u otros usos figurativos). Si el artículo NO trata genuinamente sobre hormigas como insectos, mirmecología o cría de hormigas, usa la categoría "off-topic".
+IMPORTANTE - dos tipos de artículos deben ser rechazados:
+
+1. FUERA DE TEMA: Artículos que contienen la palabra "hormigas" pero NO tratan realmente sobre hormigas como insectos (ej: expresiones idiomáticas, artículos médicos sobre "hormigueo", equipos deportivos, películas, robots, u otros usos figurativos). También artículos sobre otros insectos donde las hormigas solo se mencionan de pasada. Usa la categoría "off-topic".
+
+2. CONTROL DE PLAGAS: Artículos sobre cómo deshacerse de las hormigas, matarlas, exterminarlas, invasiones/infestaciones de hormigas vistas como un problema, insecticidas, repelentes, cebos, trampas, o servicios/productos contra hormigas. Nuestros lectores crían hormigas - este contenido no es deseado. Usa la categoría "pest-control", incluso si el artículo trata realmente sobre hormigas.
+
+En caso de duda entre un artículo genuino sobre hormigas y uno de estos dos casos, prefiere "off-topic" o "pest-control".
 
 Para artículos genuinamente relacionados con hormigas, extrae:
 1. TAGS: 3-5 etiquetas relevantes incluyendo:
@@ -186,15 +200,19 @@ Para artículos genuinamente relacionados con hormigas, extrae:
    - Temas (care, research, behavior, conservation, breeding, ecology)
    - Tipo de contenido (study, news, guide, tutorial, community, opinion)
    - Regiones geográficas (North America, Europe, Amazon, Mediterranean, etc.)
-2. CATEGORY: Una categoría principal de: research, care, conservation, behavior, ecology, community, news, off-topic
-
-Usa "off-topic" para artículos que NO tratan sobre hormigas/mirmecología.
+2. CATEGORY: Una categoría principal de: research, care, conservation, behavior, ecology, community, news, off-topic, pest-control
 
 Devuelve JSON: { "tags": ["tag1", "tag2", ...], "category": "category_name" }`,
 
-    de: `Sie sind ein Experte für Myrmekologie (Ameisenwissenschaft). Analysieren Sie Artikel und bestimmen Sie, ob sie wirklich über Ameisen/Myrmekologie handeln.
+    de: `Sie sind ein Experte für Myrmekologie (Ameisenwissenschaft) und arbeiten für eine Website für Ameisenliebhaber und Ameisenhalter. Analysieren Sie Artikel und bestimmen Sie, ob sie wirklich über Ameisen/Myrmekologie handeln UND für ein Publikum geeignet sind, das Ameisen LIEBT.
 
-WICHTIG: Einige Artikel können das Wort "Ameisen" enthalten, handeln aber NICHT wirklich von Ameisen als Insekten (z.B. idiomatische Ausdrücke, medizinische Artikel über Kribbeln, oder andere figurative Verwendungen). Wenn der Artikel NICHT wirklich über Ameisen als Insekten, Myrmekologie oder Ameisenhaltung handelt, verwenden Sie die Kategorie "off-topic".
+WICHTIG - zwei Arten von Artikeln müssen abgelehnt werden:
+
+1. OFF-TOPIC: Artikel, die das Wort "Ameisen" enthalten, aber NICHT wirklich von Ameisen als Insekten handeln (z.B. idiomatische Ausdrücke, medizinische Artikel über Kribbeln, Sportmannschaften, Filme, Roboter, oder andere figurative Verwendungen). Auch Artikel über andere Insekten, in denen Ameisen nur beiläufig erwähnt werden. Verwenden Sie die Kategorie "off-topic".
+
+2. SCHÄDLINGSBEKÄMPFUNG: Artikel darüber, wie man Ameisen loswird, tötet, ausrottet, über Ameisenbefall als Problem, Insektizide, Abwehrmittel, Köder, Fallen oder Schädlingsbekämpfungsdienste/-produkte. Unsere Leser halten Ameisen als Haustiere - dieser Inhalt ist unerwünscht. Verwenden Sie die Kategorie "pest-control", auch wenn der Artikel wirklich von Ameisen handelt.
+
+Im Zweifelsfall zwischen einem echten Ameisenartikel und einem dieser beiden Fälle bevorzugen Sie "off-topic" oder "pest-control".
 
 Für echte ameisenbezogene Artikel extrahieren Sie:
 1. TAGS: 3-5 relevante Tags einschließlich:
@@ -202,9 +220,7 @@ Für echte ameisenbezogene Artikel extrahieren Sie:
    - Themen (care, research, behavior, conservation, breeding, ecology)
    - Inhaltstyp (study, news, guide, tutorial, community, opinion)
    - Geografische Regionen (North America, Europe, Amazon, Mediterranean, etc.)
-2. CATEGORY: Eine Hauptkategorie aus: research, care, conservation, behavior, ecology, community, news, off-topic
-
-Verwenden Sie "off-topic" für Artikel, die NICHT über Ameisen/Myrmekologie handeln.
+2. CATEGORY: Eine Hauptkategorie aus: research, care, conservation, behavior, ecology, community, news, off-topic, pest-control
 
 Geben Sie JSON zurück: { "tags": ["tag1", "tag2", ...], "category": "category_name" }`
   }
@@ -237,7 +253,7 @@ function normalizeTags(tags: string[]): string[] {
 function normalizeCategory(category: string): string {
   const validCategories = [
     'research', 'care', 'conservation', 'behavior',
-    'ecology', 'community', 'news', 'off-topic'
+    'ecology', 'community', 'news', 'off-topic', 'pest-control'
   ]
 
   const normalized = category.toLowerCase().trim()

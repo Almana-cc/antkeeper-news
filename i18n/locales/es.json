@@ -42,7 +42,8 @@
     "ecology": "Ecología",
     "community": "Comunidad",
     "news": "Noticias",
-    "off-topic": "Fuera de tema"
+    "off-topic": "Fuera de tema",
+    "pest-control": "Control de plagas"
   },
   "articles": {
     "title": "Artículos",
@@ -65,5 +66,35 @@
   "pagination": {
     "previous": "Anterior",
     "next": "Siguiente"
+  },
+  "admin": {
+    "login": {
+      "title": "Iniciar sesión",
+      "description": "Reservado para los administradores del sitio. Inicia sesión con tu cuenta de GitHub.",
+      "withGithub": "Iniciar sesión con GitHub",
+      "error": "Error al iniciar sesión. Inténtalo de nuevo.",
+      "adminAccess": "Acceso de administrador",
+      "adminAccessHint": "Puedes editar los artículos desde su página.",
+      "noAdminAccess": "Esta cuenta no tiene derechos de administración.",
+      "logout": "Cerrar sesión",
+      "backHome": "Volver al inicio"
+    },
+    "edit": {
+      "button": "Editar",
+      "title": "Editar artículo",
+      "titleField": "Título",
+      "summaryField": "Resumen",
+      "contentField": "Contenido",
+      "categoryField": "Categoría",
+      "tagsField": "Etiquetas",
+      "imageField": "Imagen",
+      "imageHint": "URL de la imagen",
+      "save": "Guardar",
+      "cancel": "Cancelar",
+      "saved": "Artículo actualizado",
+      "error": "Error al actualizar",
+      "markOffTopic": "Fuera de tema",
+      "markPestControl": "Control de plagas"
+    }
   }
 }

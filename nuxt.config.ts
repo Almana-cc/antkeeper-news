@@ -11,8 +11,14 @@ export default defineNuxtConfig({
     '@nuxthub/core',
     '@nuxt/fonts',
     '@nuxtjs/i18n',
-    '@vueuse/nuxt'
+    '@vueuse/nuxt',
+    'nuxt-auth-utils'
   ],
+  runtimeConfig: {
+    // Comma-separated list of GitHub logins allowed to administrate the site
+    // Override with NUXT_ADMIN_GITHUB_LOGINS
+    adminGithubLogins: ''
+  },
   googleFonts: {
     families: {
       Montserrat: [400, 500, 600, 700]

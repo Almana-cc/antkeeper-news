@@ -38,4 +38,8 @@ export default defineCachedEventHandler(async (event) => {
   }
 
   return article
-}, { maxAge: 60 * 60 * 5 /* 5 hours */ })
+}, {
+  maxAge: 60 * 60 * 5, /* 5 hours */
+  // Logged-in users (admins) always see fresh data so edits are visible immediately
+  shouldBypassCache: (event) => Boolean(getCookie(event, 'nuxt-session'))
+})
