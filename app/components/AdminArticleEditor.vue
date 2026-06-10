@@ -8,7 +8,7 @@ interface EditableArticle {
   tags?: string[] | null
 }
 
-const props = defineProps<{ article: EditableArticle }>()
+const props = defineProps<{ article: EditableArticle; iconOnly?: boolean }>()
 const emit = defineEmits<{ updated: [article: Record<string, unknown>] }>()
 
 const { t } = useI18n()
@@ -76,11 +76,12 @@ function markAs(category: string) {
   <UModal v-model:open="open" :title="t('admin.edit.title')">
     <UButton
       color="secondary"
-      variant="soft"
+      :variant="iconOnly ? 'solid' : 'soft'"
       icon="i-lucide-pencil"
       size="sm"
+      :aria-label="t('admin.edit.button')"
     >
-      {{ t('admin.edit.button') }}
+      <template v-if="!iconOnly">{{ t('admin.edit.button') }}</template>
     </UButton>
 
     <template #body>

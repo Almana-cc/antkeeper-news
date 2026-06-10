@@ -8,6 +8,15 @@ const { t } = useI18n()
 const { getTagLabel } = useTagTranslations()
 const localePath = useLocalePath()
 
+// Admin session: show the edit button overlay on cards
+const { loggedIn, session } = useUserSession()
+const isAdmin = computed(() => loggedIn.value && session.value?.isAdmin === true)
+
+// Refresh article lists so hidden/edited articles update right away
+async function onArticleUpdated() {
+  await refreshNuxtData()
+}
+
 // Navigate to index with tag filter applied
 function filterByTag(tag: string) {
   navigateTo({
@@ -89,6 +98,7 @@ const author = {
 </script>
 
 <template>
+  <div class="relative h-full">
   <UBlogPost
     class="h-full flex flex-col"
     :title="article.title"
@@ -170,4 +180,10 @@ const author = {
       </div>
     </template>
   </UBlogPost>
+
+  <!-- Admin edit overlay (outside the card link so clicks don't navigate) -->
+  <div v-if="isAdmin" class="absolute top-2 right-2 z-10">
+    <AdminArticleEditor :article="article" icon-only @updated="onArticleUpdated" />
+  </div>
+  </div>
 </template>
