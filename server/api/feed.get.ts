@@ -1,4 +1,4 @@
-import { and, eq, desc, sql, notInArray } from 'drizzle-orm'
+import { and, eq, desc, sql, notInArray, or, isNull } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
 import { containsNegativeContent } from '../services/keyword-filter.service'
 import { HIDDEN_CATEGORIES } from '../../shared/utils/categories'
@@ -14,7 +14,13 @@ export default defineCachedEventHandler(
     const language = query.language as string | undefined
     const category = query.category as string | undefined
 
-    const conditions = [notInArray(schema.articles.category, HIDDEN_CATEGORIES)]
+    // Keep uncategorized articles: NOT IN is never true for NULL
+    const conditions = [
+      or(
+        isNull(schema.articles.category),
+        notInArray(schema.articles.category, HIDDEN_CATEGORIES)
+      )!
+    ]
 
     if (language) {
       conditions.push(eq(schema.articles.language, language))

@@ -15,8 +15,8 @@ interface CategorizationResult {
 const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY
 const OPENROUTER_BASE_URL = 'https://openrouter.ai/api/v1'
 
-// Using free model - no paid fallback
-const MODEL = 'liquid/lfm-2.5-1.2b-instruct:free'
+// Paid model: free models keep getting removed from OpenRouter, silently breaking categorization
+const MODEL = 'mistralai/mistral-small-3.2-24b-instruct'
 
 export async function categorizeArticle(input: ArticleInput, retryCount = 0): Promise<CategorizationResult> {
   if (!OPENROUTER_API_KEY) {

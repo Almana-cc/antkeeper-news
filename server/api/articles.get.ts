@@ -1,4 +1,4 @@
-import { and, eq, desc, sql, notInArray, gte, or, inArray } from 'drizzle-orm'
+import { and, eq, desc, sql, notInArray, gte, or, inArray, isNull } from 'drizzle-orm'
 import { db, schema } from 'hub:db'
 import { containsNegativeContent } from '../services/keyword-filter.service'
 import { HIDDEN_CATEGORIES } from '../../shared/utils/categories'
@@ -32,7 +32,13 @@ export default defineCachedEventHandler(
       conditions.push(eq(schema.articles.category, category))
     } else {
       // Default: never surface off-topic or pest-control articles
-      conditions.push(notInArray(schema.articles.category, HIDDEN_CATEGORIES))
+      // (keep uncategorized ones: NOT IN is never true for NULL)
+      conditions.push(
+        or(
+          isNull(schema.articles.category),
+          notInArray(schema.articles.category, HIDDEN_CATEGORIES)
+        )!
+      )
     }
 
     if (featured !== undefined) {
