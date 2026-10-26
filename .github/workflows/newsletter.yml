@@ -1,9 +1,10 @@
 name: Weekly Newsletter Generation
 
 on:
-  schedule:
-    # Every Friday at 9 AM UTC
-    - cron: "0 9 * * 5"
+  # Paused: generation model no longer available on OpenRouter
+  # schedule:
+  #   # Every Friday at 9 AM UTC
+  #   - cron: "0 9 * * 5"
   workflow_dispatch:
 
 jobs:
